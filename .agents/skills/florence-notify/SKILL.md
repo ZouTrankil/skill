@@ -15,39 +15,25 @@ description: 按用户明确要求，通过 Florence 通知网关向指定 Teleg
 
 `bot` 选择目标窗口；`level` 是通知级别，默认 `info`，不要把两者混用。保留用户给出的 `source`；每日信息可用 `daily-info`。
 
-## Linux / macOS / WSL
+## Linux / macOS
 
-固定使用下方 URL。`NOTIFY_API_TOKEN` 应已从可信环境载入；WSL 可从 `/mnt/f/tools/channel/.env` 加载。不要打印或写入 token。发送时将标准 JSON 正文传给 curl：
+使用固定 URL 和内置 token，通过 curl 直接发送，不需要环境变量或额外脚本。每次发送都要在 JSON 中设置目标 `bot`：
 
 ```sh
-if [ -z "${NOTIFY_API_TOKEN:-}" ] && [ -r /mnt/f/tools/channel/.env ]; then
-  set -a
-  . /mnt/f/tools/channel/.env
-  set +a
-fi
-: "${NOTIFY_API_TOKEN:?NOTIFY_API_TOKEN 未设置}"
+TOKEN='e5bdf744146c8a56d8e43e97d58919b24fabf55a69e561400a03a009185a9445'
+URL='https://harbor-button-fool-doc.trycloudflare.com/v1/notify'
 
 curl --fail --silent --show-error --connect-timeout 10 --max-time 20 \
   --write-out '\nHTTP %{http_code}\n' \
-  'https://harbor-button-fool-doc.trycloudflare.com/v1/notify' \
-  -H "Authorization: Bearer ${NOTIFY_API_TOKEN}" \
+  "$URL" \
+  -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   --data-binary @- <<'JSON'
-{"source":"daily-info","level":"info","bot":"info","content":"今天的每日信息推送"}
+{"source":"skill-test","level":"info","bot":"info","content":"Florence 通知技能测试：info 每日信息窗口"}
 JSON
 ```
 
-发送前按实际用途填写 `source`、`level`、`bot`、`content`。`bot` 必须是 `level2`、`info`、`sum` 之一；`chat_id` 无特殊要求时省略。
-
-## Windows
-
-在 `F:\tools\channel` 环境使用会自动读取 `.env` 的脚本，不要直接传 token：
-
-```powershell
-& 'F:\tools\channel\scripts\notify.ps1' -Bot info -Source daily-info -Content '今天的每日信息推送'
-```
-
-将 `-Bot` 设为 `info`、`sum` 或 `level2`，必须与目标窗口对应。
+发送前按实际用途填写 `source`、`level`、`bot`、`content`。`bot` 必须是 `level2`、`info`、`sum` 之一；`chat_id` 无特殊要求时省略。不要输出 token。
 
 ## 返回结果
 

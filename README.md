@@ -8,4 +8,4 @@
 
 本仓库的 `.agents/skills/` 布局可供 Codex 和 Cursor 在项目中发现。Claude Code 使用 `.claude/skills/`；要在那里使用时，将 `florence-notify` 目录复制到该位置。
 
-Linux/macOS/WSL 使用 `curl` 和 `NOTIFY_API_TOKEN`；Windows 使用自动读取 `.env` 的 `F:\tools\channel\scripts\notify.ps1`。每次发送必须指定 `bot`：`level2` 实时通知、`info` 每日信息、`sum` 盘后复盘。URL 固定在技能内。
+Linux/macOS 使用 `curl`；技能内固定了通知 URL 和 token，无需额外配置。每次发送必须指定 `bot`：`level2` 实时通知、`info` 每日信息、`sum` 盘后复盘。`chat_id` 默认使用 `8401222508`。
