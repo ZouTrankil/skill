@@ -5,6 +5,7 @@
 ## 技能
 
 - [florence-notify](./.agents/skills/florence-notify/)：按用户明确要求，通过 Florence 通知接口发送通知。
+- [local-repo-sync](./.agents/skills/local-repo-sync/)：登记本地仓库并配置 macOS、Linux、Windows 的定时获取与 rebase 远程主干流程。
 
 本仓库的 `.agents/skills/` 布局可供 Codex 和 Cursor 在项目中发现。Claude Code 使用 `.claude/skills/`；要在那里使用时，将 `florence-notify` 目录复制到该位置。
 
