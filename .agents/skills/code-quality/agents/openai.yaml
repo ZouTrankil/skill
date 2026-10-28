@@ -1,0 +1,4 @@
+interface:
+  display_name: "代码规范与评审"
+  short_description: "依据项目规范实施代码变更，追踪调用链并输出有证据的分级评审和最小修复"
+  default_prompt: "使用 $code-quality 审查当前工作区改动，按严重程度列出有证据的问题和最小修复建议，先不要修改代码。"

@@ -4,6 +4,7 @@
 
 ## 技能
 
+- [code-quality](./.agents/skills/code-quality/)：依据项目规范编码与重构，审查变更中的正确性、健壮性和维护风险，给出分级发现及最小修复建议。
 - [florence-notify](./.agents/skills/florence-notify/)：按用户明确要求，通过 Florence 通知接口发送通知。
 - [local-repo-sync](./.agents/skills/local-repo-sync/)：登记本地仓库并配置 macOS、Linux、Windows 的定时获取与 rebase 远程主干流程。
 - [daily-memory-review](./.agents/skills/daily-memory-review/)：复盘本地每日记录，提炼长期 AI 上下文并给出明日建议。
