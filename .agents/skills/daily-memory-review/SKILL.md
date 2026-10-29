@@ -45,7 +45,7 @@ metadata:
 ## 每日总结通知
 
 - 只有本次实际完成复盘并成功写入 summary 文件后，才推送通知。若定时运行因当天文件已存在而跳过，不要发送通知。
-- 使用同一技能库中的 `florence-notify` 技能：读取 `.agents/skills/florence-notify/SKILL.md` 并遵守它的调用和回执规则。每日复盘的目标使用 `bot=sum`（复盘窗口），`level=info`，`source=daily-memory-review`。
+- 使用 `florence-notify` 技能：从当前可用技能列表定位并读取其 `SKILL.md`，遵守它的调用和回执规则；不要假定当前工作目录包含该技能。每日复盘的目标使用 `bot=sum`（复盘窗口），`level=info`，`source=daily-memory-review`。
 - 推送与 summary 一致的精简内容，保留人生视角、健康建议、信息量 / 质量评分和明日建议；不要发送工作业务细节、原始日记或本地路径。
 - 通知请求失败或结果不确定时不要自动重试，按通知技能要求报告入队 / 送达状态和通知 ID。通知技能不可用时保留已写好的 summary，并报告未推送；不要自行调用其他接口或输出凭据。
 
