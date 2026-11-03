@@ -54,7 +54,7 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 | [code-quality](./library/project-types/software-development/code-quality/SKILL.md) | 依据项目规范编码、重构与评审，给出有证据的问题和修复建议 | 本仓库维护 | 项目类共用：按当前开发任务确定项目 | 已配置全局，链接 library 源码 |
 | [florence-notify](./.agents/skills/florence-notify/SKILL.md) | 按明确要求发送 Florence 通知 | 本仓库维护 | 全局通用：已配置该通知服务的任务 | 已配置全局，保留原安装 |
 | [local-repo-sync](./library/project-types/software-development/local-repo-sync/SKILL.md) | 登记本地仓库，配置定期 fetch 与 rebase | 本仓库维护 | 项目类共用：按已有仓库清单确定范围 | 已配置全局，链接 library 源码 |
-| [daily-memory-review](./.agents/skills/daily-memory-review/SKILL.md) | 复盘本地每日记录，维护长期上下文并建议次日行动 | 本仓库维护 | 全局通用：个人记录复盘，需配置记录来源 | 已配置全局，链接源码 |
+| [daily-memory-review](./.agents/skills/daily-memory-review/SKILL.md) | 复盘本地每日记录，接入 raw 增量索引与长期认知评估，建议次日行动 | 本仓库维护 | 全局通用：个人记录复盘，需配置记录来源 | 已配置全局，链接源码 |
 | [aihot](./.agents/skills/aihot/SKILL.md) | 查询 AI 资讯、热点与日报 | 第三方：AIHOT / Virxact，2.0.0；有本地调用约束 | 全局通用：AI 资讯查询，仅明确调用 | 已配置全局，链接源码 |
 | [repo-artifact-cleanup](./library/project-types/software-development/repo-artifact-cleanup/SKILL.md) | 批量扫描临时产物，按证据和授权隔离、清理及恢复 | 本仓库维护 | 项目类共用：复用仓库清单，清理范围单独授权 | 已配置全局，流程版；未执行清理验收 |
 | [worktree-cleanup](./library/project-types/software-development/worktree-cleanup/SKILL.md) | 核对任务、改动和提交保护后回收 worktree，保留分支 | 本仓库维护 | 项目类共用：复用仓库清单，回收范围单独授权 | 已配置全局，流程版；未执行回收验收 |
