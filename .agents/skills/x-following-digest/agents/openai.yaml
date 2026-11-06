@@ -1,4 +1,0 @@
-interface:
-  display_name: "X 关注动态简报"
-  short_description: "汇总关注账号近期动态与观点，分析冲突和证据，并推送至指定 Telegram 目标"
-  default_prompt: "使用 $x-following-digest 汇总我在 X 上关注用户最近 24 小时的动态，分类分析观点和冲突，并推送到已配置的 Telegram 目标。"
