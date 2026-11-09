@@ -58,7 +58,7 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 | [daily-memory-review](./.agents/skills/daily-memory-review/SKILL.md) | 复盘本地每日记录，接入 raw 增量索引与长期认知评估，建议次日行动 | 本仓库维护 | 全局通用：个人记录复盘，需配置记录来源 | 已配置全局，链接源码 |
 | [x-following-digest](./.agents/skills/x-following-digest/SKILL.md) | 汇总 X 关注用户近期动态、分类比较观点与冲突，推送 Telegram | 本仓库维护 | 全局通用：需配置 X 访问方式和推送目标 | 已配置全局，Aside 来源已复核、本机发送配置检查通过；完整覆盖及 Telegram 投递待验收，调度状态以 Orca 为准 |
 | [aihot](./.agents/skills/aihot/SKILL.md) | 查询 AI 资讯、热点与日报 | 第三方：AIHOT / Virxact，2.0.0；有本地调用约束 | 全局通用：AI 资讯查询，仅明确调用 | 已配置全局，链接源码 |
-| [repo-artifact-cleanup](./library/project-types/software-development/repo-artifact-cleanup/SKILL.md) | 批量扫描临时产物，按证据和授权隔离、清理及恢复 | 本仓库维护 | 项目类共用：复用仓库清单，清理范围单独授权 | 已配置全局，流程版；未执行清理验收 |
+| [repo-artifact-cleanup](./library/project-types/software-development/repo-artifact-cleanup/SKILL.md) | 批量扫描临时产物，按证据和授权隔离、清理及恢复 | 本仓库维护 | 项目类共用：复用仓库清单，清理范围单独授权 | 已配置全局；支持日志与临时批次按时间 / 数量轮转，普通日志删除、其他产物隔离 |
 | [worktree-cleanup](./library/project-types/software-development/worktree-cleanup/SKILL.md) | 核对任务、改动和提交保护后回收 worktree，保留分支 | 本仓库维护 | 项目类共用：复用仓库清单，回收范围单独授权 | 已配置全局，流程版；未执行回收验收 |
 
 当前项目类共用技能归入 `software-development`，已建立用户级全局入口，不要求逐个项目安装；当前没有项目专用技能。分类说明用途，安装位置决定可发现范围，两者独立。
@@ -80,7 +80,7 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 
 `code-quality` 根据当前任务、工作目录和项目约定确定范围。`local-repo-sync` 继续使用技能旁已有的 `repos.tsv` 仓库清单，不重复登记项目；该本机配置已被 Git 忽略。需要临时指定其他清单时使用 `SYNC_REPOS_FILE`。
 
-两个清理技能优先使用本次指定的目录或清单，否则读取 `SYNC_REPOS_FILE`，再否则复用 `local-repo-sync/repos.tsv`。只读取清单，不调用仓库同步，也不继承同步授权。清理路径、保护项、保留期限和自动执行范围使用用户指定的清理策略；未配置时先扫描报告，不依据文件名或时间自动删除。
+两个清理技能优先使用本次指定的目录或清单，否则读取 `SYNC_REPOS_FILE`，再否则复用 `local-repo-sync/repos.tsv`。只读取清单，不调用仓库同步，也不继承同步授权。清理路径、保护项、保留期限和自动执行范围优先使用用户指定的清理策略。`repo-artifact-cleanup` 在已授权清理时可采用技能内默认轮转策略（日志 3 天 / 100 份、临时批次 3 天 / 20 批，普通日志删除、其他产物隔离）；`worktree-cleanup` 仍按其独立约定执行。保护和占用检查不能因达到阈值而省略。
 
 第一版仅包含 `SKILL.md`，由代理按流程调用现有 Git、文件系统或管理器工具；没有独立定时执行脚本，不创建空的 `scripts/` 或 `references/`。例如可以请求“使用 `$repo-artifact-cleanup` 扫描已有清单中的仓库，先只报告候选”或“使用 `$worktree-cleanup` 检查可回收工作树，先不删除”。正式执行与调度需另有明确范围和授权。
 
