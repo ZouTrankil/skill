@@ -25,7 +25,7 @@ skill/
 ├── .agents/skills/              # 现有通用技能；在本仓库中也可被发现
 │   ├── aihot/
 │   ├── daily-memory-review/
-│   ├── x-following-digest/
+│   ├── notebooklm/
 │   └── florence-notify/
 ├── library/project-types/       # 项目类共用源码，当前通过用户级链接启用
 │   └── software-development/
@@ -56,10 +56,22 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 | [florence-notify](./.agents/skills/florence-notify/SKILL.md) | 按明确要求发送 Florence 通知 | 本仓库维护 | 全局通用：已配置该通知服务的任务 | 已配置全局，保留原安装 |
 | [local-repo-sync](./library/project-types/software-development/local-repo-sync/SKILL.md) | 登记本地仓库，配置定期 fetch 与 rebase | 本仓库维护 | 项目类共用：按已有仓库清单确定范围 | 已配置全局，链接 library 源码 |
 | [daily-memory-review](./.agents/skills/daily-memory-review/SKILL.md) | 复盘本地每日记录，接入 raw 增量索引与长期认知评估，建议次日行动 | 本仓库维护 | 全局通用：个人记录复盘，需配置记录来源 | 已配置全局，链接源码 |
-| [x-following-digest](./.agents/skills/x-following-digest/SKILL.md) | 汇总 X 关注用户近期动态、分类比较观点与冲突，推送 Telegram | 本仓库维护 | 全局通用：需配置 X 访问方式和推送目标 | 已配置全局，Aside 来源已复核、本机发送配置检查通过；完整覆盖及 Telegram 投递待验收，调度状态以 Orca 为准 |
+| [notebooklm](./.agents/skills/notebooklm/SKILL.md) | 使用 NotebookLM 管理笔记本与来源、基于来源问答研究并生成或下载产物 | 第三方独立技能：teng-lin/notebooklm-py，v0.8.6；未做本地改写 | 全局通用：NotebookLM 工作流 | 已纳入本仓库；Python CLI 安装与 Google 账号认证需另行完成 |
 | [aihot](./.agents/skills/aihot/SKILL.md) | 查询 AI 资讯、热点与日报 | 第三方：AIHOT / Virxact，2.0.0；有本地调用约束 | 全局通用：AI 资讯查询，仅明确调用 | 已配置全局，链接源码 |
 | [repo-artifact-cleanup](./library/project-types/software-development/repo-artifact-cleanup/SKILL.md) | 批量扫描临时产物，按证据和授权隔离、清理及恢复 | 本仓库维护 | 项目类共用：复用仓库清单，清理范围单独授权 | 已配置全局；支持日志与临时批次按时间 / 数量轮转，普通日志删除、其他产物隔离 |
 | [worktree-cleanup](./library/project-types/software-development/worktree-cleanup/SKILL.md) | 核对任务、改动和提交保护后回收 worktree，保留分支 | 本仓库维护 | 项目类共用：复用仓库清单，回收范围单独授权 | 已配置全局，流程版；未执行回收验收 |
+
+## 外部工作区工具
+
+Google Workspace、Notion 与 Slack 由已连接插件提供。它们的技能和连接器由插件管理器维护；本仓库只记录能力入口，不复制插件缓存源码到 `.agents/skills/`。
+
+| 工具 | 可用技能 / 能力 | 适用场景 |
+| --- | --- | --- |
+| Google Workspace | Google Drive 插件及 `google-drive:google-drive`、`google-drive:google-docs`、`google-drive:google-sheets`、`google-drive:google-slides`、`google-drive:google-drive-comments` 技能 | 搜索和管理 Drive 文件；读写 Docs、Sheets、Slides；处理文件评论 |
+| Notion | Notion 插件及 `notion:notion-knowledge-capture`、`notion:notion-research-documentation`、`notion:notion-database-designer`、`notion:notion-spec-to-implementation`、`notion:notion-weekly-project-digest`、`notion:notion-meeting-prep` 等技能 | 知识沉淀、跨页面研究、数据库设计、规格拆任务、周报和会议准备 |
+| Slack | Slack 插件连接器工具；当前技能清单未提供独立 Slack skill | 搜索和读取频道 / 线程、整理 Canvas 与 Lists、按明确要求起草或发送消息 |
+
+使用时按任务调用对应插件技能。若要调整插件安装、授权或连接状态，使用插件管理器；不要把插件可用误记为本仓库源码或已完成特定账号验收。
 
 当前项目类共用技能归入 `software-development`，已建立用户级全局入口，不要求逐个项目安装；当前没有项目专用技能。分类说明用途，安装位置决定可发现范围，两者独立。
 
