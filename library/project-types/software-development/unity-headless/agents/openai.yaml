@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unity 无界面执行"
+  short_description: "为 Unity 工程选择批处理模式，核对 Editor 身份、图形设备与测试结果"
+  default_prompt: "使用 $unity-headless 检查当前 Unity 工程能否无界面运行指定测试，并核对结果。"

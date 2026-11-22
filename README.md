@@ -32,6 +32,7 @@ skill/
 │       ├── code-quality/
 │       ├── local-repo-sync/
 │       ├── repo-artifact-cleanup/
+│       ├── unity-headless/
 │       └── worktree-cleanup/
 └── scripts/                     # 仓库级安装等工具
 
@@ -44,7 +45,7 @@ skill/
 
 Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目级位置是项目内的 `.agents/skills/`，并支持技能目录符号链接。项目类共用技能可通过链接接入；需要独立分发时可复制，但应记录来源与版本，避免两边分别修改。同名技能不会自动合并，应避免重复启用。[官方目录说明](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
 
-本仓库现有安装脚本仍使用 `${CODEX_HOME:-$HOME/.codex}/skills/`，且只安装 `florence-notify`。当前机器保留该技能已有的全局安装，`aihot`、`daily-memory-review` 及 library 中四个项目类共用技能通过 `~/.agents/skills/` 下的符号链接接入源码；不要再为同一技能建立第二个用户级入口。其他客户端按各自支持的发现目录接入。
+本仓库现有安装脚本仍使用 `${CODEX_HOME:-$HOME/.codex}/skills/`，且只安装 `florence-notify`。当前机器保留该技能已有的全局安装，`aihot`、`daily-memory-review` 及 library 中的项目类共用技能通过 `~/.agents/skills/` 下的符号链接接入源码；不要再为同一技能建立第二个用户级入口。其他客户端按各自支持的发现目录接入。
 
 本机技能入口及跨机器迁移来源见 [技能账本](./技能账本.md)。
 
@@ -61,6 +62,7 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 | [notebooklm](./.agents/skills/notebooklm/SKILL.md) | 使用 NotebookLM 管理笔记本与来源、基于来源问答研究并生成或下载产物 | 第三方独立技能：teng-lin/notebooklm-py，v0.8.6；未做本地改写 | 全局通用：NotebookLM 工作流 | 已纳入本仓库；Python CLI 安装与 Google 账号认证需另行完成 |
 | [aihot](./.agents/skills/aihot/SKILL.md) | 查询 AI 资讯、热点与日报 | 第三方：AIHOT / Virxact，2.0.0；有本地调用约束 | 全局通用：AI 资讯查询，仅明确调用 | 已配置全局，链接源码 |
 | [repo-artifact-cleanup](./library/project-types/software-development/repo-artifact-cleanup/SKILL.md) | 批量扫描临时产物，按证据和授权隔离、清理及恢复 | 本仓库维护 | 项目类共用：复用仓库清单，清理范围单独授权 | 已配置全局；支持日志与临时批次按时间 / 数量轮转，普通日志删除、其他产物隔离 |
+| [unity-headless](./library/project-types/software-development/unity-headless/SKILL.md) | 选择 Unity 批处理模式，使用原生 Editor 或 akiojin Bridge，并验证执行结果 | 本仓库维护 | 项目类共用：Unity 工程 | 已配置全局，链接 library 源码 |
 | [worktree-cleanup](./library/project-types/software-development/worktree-cleanup/SKILL.md) | 核对任务、改动和提交保护后回收 worktree，保留分支 | 本仓库维护 | 项目类共用：复用仓库清单，回收范围单独授权 | 已配置全局，流程版；未执行回收验收 |
 
 ## 外部工作区工具
@@ -88,6 +90,8 @@ Google Workspace、Notion 与 Slack 由已连接插件提供。它们的技能�
   → <本仓库>/library/project-types/software-development/local-repo-sync
 ~/.agents/skills/repo-artifact-cleanup
   → <本仓库>/library/project-types/software-development/repo-artifact-cleanup
+~/.agents/skills/unity-headless
+  → <本仓库>/library/project-types/software-development/unity-headless
 ~/.agents/skills/worktree-cleanup
   → <本仓库>/library/project-types/software-development/worktree-cleanup
 ```
