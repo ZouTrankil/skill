@@ -1,0 +1,325 @@
+# unity-cli
+
+[English](README.md) | [日本語](README.ja.md) | [中文](README.zh.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Español](README.es.md)
+
+`unity-cli` e una CLI Rust che permette a Claude Code di controllare Unity Editor tramite TCP diretto.
+E il successore di [`unity-mcp-server`](https://github.com/akiojin/unity-mcp-server), riprogettato da Node.js + MCP a un workflow nativo con binario unico.
+
+## Perche unity-cli
+
+- Controlla Unity da Claude Code con skill mirati e comandi typed.
+- Usa 143 runtime Unity Tool APIs e 11 strumenti Reference Cache per scene, asset, codice, test, UI ed editor.
+- Binario unico con avvio rapido e overhead ridotto.
+
+## Funzioni aggiunte da v0.13
+
+Gli [esempi eseguibili degli strumenti](docs/tools.md#v013v015-executable-examples) coprono:
+
+- Risultati dei test PlayMode attraverso Domain Reload; pressione prolungata di tastiera/gamepad, simulazione mouse/tocco, sequenze di input e controlli di notifica InputAction.
+- Registrazione MP4, WebM e sequenza di frame PNG, piu anteprime di hot reload dei metodi.
+- Modifica di asset/tracce/clip Timeline, job di bake Lighting/NavMesh/NavMeshSurface/Occlusion e build Player standalone con polling dello stato.
+
+Iniziare da `unity-playmode-testing` per runtime/input/cattura/hot reload, da `unity-asset-management` per Timeline e da `unity-editor-tools` per i job di build/bake. I prerequisiti di package e scene sono indicati in ogni esempio.
+
+## Come funziona
+
+```text
+Claude Code
+  -> Skills (caricati on demand)
+  -> unity-cli
+  -> Unity Editor (TCP bridge)
+```
+
+Alcuni strumenti di codice (`read`, `search`, `find_symbol`, `find_refs`, ecc.) funzionano in locale senza connessione Unity.
+
+## Inizio rapido
+
+### Compatibilita dell'Editor
+
+Il Bridge richiede Unity 2022.3 o successivo. La matrice macOS copre
+2022.3.62f3, 6000.0.84f1, 6000.3.25f1, 6000.4.11f1, 6000.5.3f1,
+6000.6.3f1, 6000.7.0a2 e 6000.7.0b2 (E2E di accettazione: PASS il 2026-09-30). Consultare le
+[date e i risultati di verifica](docs/editor-compatibility.md) prima di scegliere una versione.
+L'Editor Unity 6000.7 gira su Mono; le build Player CoreCLR sono escluse da questa matrice.
+I controlli baseline e di tutti gli strumenti su Windows sono passati su 6000.3.28f1, 6000.6.8f1 e Unity 7.0 Alpha 7000.0.0a16 rispetto al sorgente aggiornato il 2026-11-10.
+Quest ultimo esegue l Editor su CoreCLR; i risultati Windows collegati indicano la build alpha esatta, i package e l ambito verificato.
+
+### Installare o aggiornare con un agente LLM
+
+Copiare questo prompt in Claude Code, Codex o un altro agente di programmazione aperto
+nel proprio progetto Unity. Eseguire di nuovo lo stesso prompt in seguito per aggiornare
+insieme la CLI e il pacchetto bridge di Unity:
+
+```text
+Installa o aggiorna unity-cli per questo progetto Unity, mantieni il pacchetto bridge di
+Unity alla stessa versione della CLI e collegalo allo Unity Editor.
+
+1. Rileva il mio sistema operativo (macOS, Linux o Windows).
+2. Se `unity-cli` non e ancora nel PATH, esegui lo script ufficiale di Quick Install:
+   - macOS / Linux: curl -fsSL https://raw.githubusercontent.com/akiojin/unity-cli/main/scripts/install.sh | sh
+   - Windows (PowerShell): irm https://raw.githubusercontent.com/akiojin/unity-cli/main/scripts/install.ps1 | iex
+3. Se `unity-cli` e gia nel PATH, aggiornalo invece all'ultima release.
+   Se UNITY_CLI_NO_AUTO_UPDATE=1 o UNITY_CLI_VERSION sono impostati, ho fissato la versione
+   di proposito: non aggiornarlo; dimmelo e chiedimi prima. Altrimenti individua dove si trova
+   davvero il binario (seguendo i link simbolici) e aggiornalo nel modo in cui e stato installato:
+   - Quick Install (copia gestita sotto ~/.unity/tools): unity-cli cli install
+   - Homebrew: brew upgrade akiojin/tap/unity-cli
+   - Qualsiasi altro caso (cargo install, download manuale): dimmi come e stato installato e
+     chiedimi prima di modificarlo.
+4. Verifica che `unity-cli --version` funzioni dal PATH. Su macOS / Linux, se non viene
+   trovato, aggiungi ~/.local/bin al PATH di questa shell e indicami la riga da aggiungere al
+   mio profilo della shell. Su Windows, apri una nuova shell per applicare il PATH utente aggiornato.
+5. Prima di modificare il mio progetto, dimmi che setup modifica Packages/manifest.json
+   (aggiunge lo scoped registry OpenUPM e com.akiojin.unity-cli-bridge fissato alla versione
+   della CLI) e, per i progetti che usano solo il vecchio Input Manager, imposta
+   activeInputHandler su Both in ProjectSettings/ProjectSettings.asset. Attendi la mia conferma.
+6. Dalla radice del progetto Unity, esegui: unity-cli --output json setup --launch-editor
+   Se il JSON contiene ok: false, segui editor.hint (la prima importazione puo richiedere
+   alcuni minuti; riesegui setup per continuare ad attendere).
+7. Controlla la versione del bridge con: unity-cli --output json bridge status
+   - Se source e registry e versionCheck.status (qui o nel report di setup) e mismatch:
+     dimmi che questo cambia la riga com.akiojin.unity-cli-bridge in Packages/manifest.json
+     alla versione della CLI e attendi la mia conferma. Poi esegui unity-cli bridge upgrade e
+     lascia che lo Unity Editor reimporti il pacchetto.
+   - Se source e custom o embedded (URL Git, percorso locale o una copia sotto Packages/), o
+     versionCheck.status e unknown: non riscriverlo. Riportami invece il source ed entrambe
+     le versioni.
+8. Verifica la connessione con: unity-cli system ping
+   Conferma che versionCheck.status e match (la CLI e il bridge usano la stessa versione).
+9. Se un passaggio fallisce, esegui: unity-cli doctor --output json
+   Riporta il codice diagnosis e segui il suo suggerimento prima di riprovare.
+```
+
+**Plugin Claude Code**: installare il plugin `unity-cli` da Claude Code
+Marketplace per permettere all'agente di usare gli skill dei workflow Unity:
+
+```bash
+/plugin marketplace add akiojin/unity-cli
+```
+
+Il plugin fornisce gli skill; il binario e il bridge Unity vengono preparati quando servono.
+Quando un'attivita richiede Unity e `unity-cli` manca, lo skill `unity-cli-usage` fa eseguire
+all'agente lo script di Quick Install e poi `unity-cli setup` nel progetto Unity
+(avvisa prima di modificare `Packages/manifest.json`).
+
+**Codex Skills**: usando questo repository con Codex, gli skill sono disponibili tramite
+`.agents/skills/` (symlink alla sorgente del plugin, esposti anche tramite `.claude/skills/`).
+Non serve alcuna configurazione aggiuntiva — basta clonare il repository.
+
+### Installazione manuale
+
+#### Quick Install (consigliato)
+
+macOS (Apple silicon / Intel) e Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/akiojin/unity-cli/main/scripts/install.sh | sh
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/akiojin/unity-cli/main/scripts/install.ps1 | iex
+```
+
+Entrambi gli installer scaricano il binario della release nella struttura gestita
+`~/.unity/tools/unity-cli/{rid}/` e lo verificano con i `SHA256SUMS` della release prima
+dell'installazione; se il checksum non corrisponde, l'installazione viene interrotta e il
+binario esistente non viene toccato. `install.sh` crea un symlink in `~/.local/bin/unity-cli`;
+`install.ps1` aggiunge la directory gestita al `PATH` utente. Impostare
+`UNITY_CLI_VERSION=v0.19.1` per fissare una release. Dopo l'installazione iniziale la CLI
+controlla automaticamente gli aggiornamenti in background, e ogni aggiornamento viene
+verificato con gli stessi checksum.
+
+Se `~/.local/bin` non e nel PATH, aggiungere quanto segue al profilo della shell
+(ad es. `~/.zshrc` o `~/.bashrc`):
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Impostare `UNITY_CLI_NO_AUTO_UPDATE=1` per disattivare l'aggiornamento automatico.
+
+#### Gestori di pacchetti
+
+```bash
+brew install akiojin/tap/unity-cli     # macOS / Linux (Homebrew)
+```
+
+Le installazioni Homebrew si aggiornano con `brew upgrade`.
+Il pacchetto Windows winget non e ancora pubblicato (#537); fino ad allora usare
+il comando Quick Install PowerShell sopra.
+Su macOS Intel, gli embedding reference (`unity-cli reference embed-build` / `embed-search`) caricano ONNX Runtime
+dinamicamente; la formula Homebrew installa `onnxruntime`, altrimenti eseguire
+`brew install onnxruntime` o impostare `ORT_DYLIB_PATH`.
+
+#### Releases o cargo install
+
+Installare il crate pubblicato da crates.io. Il workflow di release lo pubblica con `cargo publish`:
+
+```bash
+cargo install unity-cli
+```
+
+Si puo anche scaricare il binario piu recente da [GitHub
+Releases](https://github.com/akiojin/unity-cli/releases) oppure installarlo da un checkout locale:
+
+```bash
+git clone https://github.com/akiojin/unity-cli.git
+cd unity-cli
+cargo install --path .
+```
+
+#### Configurazione del progetto
+
+Configurazione del progetto con un solo comando (controllo del binario → installazione del bridge → connessione all'Editor):
+
+```bash
+cd /path/to/YourUnityProject
+unity-cli --output json setup --launch-editor
+```
+
+`setup` aggiunge lo scoped registry OpenUPM e `com.akiojin.unity-cli-bridge`
+(fissato alla versione della CLI) a `Packages/manifest.json`, avvia facoltativamente
+l'Editor Unity Hub del progetto, attende il bridge e restituisce un report JSON.
+`unity-cli bridge install | upgrade | status` gestiscono il pacchetto separatamente;
+`install` e idempotente, e `setup` / `system ping` segnalano un `versionCheck` quando le
+versioni di CLI e bridge differiscono. Se il progetto usa ancora solo il vecchio Input
+Manager e l'Editor e chiuso, `install` imposta anche `activeInputHandler` su Both in
+`ProjectSettings/ProjectSettings.asset`, cosi la dipendenza Input System viene importata
+senza un prompt di riavvio bloccante.
+
+Pacchetto bridge lato Unity, alternative manuali (sceglierne una):
+
+**OpenUPM**:
+
+```bash
+openupm add com.akiojin.unity-cli-bridge
+```
+
+**Git URL** (Unity Package Manager):
+
+```text
+https://github.com/akiojin/unity-cli.git?path=UnityCliBridge/Packages/unity-cli-bridge
+```
+
+#### Verifica della connessione
+
+```bash
+unity-cli system ping
+unity-cli doctor --output json   # se ping fallisce: SAFE_MODE / BRIDGE_NOT_INSTALLED / PORT_IN_USE / ...
+```
+
+#### Manutenzione del binario gestito
+
+```bash
+unity-cli cli doctor
+unity-cli cli install
+```
+
+`unityd` e `lspd` aggiornano automaticamente i propri binari gestiti `unity-cli` / C# LSP all'avvio del daemon.
+Le copie gestite si trovano in `UNITY_CLI_TOOLS_ROOT` (o nella directory tools predefinita del sistema operativo) e vengono aggiornate senza conferma interattiva.
+
+## Skills (23)
+
+Questi skill sono guide di workflow. L elenco coincide con [docs/skills.md](docs/skills.md) e con le directory del plugin sotto `.claude-plugin/plugins/unity-cli/skills/`.
+
+| Categoria | Skills |
+| --- | --- |
+| Introduzione | `unity-project-bootstrap`, `unity-cli-usage` |
+| Scene e oggetti | `unity-scene-create`, `unity-scene-inspect`, `unity-gameobject-edit`, `unity-prefab-workflow` |
+| Asset | `unity-2d-sprite-tilemap`, `unity-asset-management`, `unity-audio-setup`, `unity-addressables` |
+| Codice | `unity-csharp-navigate`, `unity-csharp-edit`, `unity-csharp-reference` |
+| Runtime e test | `unity-playmode-testing`, `unity-input-system`, `unity-ui-toolkit-build`, `unity-localization`, `unity-ui-automation`, `unity-development-loop`, `unity-vfx-graph` |
+| Editor | `unity-editor-tools`, `unity-package-management`, `unity-urp-setup` |
+
+`gh-skills-sync` si trova in `dev-skills/` ed e un helper solo per lo sviluppo. Non fa parte del plugin.
+
+## Esempi rapidi
+
+Importa file `.unitypackage` locali o pacchetti Asset Store scaricati senza dialogo, attendendo compilazione e Domain Reload.
+
+```bash
+unity-cli package import /absolute/path/Small.unitypackage --output json
+unity-cli package cache-list --output json
+unity-cli package cache-import "Small Package" --output json
+# Apri My Assets, premi Download a mano, poi importa automaticamente:
+unity-cli package asset-store-import 12345 --download-timeout-ms 600000 --output json
+```
+
+Usa `--cache-path` o `UNITY_CLI_ASSET_STORE_CACHE_PATH` per una cache personalizzata.
+ID di selezione, timeout e recupero sono in [package import commands](docs/tools.md#unitypackage-and-asset-store-cache). `package asset-store-open [name-or-id]` e `package asset-store-wait <name-or-id>` separano visualizzazione e attesa. Download, login e controllo di proprieta restano manuali in Unity; la CLI non preme mai Download e non legge i token dell account Unity.
+
+```bash
+# Connettivita
+unity-cli system ping
+
+# Crea una scena
+unity-cli scene create MainScene
+
+# Crea un GameObject tramite raw
+unity-cli raw create_gameobject --json '{"name":"Player"}'
+
+# Cerca nel codice C# (tool locale)
+unity-cli tool call search --json '{"pattern":"PlayerController"}'
+
+# Ispeziona lo schema dello strumento leggibile dalla macchina
+unity-cli tool schema create_scene --output json
+
+# Dry-run delle chiamate che mutano lo stato (senza effetti collaterali)
+unity-cli --dry-run tool call create_scene --json '{"sceneName":"PreviewScene"}'
+
+# Esegui test EditMode
+unity-cli tool call run_tests --json '{"mode":"editmode"}'
+```
+
+## Flusso GWT Spec
+
+Le specifiche di funzionalita sono gestite in GitHub Issues con etichetta `gwt-spec`.
+Il corpo dell Issue e la fonte per `Spec`, `Plan`, `Tasks` e `TDD`.
+
+## Contribuire
+
+I contributi esterni devono puntare al branch `develop`. Leggere
+[CONTRIBUTING.md](CONTRIBUTING.md) prima di aprire una PR, in particolare la policy dei branch, la CI richiesta e le modifiche alla documentazione degli skill.
+
+## Configurazione
+
+| Variabile | Descrizione | Default |
+| --- | --- | --- |
+| `UNITY_PROJECT_ROOT` | Directory con `Assets/` e `Packages/` | auto-detect |
+| `UNITY_CLI_HOST` | Host Unity Editor | `localhost` |
+| `UNITY_CLI_PORT` | Porta Unity Editor | `6400` |
+| `UNITY_CLI_AUTH_TOKEN_FILE` | JSON del lockfile Editor con `authToken` per credenziali remote o montate | *(unset)* |
+| `UNITY_CLI_ALLOW_UNAUTHENTICATED` | Opt-out temporaneo di migrazione. Solo `1` lo abilita | *(unset)* |
+| `UNITY_CLI_TIMEOUT_MS` | Timeout comando (ms) | `30000` |
+| `UNITY_CLI_LSP_MODE` | Modalita LSP (`off` / `auto` / `required`). `auto` preferisce il LSP C# per la ricerca dei simboli e torna all'indice locale (`backend: "index"`, `fallbackReason`) | `auto` |
+| `UNITY_CLI_LSP_AUTO_TIMEOUT_MS` | Limite (ms) di attesa del LSP per una ricerca simboli in `auto` prima di tornare all'indice locale | `10000` |
+| `UNITY_CLI_TOOLS_ROOT` | Directory root dei tool scaricati | OS default |
+| `UNITY_CLI_UNITYD_PORT` | Porta TCP loopback di unityd su Windows (client e daemon) | `6422` |
+| `UNITY_CLI_LSPD_PORT` | Porta TCP loopback del daemon LSP su Windows (client e daemon) | `6421` |
+| `UNITY_CLI_NO_AUTO_UPDATE` | Disattiva l aggiornamento automatico in background (`1` per disattivare) | *(unset)* |
+
+Le variabili legacy con prefisso MCP non sono supportate. Usa solo `UNITY_CLI_*`.
+Le porte daemon di Windows accettano interi da 1 a 65535; toglierle ripristina i default. Passa gli stessi valori al daemon e ai client CLI.
+Autenticazione, Docker e WSL2 sono nella [guida di configurazione](docs/configuration.md).
+
+## Documentazione
+
+- Catalogo completo di comandi e tool: [docs/tools.md](docs/tools.md)
+- Contratto e inventario degli skill: [docs/skills.md](docs/skills.md)
+- Guida di configurazione: [docs/configuration.md](docs/configuration.md)
+- Architettura: [docs/architecture.md](docs/architecture.md)
+- Hot reload: [docs/hot-reload.md](docs/hot-reload.md)
+- Note di migrazione: [docs/migration-notes.md](docs/migration-notes.md)
+- Adattatore MCP sottile e configurazione dei client: [docs/mcp.md](docs/mcp.md)
+- Confronto con il Unity CLI ufficiale (funzionalita, benchmark di latenza, uso congiunto): [docs/comparison.md](docs/comparison.md)
+- Workflow di sviluppo e CI: [docs/development.md](docs/development.md)
+- Fattibilita e vincoli del download Asset Store: [ricerca](docs/asset-store-download-research.md)
+- Guida ai contributi: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Processo di release: [RELEASE.md](RELEASE.md)
+- Template di attribuzione: [ATTRIBUTION.md](ATTRIBUTION.md)
+
+## Licenza
+
+MIT. Vedi [ATTRIBUTION.md](ATTRIBUTION.md) per i template di attribuzione in caso di redistribuzione.

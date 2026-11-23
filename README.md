@@ -1,6 +1,10 @@
 # AI 技能
 
-这里收录可复用、尽量兼容多种 AI 工具的技能包。技能使用通用的 `SKILL.md` 格式。
+这里收录可复用的 AI 技能包和命令行工具。技能使用通用的 `SKILL.md` 格式。
+
+## 命令行工具
+
+- [Unity CLI](./cli/unitycli/README.zh.md) 是基于 akiojin/unity-cli 的项目分支，包含 Rust CLI 和 Unity Bridge，源码在本仓库维护。
 
 ## 分类与存放约定
 

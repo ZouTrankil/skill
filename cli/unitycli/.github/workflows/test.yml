@@ -1,0 +1,438 @@
+name: Test
+
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [develop, 'feature/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos-release:
+    name: macOS Release (${{ matrix.target }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            deployment_target: '13.4'
+          - target: x86_64-apple-darwin
+            deployment_target: '10.13'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.target }}-cargo-build-
+
+      - name: Build release binary
+        env:
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target }}
+        run: cargo build --locked --release --target ${{ matrix.target }}
+
+  lsp-write-reliability:
+    uses: ./.github/workflows/lsp-write-reliability.yml
+
+  cli-latency:
+    name: CLI Latency (required)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build release CLI
+        run: cargo build --release --bin unity-cli
+
+      - name: Test performance and matrix checks
+        run: python3 -m unittest discover -s tests/scripts -p 'test_*.py'
+
+      - name: Measure CLI latency (50 samples per operation and route)
+        run: python3 scripts/bench-cli-latency.py --out artifacts/cli-latency.json
+
+      - name: Prove a 30 ms transport regression is rejected
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/bench-cli-latency.py --delay-ms 30 --out artifacts/cli-latency-delayed.json
+          status=$?
+          set -e
+          test "$status" -eq 1
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('artifacts/cli-latency-delayed.json').read_text())
+          assert report['status'] == 'FAIL'
+          assert len(report['results']) == 8
+          assert all(row['n'] >= 50 for row in report['results'].values())
+          assert any('ping' in violation and 'p50_ms' in violation for violation in report['violations'])
+          PY
+
+      - name: Upload CLI latency evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cli-latency
+          path: artifacts/cli-latency*.json
+          if-no-files-found: error
+
+  rust-test:
+    name: Rust Tests (required)
+    needs: macos-release
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require passing macOS release links
+        env:
+          MACOS_RELEASE_RESULT: ${{ needs.macos-release.result }}
+        run: |
+          echo "macOS release matrix: $MACOS_RELEASE_RESULT"
+          test "$MACOS_RELEASE_RESULT" = success
+
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Run cargo test
+        # env-mutating tests share process-global state (std::env::set_var
+        # is not thread-safe relative to library getenv reads), so serialize
+        # to avoid flakiness. The coverage job already uses --test-threads=1.
+        run: cargo test -- --test-threads=1
+
+  windows-installer-test:
+    name: Windows Installer Checksum Test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify install.ps1 SHA256SUMS gate
+        shell: pwsh
+        run: |
+          ./tests/scripts/install-ps1-text-test.ps1
+          ./tests/scripts/install-ps1-test.ps1
+
+  # Editor-less Windows checks (#459). Anything that needs a real Unity Editor
+  # stays with the real-machine checks in #386.
+  windows-test:
+    name: Windows Tests
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Run cargo test
+        # Serialized for the same reason as the Linux job. --no-fail-fast
+        # reports every failing target at once: there is no local Windows
+        # machine to rerun on.
+        run: cargo test --no-fail-fast -- --test-threads=1
+
+      - name: Build unity-cli
+        if: ${{ !cancelled() }}
+        run: cargo build --bin unity-cli
+
+      - name: Check Editor discovery, setup --dry-run and OS screenshot fallback
+        if: ${{ !cancelled() }}
+        # --real-home: Windows resolves the profile through the shell API, so
+        # the fake lockfiles go into the runner's real %USERPROFILE%.
+        run: python tests/scripts/platform-checks.py --unity-cli target/debug/unity-cli.exe --real-home
+
+      - name: Install the built binary with install.ps1 and run it
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: ./tests/scripts/install-ps1-binary-test.ps1 -Binary target/debug/unity-cli.exe
+
+      - name: Install the built binary with install-from-source.ps1
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: ./tests/scripts/install-from-source-ps1-test.ps1 -Binary target/debug/unity-cli.exe
+
+  linux-platform-checks:
+    name: Linux Platform Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Install Xvfb, X11 screenshot tools, sway and grim
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb imagemagick scrot maim sway grim
+
+      - name: Build unity-cli
+        run: cargo build --bin unity-cli
+
+      - name: Check Editor discovery, setup --dry-run and OS screenshot fallback
+        run: >
+          xvfb-run -a -s "-screen 0 1280x720x24"
+          python3 tests/scripts/platform-checks.py --unity-cli target/debug/unity-cli
+
+      - name: Install the built binary with install-from-source.sh
+        run: sh tests/scripts/install-from-source-sh-test.sh target/debug/unity-cli
+
+      - name: Check the grim OS screenshot fallback under headless sway
+        # A wlroots compositor on the headless backend with the software
+        # renderer; WAYLAND_DISPLAY switches the check to grim (#465).
+        env:
+          WLR_BACKENDS: headless
+          WLR_LIBINPUT_NO_DEVICES: '1'
+          WLR_RENDERER: pixman
+        run: |
+          XDG_RUNTIME_DIR="$(mktemp -d)"
+          export XDG_RUNTIME_DIR
+          chmod 700 "$XDG_RUNTIME_DIR"
+          sway -c /dev/null > "$RUNNER_TEMP/sway.log" 2>&1 &
+          socket=""
+          for _ in $(seq 1 50); do
+            socket="$(find "$XDG_RUNTIME_DIR" -maxdepth 1 -type s -name 'wayland-*' | head -n 1)"
+            [ -n "$socket" ] && break
+            sleep 0.2
+          done
+          if [ -z "$socket" ]; then
+            cat "$RUNNER_TEMP/sway.log"
+            echo "sway did not create a Wayland socket" >&2
+            exit 1
+          fi
+          WAYLAND_DISPLAY="$(basename "$socket")"
+          export WAYLAND_DISPLAY
+          python3 tests/scripts/platform-checks.py --unity-cli target/debug/unity-cli --checks screenshot
+
+  lsp-test:
+    name: LSP Tests (required)
+    needs: lsp-write-reliability
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require passing LSP write measurements on every OS
+        env:
+          RELIABILITY_RESULT: ${{ needs.lsp-write-reliability.result }}
+        run: test "$RELIABILITY_RESULT" = success
+
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run dotnet test
+        run: dotnet test lsp/Server.Tests.csproj
+
+      - name: Test hot reload validation and execution observations
+        run: dotnet test tests/hot-reload/HotReload.Tests.csproj
+
+  windows-lsp-test:
+    name: Windows LSP Tests
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run dotnet test
+        run: dotnet test lsp/Server.Tests.csproj
+
+  rust-coverage:
+    name: Rust Coverage >= 90% (required)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Run Rust coverage gate
+        run: |
+          mkdir -p coverage/rust
+          cargo llvm-cov \
+            --all-targets \
+            --cobertura \
+            --output-path coverage/rust/cobertura.xml \
+            --fail-under-lines 90 \
+            -- --test-threads=1
+
+      # Codecov upload is best-effort: the 90% gate above stays required, an external outage must not block merges (#472).
+      - name: Upload Rust coverage to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/rust/cobertura.xml
+          flags: rust
+          name: rust-coverage
+          fail_ci_if_error: false
+          verbose: true
+
+  lsp-coverage:
+    name: LSP Coverage >= 90% (required)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run LSP coverage gate
+        run: |
+          dotnet test lsp/Server.Tests.csproj \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=cobertura \
+            /p:Threshold=90 \
+            /p:ThresholdType=line \
+            /p:ThresholdStat=total
+
+      # Codecov upload is best-effort: the 90% gate above stays required, an external outage must not block merges (#472).
+      - name: Upload LSP coverage to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lsp/coverage.cobertura.xml
+          flags: lsp
+          name: lsp-coverage
+          fail_ci_if_error: false
+          verbose: true
+
+  lsp-perf:
+    name: LSP Performance (required)
+    runs-on: ubuntu-latest
+    if: >-
+      !(
+        github.event_name == 'push'
+        && github.ref == 'refs/heads/main'
+        && contains(github.event.head_commit.message, 'chore(release):')
+      )
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache cargo registry and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      - name: Install perf dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          python3 -m pip install tiktoken
+
+      - name: Build unity-cli
+        run: cargo build --release
+
+      - name: Publish local LSP binary for perf run
+        run: |
+          export UNITY_CLI_TOOLS_ROOT="$PWD/.cache/csharp-lsp"
+          export LSP_INSTALL_DIR="$UNITY_CLI_TOOLS_ROOT/csharp-lsp/linux-x64"
+          mkdir -p "$LSP_INSTALL_DIR"
+          dotnet publish lsp/Server.csproj -c Release -o "$LSP_INSTALL_DIR"
+          cp "$LSP_INSTALL_DIR/Server" "$LSP_INSTALL_DIR/server"
+          chmod +x "$LSP_INSTALL_DIR/server"
+          printf 'local-perf\n' > "$LSP_INSTALL_DIR/VERSION"
+
+      - name: Run LSP performance check
+        env:
+          UNITY_CLI_TOOLS_ROOT: ${{ github.workspace }}/.cache/csharp-lsp
+          UNITY_CLI_TEST_SKIP_MANAGED_UPDATE: '1'
+        run: |
+          mkdir -p artifacts
+          ./scripts/lsp-perf-check.sh --unity-cli ./target/release/unity-cli --project-root ./UnityCliBridge --json | tee artifacts/lsp-perf-summary.json
+          cp .unity/perf/lsp-history.jsonl artifacts/lsp-history.jsonl
+
+      - name: Upload LSP perf artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lsp-perf-history
+          path: |
+            artifacts/lsp-perf-summary.json
+            artifacts/lsp-history.jsonl
+          retention-days: 30

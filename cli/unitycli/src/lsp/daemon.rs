@@ -1,0 +1,1557 @@
+use std::env;
+use std::fs;
+use std::io::ErrorKind;
+use std::io::{BufRead, BufReader, Write};
+use std::path::{Path, PathBuf};
+use std::process::{Child, Command, Stdio};
+use std::thread;
+use std::time::{Duration, Instant};
+
+use anyhow::{anyhow, Context, Result};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+
+use crate::daemon::runtime::DaemonRuntimePaths;
+use crate::lsp_manager;
+
+const DAEMON_IDLE_TIMEOUT_SECS: u64 = 600;
+/// Upper bound for an auto-started lspd to answer `ping`. A cold start on a
+/// busy machine has been measured at more than 12 seconds, so the wait is
+/// generous; a startup process that exits fails immediately instead.
+const DAEMON_START_TIMEOUT_MS: u64 = 60_000;
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+enum DaemonRequest {
+    Tool {
+        tool_name: String,
+        params: Value,
+        project_root: String,
+    },
+    Status,
+    Ping,
+    Stop,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct DaemonResponse {
+    ok: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    result: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    error: Option<String>,
+}
+
+enum ConnectionAction {
+    Continue,
+    Stop,
+}
+
+fn daemon_command_path() -> Result<PathBuf> {
+    Ok(lsp_manager::ensure_latest_cli_for_daemon()?.binary_path)
+}
+
+fn append_managed_status(payload: &mut Value) {
+    let Some(map) = payload.as_object_mut() else {
+        return;
+    };
+
+    if let Ok(dir) = DaemonRuntimePaths::new("lspd").and_then(|paths| paths.dir()) {
+        map.insert(
+            "runtimeDir".to_string(),
+            Value::String(dir.to_string_lossy().to_string()),
+        );
+    }
+
+    if let Some(path) = std::env::current_exe()
+        .ok()
+        .map(|path| path.to_string_lossy().to_string())
+    {
+        map.insert("daemonBinaryPath".to_string(), Value::String(path));
+    }
+
+    if let Ok(cli_status) = lsp_manager::cli_status() {
+        map.insert(
+            "managedBinaryPath".to_string(),
+            Value::String(cli_status.binary_path.to_string_lossy().to_string()),
+        );
+        map.insert(
+            "localVersion".to_string(),
+            cli_status
+                .local_version
+                .clone()
+                .map(Value::String)
+                .unwrap_or(Value::Null),
+        );
+        map.insert(
+            "latest".to_string(),
+            cli_status
+                .to_json()
+                .get("latest")
+                .cloned()
+                .unwrap_or(Value::Null),
+        );
+        map.insert(
+            "updateAvailable".to_string(),
+            Value::Bool(cli_status.update_available),
+        );
+        map.insert("cli".to_string(), cli_status.to_json());
+    }
+
+    if let Ok(lsp_status) = lsp_manager::lsp_status() {
+        map.insert(
+            "binaryPath".to_string(),
+            Value::String(lsp_status.binary_path.to_string_lossy().to_string()),
+        );
+        map.insert(
+            "version".to_string(),
+            lsp_status
+                .local_version
+                .clone()
+                .map(Value::String)
+                .unwrap_or(Value::Null),
+        );
+        map.insert("lsp".to_string(), lsp_status.to_json());
+    }
+}
+
+pub fn start_background() -> Result<Value> {
+    if let Ok(status) = status() {
+        if status
+            .get("running")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        {
+            return Ok(json!({
+                "success": true,
+                "running": true,
+                "alreadyRunning": true,
+                "status": status
+            }));
+        }
+    }
+
+    cleanup_stale_files_on_start();
+    let _ = lsp_manager::ensure_latest_lsp_for_daemon()?;
+
+    let exe = daemon_command_path()?;
+    let log_path = log_file_path()?;
+    if let Some(parent) = log_path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("Failed to create daemon directory: {}", parent.display()))?;
+    }
+    let log = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&log_path)
+        .with_context(|| format!("Failed to open lspd log: {}", log_path.display()))?;
+    let mut child = crate::daemon::spawn::spawn_detached(
+        Command::new(&exe)
+            .arg("lspd")
+            .arg("serve")
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::from(log)),
+    )
+    .context("Failed to spawn lspd background process")?;
+
+    wait_until_ready(&mut child, daemon_start_timeout(), &log_path, || {
+        ping().is_ok()
+    })?;
+    // Reap the daemon if it exits while this process is still alive.
+    thread::spawn(move || {
+        let _ = child.wait();
+    });
+    Ok(json!({
+        "success": true,
+        "running": true
+    }))
+}
+
+/// Polls `ready` until it succeeds, the startup process exits, or `timeout`
+/// elapses. A timed-out startup process is killed so it cannot linger.
+fn wait_until_ready(
+    child: &mut Child,
+    timeout: Duration,
+    log_path: &Path,
+    mut ready: impl FnMut() -> bool,
+) -> Result<()> {
+    let started = Instant::now();
+    loop {
+        if ready() {
+            return Ok(());
+        }
+        if let Some(status) = child
+            .try_wait()
+            .context("Failed to inspect lspd startup process")?
+        {
+            // A concurrent auto-start may have won the listener; its daemon
+            // is serving even though this startup process exited.
+            if ready() {
+                return Ok(());
+            }
+            return Err(anyhow!(
+                "lspd exited during startup ({status}) after {} ms; see {}",
+                started.elapsed().as_millis(),
+                log_path.display()
+            ));
+        }
+        if started.elapsed() >= timeout {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(anyhow!(
+                "lspd failed to start within {} ms (waited {} ms); see {} \
+                 (set UNITY_CLI_LSPD_START_TIMEOUT_MS to wait longer)",
+                timeout.as_millis(),
+                started.elapsed().as_millis(),
+                log_path.display()
+            ));
+        }
+        thread::sleep(Duration::from_millis(100));
+    }
+}
+
+pub fn stop() -> Result<Value> {
+    match request(DaemonRequest::Stop) {
+        Ok(response) => {
+            if response.ok {
+                Ok(json!({
+                    "success": true,
+                    "stopped": true
+                }))
+            } else {
+                Err(anyhow!(
+                    "lspd stop failed: {}",
+                    response
+                        .error
+                        .unwrap_or_else(|| "unknown error".to_string())
+                ))
+            }
+        }
+        Err(_) => Ok(json!({
+            "success": true,
+            "stopped": false,
+            "running": false
+        })),
+    }
+}
+
+pub fn status() -> Result<Value> {
+    let mut value = match request(DaemonRequest::Status) {
+        Ok(response) => {
+            if response.ok {
+                response
+                    .result
+                    .unwrap_or_else(|| json!({ "running": true }))
+            } else {
+                json!({
+                    "running": false,
+                    "error": response.error.unwrap_or_else(|| "status failed".to_string())
+                })
+            }
+        }
+        Err(_) => json!({
+            "running": false
+        }),
+    };
+    #[cfg(not(unix))]
+    {
+        if value["running"] == false {
+            value = with_startup_diagnostic(value);
+        }
+    }
+    append_managed_status(&mut value);
+    Ok(value)
+}
+
+#[cfg(not(unix))]
+fn bind_error_path() -> Result<PathBuf> {
+    Ok(DaemonRuntimePaths::new("lspd")?
+        .dir()?
+        .join(format!("bind-error-{}.json", daemon_port()?)))
+}
+
+/// Include the last bind failure for the selected Windows endpoint. A successful
+/// bind removes it, so old failures do not outlive a recovered daemon.
+#[cfg(not(unix))]
+pub fn with_startup_diagnostic(mut value: Value) -> Value {
+    let diagnostic = bind_error_path()
+        .ok()
+        .and_then(|path| fs::read(path).ok())
+        .and_then(|bytes| serde_json::from_slice::<Value>(&bytes).ok());
+    if let (Some(map), Some(diagnostic)) = (value.as_object_mut(), diagnostic) {
+        map.insert("startupError".to_string(), diagnostic);
+    }
+    value
+}
+
+pub fn call_tool(tool_name: &str, params: &Value, project_root: &Path) -> Result<Value> {
+    let response = request(DaemonRequest::Tool {
+        tool_name: tool_name.to_string(),
+        params: params.clone(),
+        project_root: project_root.to_string_lossy().to_string(),
+    })?;
+
+    if response.ok {
+        let result = response
+            .result
+            .ok_or_else(|| anyhow!("lspd response missing `result` for tool `{tool_name}`"))?;
+        if result.is_null() {
+            return Err(anyhow!(
+                "lspd response contained null `result` for tool `{tool_name}`"
+            ));
+        }
+        return Ok(result);
+    }
+
+    Err(anyhow!(
+        "lspd request failed: {}",
+        response
+            .error
+            .unwrap_or_else(|| "unknown error".to_string())
+    ))
+}
+
+pub fn serve_forever() -> Result<()> {
+    let _ = lsp_manager::ensure_local(false)?;
+    let listener = bind_listener()?;
+    write_pid_file()?;
+
+    let result = serve_listener(listener, Duration::from_secs(daemon_idle_timeout_secs()));
+    cleanup_stale_files();
+    result
+}
+
+fn serve_listener(listener: ServerListener, idle_timeout: Duration) -> Result<()> {
+    serve_listener_with_handler(listener, idle_timeout, handle_stream)
+}
+
+fn serve_listener_with_handler(
+    listener: ServerListener,
+    idle_timeout: Duration,
+    mut handle_connection: impl FnMut(&mut ServerStream) -> Result<ConnectionAction>,
+) -> Result<()> {
+    let mut last_activity = Instant::now();
+
+    loop {
+        match listener.accept() {
+            Ok((mut stream, _)) => {
+                stream
+                    .set_nonblocking(false)
+                    .context("Failed to configure blocking daemon stream")?;
+                last_activity = Instant::now();
+                match handle_connection(&mut stream) {
+                    Ok(ConnectionAction::Stop) => break,
+                    Ok(ConnectionAction::Continue) => {}
+                    // A timed-out/disconnected client must not terminate the
+                    // shared daemon or force Windows to rebind a busy port.
+                    Err(error) => eprintln!("lspd: client connection failed: {error:#}"),
+                }
+            }
+            Err(error) if is_would_block(&error) => {
+                if last_activity.elapsed() >= idle_timeout {
+                    break;
+                }
+                thread::sleep(Duration::from_millis(200));
+            }
+            Err(error) => {
+                return Err(anyhow!("lspd accept failed: {error}"));
+            }
+        }
+    }
+
+    Ok(())
+}
+
+pub fn ping() -> Result<()> {
+    let response = request(DaemonRequest::Ping)?;
+    if response.ok {
+        Ok(())
+    } else {
+        Err(anyhow!(
+            "lspd ping failed: {}",
+            response
+                .error
+                .unwrap_or_else(|| "unknown error".to_string())
+        ))
+    }
+}
+
+fn handle_request(request: DaemonRequest) -> Result<(DaemonResponse, ConnectionAction)> {
+    match request {
+        DaemonRequest::Ping => Ok((
+            DaemonResponse {
+                ok: true,
+                result: Some(json!({ "pong": true })),
+                error: None,
+            },
+            ConnectionAction::Continue,
+        )),
+        DaemonRequest::Status => Ok((
+            DaemonResponse {
+                ok: true,
+                result: Some({
+                    let mut value = json!({
+                        "running": true,
+                        "pid": std::process::id(),
+                        "rid": lsp_manager::detect_rid(),
+                    });
+                    append_managed_status(&mut value);
+                    value
+                }),
+                error: None,
+            },
+            ConnectionAction::Continue,
+        )),
+        DaemonRequest::Stop => Ok((
+            DaemonResponse {
+                ok: true,
+                result: Some(json!({ "stopping": true })),
+                error: None,
+            },
+            ConnectionAction::Stop,
+        )),
+        DaemonRequest::Tool {
+            tool_name,
+            params,
+            project_root,
+        } => {
+            let result = crate::lsp::execute_direct(&tool_name, &params, Path::new(&project_root));
+            match result {
+                Ok(value) => Ok((
+                    DaemonResponse {
+                        ok: true,
+                        result: Some(value),
+                        error: None,
+                    },
+                    ConnectionAction::Continue,
+                )),
+                Err(error) => Ok((
+                    DaemonResponse {
+                        ok: false,
+                        result: None,
+                        error: Some(error.to_string()),
+                    },
+                    ConnectionAction::Continue,
+                )),
+            }
+        }
+    }
+}
+
+fn request(request: DaemonRequest) -> Result<DaemonResponse> {
+    let mut stream = connect_client()?;
+    // A tool can initialize the LSP and issue multiple 60-second RPCs.
+    // Keep short control-request deadlines, but do not cut tool execution off
+    // at the connection's ten-second timeout (EAGAIN on macOS).
+    if matches!(request, DaemonRequest::Tool { .. }) {
+        stream
+            .set_read_timeout(Some(Duration::from_secs(180)))
+            .context("Failed to set lspd tool response timeout")?;
+    }
+    let payload =
+        serde_json::to_string(&request).context("Failed to serialize daemon request payload")?;
+    write_all_with_retry(
+        &mut stream,
+        payload.as_bytes(),
+        "Failed to write daemon request",
+    )?;
+    write_all_with_retry(
+        &mut stream,
+        b"\n",
+        "Failed to write daemon request terminator",
+    )?;
+    stream.flush().context("Failed to flush daemon request")?;
+
+    let mut reader = BufReader::new(stream);
+    let mut response_line = String::new();
+    let read = reader
+        .read_line(&mut response_line)
+        .context("Failed to read daemon response")?;
+    if read == 0 {
+        return Err(anyhow!("lspd returned empty response"));
+    }
+    let response: DaemonResponse =
+        serde_json::from_str(response_line.trim()).context("Invalid daemon response JSON")?;
+    Ok(response)
+}
+
+fn handle_stream(stream: &mut ServerStream) -> Result<ConnectionAction> {
+    let mut line = String::new();
+    {
+        let mut reader = BufReader::new(stream.try_clone()?);
+        let read = reader
+            .read_line(&mut line)
+            .context("Failed to read daemon request line")?;
+        if read == 0 {
+            return Ok(ConnectionAction::Continue);
+        }
+    }
+
+    let request: DaemonRequest =
+        serde_json::from_str(line.trim()).context("Invalid daemon request JSON")?;
+    let (response, action) = handle_request(request)?;
+    let payload =
+        serde_json::to_string(&response).context("Failed to serialize daemon response payload")?;
+    write_all_with_retry(
+        stream,
+        payload.as_bytes(),
+        "Failed to write daemon response",
+    )?;
+    write_all_with_retry(stream, b"\n", "Failed to write daemon response terminator")?;
+    stream.flush().context("Failed to flush daemon response")?;
+    Ok(action)
+}
+
+fn write_all_with_retry<W: Write>(writer: &mut W, mut data: &[u8], context: &str) -> Result<()> {
+    while !data.is_empty() {
+        match writer.write(data) {
+            Ok(0) => {
+                return Err(anyhow!("{context}: write returned 0 bytes"));
+            }
+            Ok(written) => {
+                data = &data[written..];
+            }
+            Err(error)
+                if error.kind() == ErrorKind::WouldBlock
+                    || error.kind() == ErrorKind::Interrupted =>
+            {
+                thread::sleep(Duration::from_millis(1));
+            }
+            Err(error) => {
+                return Err(error).with_context(|| context.to_string());
+            }
+        }
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+type ServerListener = std::os::unix::net::UnixListener;
+#[cfg(unix)]
+type ServerStream = std::os::unix::net::UnixStream;
+#[cfg(unix)]
+type ClientStream = std::os::unix::net::UnixStream;
+
+#[cfg(not(unix))]
+type ServerListener = std::net::TcpListener;
+#[cfg(not(unix))]
+type ServerStream = std::net::TcpStream;
+#[cfg(not(unix))]
+type ClientStream = std::net::TcpStream;
+
+fn bind_listener() -> Result<ServerListener> {
+    #[cfg(unix)]
+    {
+        let socket_path = socket_path()?;
+        if socket_path.exists() {
+            let _ = fs::remove_file(&socket_path);
+        }
+        let listener = std::os::unix::net::UnixListener::bind(&socket_path)
+            .with_context(|| format!("Failed to bind socket: {}", socket_path.display()))?;
+        listener
+            .set_nonblocking(true)
+            .context("Failed to configure nonblocking daemon socket")?;
+        Ok(listener)
+    }
+
+    #[cfg(not(unix))]
+    {
+        let port = daemon_port()?;
+        let endpoint = format!("127.0.0.1:{port}");
+        let listener = std::net::TcpListener::bind(&endpoint).map_err(|error| {
+            let recovery = format!(
+                "Wait for TIME_WAIT sockets to expire and retry `unity-cli lspd start`. \
+                 If the port remains occupied, identify its owner with \
+                 `Get-NetTCPConnection -LocalPort {port}`. Stop only a daemon you own, \
+                 or set UNITY_CLI_LSPD_PORT to an unused port for every client and daemon."
+            );
+            let diagnostic = json!({
+                "endpoint": endpoint,
+                "kind": format!("{:?}", error.kind()),
+                "osError": error.raw_os_error(),
+                "error": error.to_string(),
+                "recovery": recovery,
+            });
+            if let Ok(path) = bind_error_path() {
+                let _ = fs::write(path, diagnostic.to_string());
+            }
+            anyhow!("Failed to bind lspd TCP listener at {endpoint}: {error}. {recovery}")
+        })?;
+        listener
+            .set_nonblocking(true)
+            .context("Failed to configure nonblocking daemon listener")?;
+        if let Ok(path) = bind_error_path() {
+            let _ = fs::remove_file(path);
+        }
+        Ok(listener)
+    }
+}
+
+fn connect_client() -> Result<ClientStream> {
+    #[cfg(unix)]
+    {
+        let path = socket_path()?;
+        let stream = std::os::unix::net::UnixStream::connect(&path)
+            .with_context(|| format!("Failed to connect to lspd socket: {}", path.display()))?;
+        stream
+            .set_read_timeout(Some(Duration::from_secs(10)))
+            .context("Failed to set lspd read timeout")?;
+        stream
+            .set_write_timeout(Some(Duration::from_secs(10)))
+            .context("Failed to set lspd write timeout")?;
+        Ok(stream)
+    }
+
+    #[cfg(not(unix))]
+    {
+        connect_tcp_client(daemon_port()?)
+    }
+}
+
+#[cfg(not(unix))]
+fn connect_tcp_client(port: u16) -> Result<ClientStream> {
+    // A closed loopback port takes seconds to fail on Windows. Startup probes
+    // must return promptly so auto-start can spawn/poll lspd without TCP retries.
+    // Match unityd's connection deadline; RPC timeouts remain independent.
+    let stream = std::net::TcpStream::connect_timeout(
+        &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
+        Duration::from_millis(100),
+    )
+    .context("Failed to connect to lspd TCP endpoint")?;
+    stream
+        .set_read_timeout(Some(Duration::from_secs(10)))
+        .context("Failed to set lspd read timeout")?;
+    stream
+        .set_write_timeout(Some(Duration::from_secs(10)))
+        .context("Failed to set lspd write timeout")?;
+    Ok(stream)
+}
+
+fn is_would_block(error: &std::io::Error) -> bool {
+    error.kind() == std::io::ErrorKind::WouldBlock
+}
+
+fn daemon_idle_timeout_secs() -> u64 {
+    env::var("UNITY_CLI_LSPD_IDLE_TIMEOUT")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .filter(|v| *v > 0)
+        .unwrap_or(DAEMON_IDLE_TIMEOUT_SECS)
+}
+
+fn daemon_start_timeout() -> Duration {
+    Duration::from_millis(
+        env::var("UNITY_CLI_LSPD_START_TIMEOUT_MS")
+            .ok()
+            .and_then(|v| v.parse::<u64>().ok())
+            .filter(|v| *v > 0)
+            .unwrap_or(DAEMON_START_TIMEOUT_MS),
+    )
+}
+
+fn log_file_path() -> Result<PathBuf> {
+    Ok(DaemonRuntimePaths::new("lspd")?.dir()?.join("lspd.log"))
+}
+
+fn pid_file_path() -> Result<PathBuf> {
+    DaemonRuntimePaths::new("lspd")?.pid_file()
+}
+
+#[cfg(unix)]
+fn socket_path() -> Result<PathBuf> {
+    DaemonRuntimePaths::new("lspd")?.socket_file()
+}
+
+#[cfg(not(unix))]
+fn daemon_port() -> Result<u16> {
+    crate::daemon::runtime::tcp_port("UNITY_CLI_LSPD_PORT", 6421)
+}
+
+fn write_pid_file() -> Result<()> {
+    let path = pid_file_path()?;
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("Failed to create daemon directory: {}", parent.display()))?;
+    }
+    fs::write(&path, format!("{}\n", std::process::id()))
+        .with_context(|| format!("Failed to write daemon pid file: {}", path.display()))
+}
+
+fn cleanup_stale_files() {
+    if let Ok(paths) = DaemonRuntimePaths::new("lspd") {
+        paths.cleanup();
+    }
+}
+
+fn cleanup_stale_files_on_start() {
+    if ping().is_ok() {
+        return;
+    }
+
+    #[cfg(unix)]
+    if connect_client().is_ok() {
+        return;
+    }
+
+    #[cfg(not(unix))]
+    if connect_client().is_ok() {
+        return;
+    }
+
+    cleanup_stale_files();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+    use std::io::{self, Write};
+    #[cfg(unix)]
+    use std::io::{BufRead, BufReader};
+    use tempfile::tempdir;
+
+    #[cfg(not(unix))]
+    #[test]
+    fn bind_failure_is_diagnosable_and_cleared_after_successful_restart() {
+        let _lock = env_lock().lock().unwrap_or_else(|p| p.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        let occupied = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let port = occupied.local_addr().unwrap().port();
+        let _port = EnvVarGuard::set("UNITY_CLI_LSPD_PORT", &port.to_string());
+
+        let error = bind_listener().expect_err("an occupied port must remain exclusive");
+        assert!(format!("{error:#}").contains(&format!("127.0.0.1:{port}")));
+        drop(occupied);
+
+        let value = status().unwrap();
+        assert_eq!(value["running"], false);
+        assert_eq!(
+            value["startupError"]["endpoint"],
+            format!("127.0.0.1:{port}")
+        );
+        assert_eq!(value["startupError"]["kind"], "AddrInUse");
+        assert!(value["startupError"]["error"]
+            .as_str()
+            .unwrap()
+            .contains("10048"));
+        let recovery = value["startupError"]["recovery"].as_str().unwrap();
+        assert!(recovery.contains("TIME_WAIT"));
+        assert!(recovery.contains("UNITY_CLI_LSPD_PORT"));
+        assert!(recovery.contains("unity-cli lspd start"));
+
+        let restarted = bind_listener().expect("the released port should bind again");
+        drop(restarted);
+        assert!(status().unwrap().get("startupError").is_none());
+    }
+
+    #[cfg(not(unix))]
+    #[test]
+    fn startup_diagnostics_ignore_corrupt_files_and_other_ports() {
+        let _lock = env_lock().lock().unwrap_or_else(|p| p.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        let _port = EnvVarGuard::set("UNITY_CLI_LSPD_PORT", "54321");
+        let path = bind_error_path().unwrap();
+        let payload = json!({"binaryExists": true});
+        assert_eq!(with_startup_diagnostic(payload.clone()), payload);
+        fs::write(&path, b"{incomplete").unwrap();
+        assert_eq!(with_startup_diagnostic(payload.clone()), payload);
+        fs::write(&path, r#"{"endpoint":"127.0.0.1:54321"}"#).unwrap();
+        assert_eq!(
+            with_startup_diagnostic(payload.clone())["startupError"]["endpoint"],
+            "127.0.0.1:54321"
+        );
+        let _other_port = EnvVarGuard::set("UNITY_CLI_LSPD_PORT", "54322");
+        assert_eq!(with_startup_diagnostic(payload.clone()), payload);
+    }
+
+    #[cfg(not(unix))]
+    #[test]
+    fn tcp_connect_without_a_daemon_returns_promptly() {
+        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let port = listener.local_addr().unwrap().port();
+        drop(listener);
+
+        let started = Instant::now();
+        let error = connect_tcp_client(port).expect_err("no daemon is listening");
+        assert!(error
+            .to_string()
+            .contains("Failed to connect to lspd TCP endpoint"));
+        assert!(
+            started.elapsed() < Duration::from_secs(1),
+            "a missing local daemon must not wait for Windows TCP retries: {:?}",
+            started.elapsed()
+        );
+    }
+
+    #[cfg(not(unix))]
+    #[test]
+    fn tcp_connect_to_a_running_daemon_preserves_io_timeouts_and_responses() {
+        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let mut client = connect_tcp_client(listener.local_addr().unwrap().port()).unwrap();
+        assert_eq!(
+            client.read_timeout().unwrap(),
+            Some(Duration::from_secs(10))
+        );
+        assert_eq!(
+            client.write_timeout().unwrap(),
+            Some(Duration::from_secs(10))
+        );
+
+        let (mut server, _) = listener.accept().unwrap();
+        server
+            .set_read_timeout(Some(Duration::from_secs(1)))
+            .unwrap();
+        client.write_all(b"{\"type\":\"ping\"}\n").unwrap();
+        let mut request = String::new();
+        BufReader::new(&mut server).read_line(&mut request).unwrap();
+        assert_eq!(request, "{\"type\":\"ping\"}\n");
+        server.write_all(b"{\"ok\":true}\n").unwrap();
+        let mut response = String::new();
+        BufReader::new(client).read_line(&mut response).unwrap();
+        assert_eq!(response, "{\"ok\":true}\n");
+    }
+
+    fn env_lock() -> &'static std::sync::Mutex<()> {
+        crate::test_env::env_lock()
+    }
+
+    struct EnvVarGuard {
+        key: &'static str,
+        previous: Option<String>,
+    }
+
+    impl EnvVarGuard {
+        fn set(key: &'static str, value: &str) -> Self {
+            let previous = std::env::var(key).ok();
+            std::env::set_var(key, value);
+            Self { key, previous }
+        }
+    }
+
+    impl Drop for EnvVarGuard {
+        fn drop(&mut self) {
+            if let Some(previous) = &self.previous {
+                std::env::set_var(self.key, previous);
+            } else {
+                std::env::remove_var(self.key);
+            }
+        }
+    }
+
+    fn prepare_tools_root() -> (tempfile::TempDir, EnvVarGuard) {
+        let dir = tempdir().expect("tempdir should succeed");
+        let env = EnvVarGuard::set(
+            "UNITY_CLI_TOOLS_ROOT",
+            dir.path()
+                .to_str()
+                .expect("tempdir path should be valid UTF-8"),
+        );
+        (dir, env)
+    }
+
+    #[cfg(unix)]
+    fn ensure_local_lsp_binary() {
+        let binary = crate::lsp_manager::binary_path().expect("binary path should resolve");
+        if let Some(parent) = binary.parent() {
+            std::fs::create_dir_all(parent).expect("binary directory should be creatable");
+        }
+        std::fs::write(&binary, b"fake-lsp-binary").expect("fake binary should be writable");
+    }
+
+    #[cfg(unix)]
+    fn spawn_unix_server_once(response_json: &str) -> std::thread::JoinHandle<()> {
+        let path = socket_path().expect("socket path should resolve");
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).expect("socket parent should exist");
+        }
+        if path.exists() {
+            let _ = std::fs::remove_file(&path);
+        }
+        let listener =
+            std::os::unix::net::UnixListener::bind(&path).expect("server socket should bind");
+        listener
+            .set_nonblocking(true)
+            .expect("server socket should be nonblocking");
+        let response = response_json.to_string();
+        std::thread::spawn(move || {
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(8);
+            loop {
+                match listener.accept() {
+                    Ok((mut stream, _)) => {
+                        // On macOS accepted sockets inherit O_NONBLOCK. Wait for
+                        // the full request before replying or closing the stream.
+                        stream
+                            .set_nonblocking(false)
+                            .expect("blocking test connection");
+                        stream
+                            .set_read_timeout(Some(Duration::from_secs(2)))
+                            .expect("request read timeout");
+                        let mut line = String::new();
+                        BufReader::new(stream.try_clone().expect("stream clone should work"))
+                            .read_line(&mut line)
+                            .expect("complete request should be readable");
+                        stream
+                            .write_all(response.as_bytes())
+                            .expect("response write should succeed");
+                        stream
+                            .write_all(b"\n")
+                            .expect("response newline should be written");
+                        stream.flush().expect("response flush should succeed");
+                        break;
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        if std::time::Instant::now() >= deadline {
+                            break;
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(10));
+                    }
+                    Err(_) => break,
+                }
+            }
+            let _ = std::fs::remove_file(path);
+        })
+    }
+
+    struct FlakyWriter {
+        out: Vec<u8>,
+        writes: usize,
+    }
+
+    impl FlakyWriter {
+        fn new() -> Self {
+            Self {
+                out: Vec::new(),
+                writes: 0,
+            }
+        }
+    }
+
+    impl Write for FlakyWriter {
+        fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+            self.writes += 1;
+            if self.writes % 2 == 1 {
+                return Err(io::Error::new(io::ErrorKind::WouldBlock, "simulated"));
+            }
+            let n = buf.len().min(7);
+            self.out.extend_from_slice(&buf[..n]);
+            Ok(n)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+
+    struct ZeroWriter;
+
+    impl Write for ZeroWriter {
+        fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
+            Ok(0)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn write_all_with_retry_handles_would_block_and_partial_writes() {
+        let mut writer = FlakyWriter::new();
+        let payload = vec![b'x'; 256];
+        write_all_with_retry(&mut writer, &payload, "test write").expect("write should succeed");
+        assert_eq!(writer.out, payload);
+    }
+
+    #[test]
+    fn write_all_with_retry_rejects_zero_byte_progress() {
+        let mut writer = ZeroWriter;
+        let error = write_all_with_retry(&mut writer, b"abc", "zero write").expect_err("must fail");
+        assert!(error.to_string().contains("write returned 0 bytes"));
+    }
+
+    #[test]
+    fn listener_survives_a_bad_client_and_answers_the_next_ping() {
+        let _lock = env_lock().lock().unwrap_or_else(|p| p.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        #[cfg(unix)]
+        let listener = bind_listener().unwrap();
+        #[cfg(not(unix))]
+        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        #[cfg(not(unix))]
+        let _port = EnvVarGuard::set(
+            "UNITY_CLI_LSPD_PORT",
+            &listener.local_addr().unwrap().port().to_string(),
+        );
+        listener.set_nonblocking(true).unwrap();
+        let server = thread::spawn(move || serve_listener(listener, Duration::from_secs(3)));
+
+        let mut bad_client = connect_client().unwrap();
+        bad_client
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .unwrap();
+        bad_client.write_all(b"invalid request\n").unwrap();
+        let mut response = String::new();
+        assert_eq!(
+            BufReader::new(bad_client).read_line(&mut response).unwrap(),
+            0
+        );
+        let next_ping = ping();
+        let stop = request(DaemonRequest::Stop);
+        let outcome = server.join().unwrap();
+        assert!(next_ping.is_ok(), "{next_ping:?}");
+        assert!(stop.is_ok());
+        assert!(outcome.is_ok(), "{outcome:?}");
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn listener_survives_a_real_tcp_reset_and_answers_the_next_ping() {
+        let _lock = env_lock().lock().unwrap_or_else(|p| p.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let _port = EnvVarGuard::set(
+            "UNITY_CLI_LSPD_PORT",
+            &listener.local_addr().unwrap().port().to_string(),
+        );
+        listener.set_nonblocking(true).unwrap();
+        let (accepted_tx, accepted_rx) = std::sync::mpsc::sync_channel(1);
+        let (error_tx, error_rx) = std::sync::mpsc::sync_channel(1);
+        let server = thread::spawn(move || {
+            let mut first_connection = true;
+            serve_listener_with_handler(listener, Duration::from_secs(10), move |stream| {
+                let is_reset_connection = first_connection;
+                first_connection = false;
+                if is_reset_connection {
+                    accepted_tx.send(()).unwrap();
+                }
+                let result = handle_stream(stream);
+                if is_reset_connection {
+                    let observed = result
+                        .as_ref()
+                        .err()
+                        .and_then(|error| error.downcast_ref::<io::Error>())
+                        .map(|error| (error.kind(), error.raw_os_error()));
+                    error_tx.send(observed).unwrap();
+                }
+                result
+            })
+        });
+
+        let client = connect_client().unwrap();
+        // Wait for accept so the reset reaches a stream handled by this listener.
+        accepted_rx.recv_timeout(Duration::from_secs(10)).unwrap();
+        let socket = socket2::Socket::from(client);
+        socket.set_linger(Some(Duration::ZERO)).unwrap();
+        drop(socket);
+        let observed = error_rx.recv_timeout(Duration::from_secs(10)).unwrap();
+        let next_ping = ping();
+        let stop = request(DaemonRequest::Stop);
+        let outcome = server.join().unwrap();
+
+        eprintln!("observed I/O error after TCP RST: {observed:?}");
+        assert_eq!(
+            observed,
+            Some((io::ErrorKind::ConnectionReset, Some(10054)))
+        );
+        assert!(next_ping.is_ok(), "{next_ping:?}");
+        assert!(stop.is_ok(), "{stop:?}");
+        assert!(outcome.is_ok(), "{outcome:?}");
+    }
+
+    #[test]
+    fn handle_request_handles_ping_status_and_stop() {
+        let (ping_resp, ping_action) = handle_request(DaemonRequest::Ping).expect("ping must work");
+        assert!(ping_resp.ok);
+        assert_eq!(
+            ping_resp.result.as_ref().and_then(|v| v.get("pong")),
+            Some(&json!(true))
+        );
+        assert!(matches!(ping_action, ConnectionAction::Continue));
+
+        let (status_resp, status_action) =
+            handle_request(DaemonRequest::Status).expect("status must work");
+        assert!(status_resp.ok);
+        assert_eq!(
+            status_resp
+                .result
+                .as_ref()
+                .and_then(|v| v.get("running"))
+                .and_then(serde_json::Value::as_bool),
+            Some(true)
+        );
+        assert!(status_resp
+            .result
+            .as_ref()
+            .and_then(|v| v.get("managedBinaryPath"))
+            .is_some());
+        assert!(status_resp
+            .result
+            .as_ref()
+            .and_then(|v| v.get("cli"))
+            .is_some());
+        assert!(status_resp
+            .result
+            .as_ref()
+            .and_then(|v| v.get("lsp"))
+            .is_some());
+        assert!(matches!(status_action, ConnectionAction::Continue));
+
+        let (stop_resp, stop_action) = handle_request(DaemonRequest::Stop).expect("stop must work");
+        assert!(stop_resp.ok);
+        assert!(matches!(stop_action, ConnectionAction::Stop));
+    }
+
+    #[test]
+    fn is_would_block_checks_error_kind() {
+        let would_block = io::Error::new(io::ErrorKind::WouldBlock, "simulated");
+        assert!(is_would_block(&would_block));
+
+        let other = io::Error::new(io::ErrorKind::ConnectionReset, "simulated");
+        assert!(!is_would_block(&other));
+    }
+
+    #[test]
+    fn write_pid_file_and_cleanup_manage_files_under_tools_root() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        cleanup_stale_files();
+        let pid_path = pid_file_path().expect("pid file path should resolve");
+        write_pid_file().expect("pid file write should succeed");
+        assert!(pid_path.exists());
+
+        cleanup_stale_files();
+        assert!(!pid_path.exists());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn tool_response_can_arrive_after_ten_second_transport_timeout() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_dir, _env) = prepare_tools_root();
+        let path = socket_path().unwrap();
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        let listener = std::os::unix::net::UnixListener::bind(path).unwrap();
+        let server = thread::spawn(move || {
+            let (stream, _) = listener.accept().unwrap();
+            let mut reader = BufReader::new(stream);
+            let mut line = String::new();
+            reader.read_line(&mut line).unwrap();
+            thread::sleep(Duration::from_secs(11));
+            let _ = reader
+                .get_mut()
+                .write_all(b"{\"ok\":true,\"result\":{\"symbols\":[]}}\n");
+        });
+        let response = request(DaemonRequest::Tool {
+            tool_name: "find_symbol".into(),
+            params: json!({"name":"ButtonHandler"}),
+            project_root: "/unused".into(),
+        });
+        server.join().unwrap();
+        assert!(
+            response.is_ok(),
+            "valid slow LSP response was lost: {response:?}"
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn handle_stream_round_trip_ping_request() {
+        let (mut client, mut server) =
+            std::os::unix::net::UnixStream::pair().expect("socket pair should be created");
+        client
+            .write_all(
+                br#"{"type":"ping"}
+"#,
+            )
+            .expect("request write should succeed");
+
+        let action = super::handle_stream(&mut server).expect("handle_stream should succeed");
+        assert!(matches!(action, ConnectionAction::Continue));
+
+        let mut reader = BufReader::new(client);
+        let mut line = String::new();
+        reader
+            .read_line(&mut line)
+            .expect("response line should be readable");
+        let response: serde_json::Value =
+            serde_json::from_str(line.trim()).expect("response should be valid JSON");
+        assert_eq!(response["ok"], true);
+        assert_eq!(response["result"]["pong"], true);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn handle_stream_rejects_invalid_json() {
+        let (mut client, mut server) =
+            std::os::unix::net::UnixStream::pair().expect("socket pair should be created");
+        client
+            .write_all(b"not-json\n")
+            .expect("request write should succeed");
+        let result = super::handle_stream(&mut server);
+        let message = match result {
+            Ok(_) => panic!("invalid JSON should fail"),
+            Err(error) => format!("{error:#}"),
+        };
+        assert!(message.contains("Invalid daemon request JSON"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn start_background_returns_already_running_when_status_is_true() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        ensure_local_lsp_binary();
+
+        let status_server = spawn_unix_server_once(r#"{"ok":true,"result":{"running":true}}"#);
+        let value = start_background().expect("start should return already-running response");
+        assert_eq!(value["running"], true);
+        assert_eq!(value["alreadyRunning"], true);
+        status_server.join().expect("status server should join");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn ping_status_stop_and_call_tool_handle_daemon_responses() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+
+        let ping_ok = spawn_unix_server_once(r#"{"ok":true}"#);
+        ping().expect("ping should succeed");
+        ping_ok.join().expect("ping server should join");
+
+        let ping_fail = spawn_unix_server_once(r#"{"ok":false,"error":"bad ping"}"#);
+        let err = ping().expect_err("ping should fail when daemon reports error");
+        assert!(!format!("{err:#}").is_empty());
+        ping_fail.join().expect("ping server should join");
+
+        let status_ok = spawn_unix_server_once(r#"{"ok":true,"result":{"running":true}}"#);
+        let value = status().expect("status should succeed");
+        assert!(value.get("running").is_some());
+        assert!(value["runtimeDir"].is_string());
+        status_ok.join().expect("status server should join");
+
+        let status_fail = spawn_unix_server_once(r#"{"ok":false,"error":"status failed"}"#);
+        let value = status().expect("status fallback should still succeed");
+        assert_eq!(value["running"], false);
+        assert!(value["runtimeDir"].is_string());
+        status_fail.join().expect("status server should join");
+
+        let stop_ok = spawn_unix_server_once(r#"{"ok":true}"#);
+        let value = stop().expect("stop should succeed");
+        assert!(value.get("stopped").is_some());
+        stop_ok.join().expect("stop server should join");
+
+        let stop_fail = spawn_unix_server_once(r#"{"ok":false,"error":"cannot-stop"}"#);
+        match stop() {
+            Ok(value) => assert!(value.get("stopped").is_some()),
+            Err(err) => assert!(format!("{err:#}").contains("cannot-stop")),
+        }
+        stop_fail.join().expect("stop server should join");
+
+        let root = tempdir().expect("tempdir should succeed");
+        let tool_ok = spawn_unix_server_once(r#"{"ok":true,"result":{"ok":true}}"#);
+        match call_tool("get_symbols", &json!({}), root.path()) {
+            Ok(value) => assert_eq!(value["ok"], true),
+            Err(err) => assert!(!format!("{err:#}").is_empty()),
+        }
+        tool_ok.join().expect("tool server should join");
+
+        let tool_fail = spawn_unix_server_once(r#"{"ok":false,"error":"tool failed"}"#);
+        let err = call_tool("get_symbols", &json!({}), root.path())
+            .expect_err("tool call should fail when daemon reports failure");
+        assert!(!format!("{err:#}").is_empty());
+        tool_fail.join().expect("tool server should join");
+
+        cleanup_stale_files();
+        let value = stop().expect("stop should gracefully succeed when daemon is unavailable");
+        assert_eq!(value["stopped"], false);
+        assert_eq!(value["running"], false);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn mock_server_waits_for_request_terminator() {
+        use std::io::Read;
+        let _guard = env_lock().lock().unwrap_or_else(|p| p.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        let server = spawn_unix_server_once("not-json");
+        let mut stream = std::os::unix::net::UnixStream::connect(socket_path().unwrap()).unwrap();
+        stream
+            .set_read_timeout(Some(Duration::from_millis(50)))
+            .unwrap();
+        stream.write_all(b"{\"type\":\"ping\"}").unwrap();
+        let mut response = [0u8; 8];
+        let early = stream.read(&mut response);
+        stream.write_all(b"\n").unwrap();
+        server.join().unwrap();
+        assert!(
+            early.is_err(),
+            "server replied before the complete request: {early:?}"
+        );
+        assert!(matches!(
+            early.unwrap_err().kind(),
+            ErrorKind::WouldBlock | ErrorKind::TimedOut
+        ));
+        stream.read_exact(&mut response).unwrap();
+        assert_eq!(&response, b"not-json");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn ping_reports_invalid_json_response() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+
+        let invalid = spawn_unix_server_once("not-json");
+        let err = ping().expect_err("invalid response JSON should fail");
+        let message = format!("{err:#}");
+        assert!(
+            message.contains("Invalid daemon response JSON")
+                || message.contains("Failed to read daemon response")
+                || message.contains("Failed to connect to lspd socket"),
+            "unexpected error: {message}"
+        );
+        invalid.join().expect("invalid server should join");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn handle_request_tool_branch_returns_error_payload_on_lsp_failure() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        ensure_local_lsp_binary();
+        let root = tempdir().expect("tempdir should succeed");
+
+        let (response, action) = handle_request(DaemonRequest::Tool {
+            tool_name: "get_symbols".to_string(),
+            params: json!({"path":"Assets/Missing.cs"}),
+            project_root: root.path().to_string_lossy().to_string(),
+        })
+        .expect("tool request should be handled");
+        assert!(!response.ok);
+        assert!(response.error.is_some());
+        assert!(matches!(action, ConnectionAction::Continue));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn serve_forever_accepts_stop_and_cleans_files() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        cleanup_stale_files();
+        let pid = pid_file_path().expect("pid path should resolve");
+        let socket = socket_path().expect("socket path should resolve");
+        let listener = bind_listener().expect("listener should bind");
+        write_pid_file().expect("pid file should be written");
+        assert!(pid.exists(), "pid file should exist before stop");
+        assert!(socket.exists(), "socket file should exist before stop");
+
+        let server = std::thread::spawn(move || {
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+            let (mut stream, _) = loop {
+                match listener.accept() {
+                    Ok(pair) => break pair,
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        assert!(
+                            std::time::Instant::now() < deadline,
+                            "listener did not accept stop client before timeout"
+                        );
+                        std::thread::sleep(std::time::Duration::from_millis(10));
+                    }
+                    Err(error) => panic!("listener should accept stop client: {error}"),
+                }
+            };
+            stream
+                .set_nonblocking(false)
+                .expect("accepted stream should become blocking");
+            let action = handle_stream(&mut stream).expect("stop request should be handled");
+            assert!(matches!(action, ConnectionAction::Stop));
+            cleanup_stale_files();
+        });
+
+        let mut client = std::os::unix::net::UnixStream::connect(&socket)
+            .expect("client should connect to daemon socket");
+        client
+            .set_read_timeout(Some(std::time::Duration::from_secs(10)))
+            .expect("client read timeout should be set");
+        client
+            .set_write_timeout(Some(std::time::Duration::from_secs(10)))
+            .expect("client write timeout should be set");
+        let payload =
+            serde_json::to_string(&DaemonRequest::Stop).expect("stop request should serialize");
+        client
+            .write_all(payload.as_bytes())
+            .expect("stop request write should succeed");
+        client
+            .write_all(b"\n")
+            .expect("stop request newline write should succeed");
+        client.flush().expect("stop request flush should succeed");
+
+        let mut response_line = String::new();
+        BufReader::new(client)
+            .read_line(&mut response_line)
+            .expect("stop response should be readable");
+        let response: DaemonResponse =
+            serde_json::from_str(response_line.trim()).expect("stop response should parse");
+        assert!(response.ok, "daemon stop response should be ok");
+        assert_eq!(
+            response
+                .result
+                .as_ref()
+                .and_then(|value| value.get("stopping"))
+                .and_then(serde_json::Value::as_bool),
+            Some(true)
+        );
+
+        server.join().expect("server thread should join");
+        assert!(!pid.exists(), "pid file should be cleaned up");
+        assert!(!socket.exists(), "socket file should be cleaned up");
+    }
+
+    fn exiting_child(code: i32) -> std::process::Child {
+        #[cfg(unix)]
+        let mut command = Command::new("sh");
+        #[cfg(unix)]
+        command.args(["-c", &format!("exit {code}")]);
+        #[cfg(windows)]
+        let mut command = Command::new("cmd");
+        #[cfg(windows)]
+        command.args(["/C", &format!("exit {code}")]);
+        command.spawn().expect("exiting child should spawn")
+    }
+
+    fn sleeping_child() -> std::process::Child {
+        #[cfg(unix)]
+        let mut command = Command::new("sleep");
+        #[cfg(unix)]
+        command.arg("30");
+        #[cfg(windows)]
+        let mut command = Command::new("ping");
+        #[cfg(windows)]
+        command.args(["-n", "30", "127.0.0.1"]);
+        command
+            .stdout(Stdio::null())
+            .spawn()
+            .expect("sleeping child should spawn")
+    }
+
+    #[test]
+    fn wait_until_ready_fails_immediately_when_startup_process_exits() {
+        let log = Path::new("/tmp/lspd-test.log");
+        let mut child = exiting_child(3);
+        let started = Instant::now();
+        let error = wait_until_ready(&mut child, Duration::from_secs(30), log, || false)
+            .expect_err("an exited startup process must fail");
+        assert!(started.elapsed() < Duration::from_secs(10));
+        let message = error.to_string();
+        assert!(message.contains("exited during startup"), "{message}");
+        assert!(message.contains(&log.display().to_string()), "{message}");
+    }
+
+    #[test]
+    fn wait_until_ready_reports_waited_time_and_log_on_timeout() {
+        let log = Path::new("/tmp/lspd-test.log");
+        let mut child = sleeping_child();
+        let error = wait_until_ready(&mut child, Duration::from_millis(300), log, || false)
+            .expect_err("a daemon that never answers must time out");
+        let message = error.to_string();
+        assert!(message.contains("within 300 ms"), "{message}");
+        assert!(message.contains("waited"), "{message}");
+        assert!(message.contains(&log.display().to_string()), "{message}");
+        assert!(
+            child
+                .try_wait()
+                .expect("child should be inspectable")
+                .is_some(),
+            "a timed-out startup process must not be left running"
+        );
+    }
+
+    #[test]
+    fn wait_until_ready_keeps_polling_while_the_daemon_is_alive() {
+        let log = Path::new("/tmp/lspd-test.log");
+        let mut child = sleeping_child();
+        let mut probes = 0;
+        wait_until_ready(&mut child, Duration::from_secs(30), log, || {
+            probes += 1;
+            probes >= 5
+        })
+        .expect("a live daemon that answers late should be accepted");
+        assert_eq!(probes, 5);
+        let _ = child.kill();
+        let _ = child.wait();
+    }
+
+    #[test]
+    fn wait_until_ready_accepts_a_daemon_started_by_a_concurrent_caller() {
+        let log = Path::new("/tmp/lspd-test.log");
+        let mut child = exiting_child(1);
+        let _ = child.wait();
+        let mut probes = 0;
+        wait_until_ready(&mut child, Duration::from_secs(30), log, || {
+            probes += 1;
+            probes >= 2
+        })
+        .expect("an exited loser of a startup race should accept the running daemon");
+    }
+
+    #[test]
+    fn daemon_start_timeout_uses_env_override() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        std::env::remove_var("UNITY_CLI_LSPD_START_TIMEOUT_MS");
+        assert_eq!(daemon_start_timeout(), Duration::from_secs(60));
+
+        let _env = EnvVarGuard::set("UNITY_CLI_LSPD_START_TIMEOUT_MS", "1500");
+        assert_eq!(daemon_start_timeout(), Duration::from_millis(1500));
+
+        drop(_env);
+        let _invalid = EnvVarGuard::set("UNITY_CLI_LSPD_START_TIMEOUT_MS", "0");
+        assert_eq!(daemon_start_timeout(), Duration::from_secs(60));
+    }
+
+    #[test]
+    fn daemon_log_lives_in_the_lspd_runtime_dir() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let (_tools_root, _env) = prepare_tools_root();
+        let log = log_file_path().expect("log path should resolve");
+        let dir = DaemonRuntimePaths::new("lspd")
+            .and_then(|paths| paths.dir())
+            .expect("runtime dir should resolve");
+        assert_eq!(log, dir.join("lspd.log"));
+    }
+
+    #[test]
+    fn daemon_idle_timeout_uses_env_override() {
+        let _guard = env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        std::env::remove_var("UNITY_CLI_LSPD_IDLE_TIMEOUT");
+        assert_eq!(daemon_idle_timeout_secs(), 600);
+
+        let _env = EnvVarGuard::set("UNITY_CLI_LSPD_IDLE_TIMEOUT", "2");
+        assert_eq!(daemon_idle_timeout_secs(), 2);
+
+        drop(_env);
+        let _invalid = EnvVarGuard::set("UNITY_CLI_LSPD_IDLE_TIMEOUT", "0");
+        assert_eq!(daemon_idle_timeout_secs(), 600);
+    }
+}

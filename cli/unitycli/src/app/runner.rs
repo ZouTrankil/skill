@@ -1,0 +1,3797 @@
+use anyhow::{anyhow, Context, Result};
+use clap::{CommandFactory, FromArgMatches};
+use serde_json::{json, Value};
+use std::fs;
+use std::path::PathBuf;
+use tracing_subscriber::EnvFilter;
+
+use super::output::{self, FailureKind};
+use crate::cli::{
+    BridgeCommand, Cli, CliCommand, Command, DoctorArgs, EditorCommand, EvalMode, InstancesCommand,
+    LspCommand, LspdCommand, OutputFormat, PackageCommand, RawArgs, ReferenceCommand, SceneCommand,
+    SkillFormat, SkillSeverity, SkillsCommand, SystemCommand, ToolCommand, UnitydCommand,
+};
+use crate::config::{RuntimeConfig, RuntimeOverrides};
+use crate::core::command_stats::{self, CliCommandTiming};
+use crate::core::contracts::BatchItem;
+use crate::core::editor_discovery::TargetError;
+use crate::instances::{list_instances, set_active_instance};
+use crate::tool_catalog::{get_tool_spec, is_known_tool};
+use crate::tool_index::{filter_tools, ToolListFilter};
+use crate::tooling::discovery::{self, DiscoveredTool};
+use crate::tooling::os_capture;
+use crate::transport::{UnityClient, UnityCommandError};
+use crate::{local_tools, lsp_manager, lspd, unityd};
+
+pub async fn run() -> Result<()> {
+    let args: Vec<_> = std::env::args_os().collect();
+    let mut parser = Cli::command();
+    // The test subcommand uses --output for a report path. Disable propagation
+    // of the root presentation option only for this command.
+    if is_test_command(&args) {
+        parser = parser.mut_arg("output", |arg| arg.global(false));
+    }
+    let matches = match parser.try_get_matches_from(&args) {
+        Ok(matches) => matches,
+        Err(error) if error.use_stderr() => {
+            let json = args
+                .windows(2)
+                .any(|pair| pair[0] == "--output" && pair[1] == "json")
+                || args.iter().any(|arg| arg == "--output=json");
+            let error = anyhow!(error).context(FailureKind::Usage);
+            output::print_failure(
+                "",
+                &error,
+                if json {
+                    OutputFormat::Json
+                } else {
+                    OutputFormat::Text
+                },
+            )?;
+            return Err(error);
+        }
+        Err(error) => {
+            error.print()?;
+            return Ok(());
+        }
+    };
+    let mut names = Vec::new();
+    let mut current = &matches;
+    while let Some((name, child)) = current.subcommand() {
+        names.push(name.to_owned());
+        current = child;
+    }
+    if let Ok(Some(tool)) = current.try_get_one::<String>("tool_name") {
+        names.push(tool.clone());
+    }
+    let cli = Cli::from_arg_matches(&matches)?;
+    run_with_cli_named(cli, &names.join(" ")).await
+}
+
+#[cfg(test)]
+pub async fn run_with_cli(cli: Cli) -> Result<()> {
+    run_with_cli_named(cli, "test").await
+}
+
+async fn run_with_cli_named(cli: Cli, command: &str) -> Result<()> {
+    crate::unity::auth::warn_unauthenticated();
+    let format = if matches!(cli.command, Command::Setup { json: true, .. }) {
+        OutputFormat::Json
+    } else {
+        cli.output
+    };
+    let mcp_stdio = matches!(cli.command, Command::Mcp { command: None });
+    let result = run_command_named(cli, command).await;
+    if let Err(error) = &result {
+        output::print_failure(
+            command,
+            error,
+            if mcp_stdio {
+                OutputFormat::Text
+            } else {
+                format
+            },
+        )?;
+    }
+    result
+}
+
+#[cfg(test)]
+async fn run_command(cli: Cli) -> Result<()> {
+    run_command_named(cli, "test").await
+}
+
+async fn run_command_named(cli: Cli, command: &str) -> Result<()> {
+    let print_value = |value: &Value, format| output::print_result(command, value, format);
+    init_tracing(cli.verbose)?;
+
+    // `--project-path` and UNITY_PROJECT_ROOT are the same setting; local
+    // tools (script read/search, index) read the project root from the env.
+    if let Some(project_path) = &cli.project_path {
+        std::env::set_var("UNITY_PROJECT_ROOT", project_path);
+    }
+
+    // Long-lived stdio must contain only JSON-RPC, and configure --dry-run
+    // must not start an update worker or create update-check stamps.
+    if let Command::Mcp { command } = &cli.command {
+        return match command {
+            None => crate::mcp::serve(&cli).await,
+            Some(crate::cli::McpCommand::Configure { client, local }) => {
+                crate::mcp::configure::run(*client, *local, cli.dry_run)
+            }
+        };
+    }
+
+    // Background self-update (non-blocking). Skipped for `cli` subcommands
+    // which manage the binary themselves, offline skill operations, and setup
+    // previews, which must not access the network or write an update-check stamp.
+    let setup_preview = cli.dry_run && matches!(&cli.command, Command::Setup { .. });
+    let mut update_handle = if !setup_preview
+        && !matches!(&cli.command, Command::Cli { .. } | Command::Skills { .. })
+    {
+        crate::core::self_update::maybe_self_update()
+    } else {
+        None
+    };
+
+    crate::core::self_update::warn_cargo_conflict();
+
+    match &cli.command {
+        Command::Mcp { .. } => unreachable!("MCP handled before self-update"),
+        Command::Test(args) => return super::test_runner::run(&cli, args).await,
+        Command::Package { command } => {
+            let mut params = match command {
+                PackageCommand::Import { path } => json!({"action":"import", "path":path}),
+                PackageCommand::CacheList { cache_path } => {
+                    json!({"action":"list_cached", "cachePath":cache_path})
+                }
+                PackageCommand::CacheImport {
+                    name_or_id,
+                    cache_path,
+                } => {
+                    json!({"action":"import_cached", "nameOrId":name_or_id, "cachePath":cache_path})
+                }
+                PackageCommand::ImportStatus { request_id } => {
+                    json!({"action":"import_status", "requestId":request_id})
+                }
+                PackageCommand::AssetStoreOpen {
+                    name_or_id,
+                    cache_path,
+                } => {
+                    json!({"action":"open_asset_store", "nameOrId":name_or_id, "cachePath":cache_path})
+                }
+                PackageCommand::AssetStoreWait(args) | PackageCommand::AssetStoreImport(args) => {
+                    let action = if matches!(command, PackageCommand::AssetStoreImport(_)) {
+                        "acquire"
+                    } else {
+                        "wait_download"
+                    };
+                    json!({"action":action, "nameOrId":args.name_or_id,
+                        "cachePath":args.cache_path, "downloadTimeoutMs":args.download_timeout_ms})
+                }
+            };
+            if params["cachePath"].is_null() {
+                params.as_object_mut().unwrap().remove("cachePath");
+            }
+            if params["nameOrId"].is_null() {
+                params.as_object_mut().unwrap().remove("nameOrId");
+            }
+            if super::package::is_import(&params) || super::package::is_download_flow(&params) {
+                params["timeoutMs"] = json!(cli.timeout_ms.unwrap_or(180_000));
+            }
+            let value = execute_tool(&cli, "package_manager", params).await?;
+            print_value(&value, cli.output)?;
+        }
+        Command::Editor { command } => {
+            let (tool, params) = match command {
+                EditorCommand::Eval {
+                    code,
+                    mode,
+                    request_id,
+                } => {
+                    let mut params = json!({
+                        "code": code,
+                        "mode": match mode {
+                            EvalMode::Expression => "expression",
+                            EvalMode::Statements => "statements",
+                        }
+                    });
+                    if let Some(id) = request_id {
+                        params["requestId"] = json!(id);
+                    }
+                    ("eval_csharp", params)
+                }
+                EditorCommand::EvalStatus { request_id } => {
+                    ("get_eval_status", json!({"requestId": request_id}))
+                }
+                EditorCommand::EvalStats { collect } => {
+                    ("get_eval_stats", json!({"collect": collect}))
+                }
+                EditorCommand::Open {
+                    headless,
+                    wait_ready,
+                } => {
+                    let value = super::editor::open(&cli, *headless, *wait_ready).await?;
+                    return print_value(&value, cli.output);
+                }
+                EditorCommand::Close { force } => {
+                    let value = super::editor::close(&cli, *force).await?;
+                    return print_value(&value, cli.output);
+                }
+                EditorCommand::Status => {
+                    let value = super::editor::status(&cli).await?;
+                    return print_value(&value, cli.output);
+                }
+            };
+            let value = execute_tool(&cli, tool, params).await?;
+            print_value(&value, cli.output)?;
+        }
+        Command::Raw(args) => {
+            let value = execute_raw(&cli, args).await?;
+            print_value(&value, cli.output)?;
+        }
+        Command::Tool { command } => match command {
+            ToolCommand::List(args) => {
+                let tools = discovery::filter_discovered_tools(
+                    discover_for_cli(&cli).await?,
+                    &ToolListFilter {
+                        query: args.query.as_deref(),
+                        category: args.category.as_deref(),
+                        offset: args.offset,
+                        limit: args.limit,
+                    },
+                )
+                .map_err(|message| anyhow!(message))
+                .context(FailureKind::Usage)?;
+                let summaries =
+                    filter_tools(&ToolListFilter::default()).map_err(|message| anyhow!(message))?;
+                let compact = |tool: &DiscoveredTool| {
+                    json!({
+                        "name": tool.name,
+                        "description": summaries.iter().find(|entry| entry.name == tool.name)
+                            .map(|entry| entry.description).unwrap_or(&tool.description)
+                    })
+                };
+                if matches!(cli.output, OutputFormat::Json) {
+                    let value = if args.compact {
+                        json!(tools.iter().map(compact).collect::<Vec<_>>())
+                    } else if args.names_only {
+                        serde_json::to_value(
+                            tools.iter().map(|tool| &tool.name).collect::<Vec<_>>(),
+                        )?
+                    } else {
+                        serde_json::to_value(&tools)?
+                    };
+                    print_value(&value, cli.output)?;
+                } else {
+                    for tool in &tools {
+                        if args.compact {
+                            println!(
+                                "{}\t{}",
+                                tool.name,
+                                compact(tool)["description"].as_str().unwrap_or_default()
+                            );
+                        } else {
+                            println!("{}", tool.name);
+                        }
+                    }
+                }
+            }
+            ToolCommand::Schema { tool_name } => {
+                let value = if let Some(name) = tool_name {
+                    let spec = if let Some(spec) = get_tool_spec(name) {
+                        DiscoveredTool::from(spec)
+                    } else {
+                        find_discovered_tool(&discover_for_cli(&cli).await?, name)?
+                    };
+                    serde_json::to_value(spec)?
+                } else {
+                    json!({
+                        "tools": discover_for_cli(&cli).await?
+                    })
+                };
+                print_value(&value, cli.output)?;
+            }
+            ToolCommand::Call(args) => {
+                let value = execute_raw(&cli, args).await?;
+                print_value(&value, cli.output)?;
+            }
+            ToolCommand::External(args) => {
+                let raw = parse_external_tool_command(args).context(FailureKind::Usage)?;
+                let value = execute_raw(&cli, &raw).await?;
+                print_value(&value, cli.output)?;
+            }
+        },
+        Command::System { command } => match command {
+            SystemCommand::Ping { message } => {
+                let mut params = serde_json::Map::new();
+                if let Some(msg) = message {
+                    params.insert("message".to_string(), Value::String(msg.clone()));
+                }
+                let mut value = execute_tool(&cli, "ping", Value::Object(params)).await?;
+                attach_ping_version_check(&mut value);
+                print_value(&value, cli.output)?;
+            }
+        },
+        Command::Scene { command } => match command {
+            SceneCommand::Create {
+                scene_name,
+                path,
+                load_scene,
+                add_to_build_settings,
+            } => {
+                let mut params = serde_json::Map::new();
+                params.insert("sceneName".to_string(), Value::String(scene_name.clone()));
+                params.insert("loadScene".to_string(), Value::Bool(*load_scene));
+                params.insert(
+                    "addToBuildSettings".to_string(),
+                    Value::Bool(*add_to_build_settings),
+                );
+                if let Some(scene_path) = path {
+                    params.insert("path".to_string(), Value::String(scene_path.clone()));
+                }
+
+                let value = execute_tool(&cli, "create_scene", Value::Object(params)).await?;
+                print_value(&value, cli.output)?;
+            }
+        },
+        Command::Instances { command } => match command {
+            InstancesCommand::List {
+                ports,
+                host,
+                timeout_ms,
+            } => {
+                let parsed = parse_ports_with_diagnostics(ports).context(FailureKind::Usage)?;
+                if !parsed.duplicate_ports.is_empty() {
+                    eprintln!(
+                        "Warning: duplicate --ports values ignored: {}",
+                        parsed
+                            .duplicate_ports
+                            .iter()
+                            .map(u16::to_string)
+                            .collect::<Vec<_>>()
+                            .join(",")
+                    );
+                }
+                let parsed_ports = parsed.ports;
+                let statuses = list_instances(host, &parsed_ports, *timeout_ms).await?;
+
+                if matches!(cli.output, OutputFormat::Json) {
+                    print_value(&serde_json::to_value(&statuses)?, cli.output)?;
+                } else {
+                    for status in statuses {
+                        let marker = if status.active { "*" } else { " " };
+                        let project = status
+                            .project_path
+                            .as_deref()
+                            .map(|path| {
+                                format!(" pid={} project={path}", status.pid.unwrap_or_default())
+                            })
+                            .unwrap_or_default();
+                        println!(
+                            "{} {:<21} {:<11} checked_at={}{}",
+                            marker, status.id, status.status, status.last_checked_at, project
+                        );
+                    }
+                }
+            }
+            InstancesCommand::SetActive { id, timeout_ms } => {
+                let result = set_active_instance(id, *timeout_ms).await?;
+                let value = serde_json::to_value(&result)?;
+                if matches!(cli.output, OutputFormat::Json) {
+                    print_value(&value, cli.output)?;
+                } else {
+                    println!(
+                        "active instance changed: {} -> {}",
+                        result.previous_id.as_deref().unwrap_or("(none)"),
+                        result.active_id
+                    );
+                }
+            }
+        },
+        Command::Lsp { command } => match command {
+            LspCommand::Install => {
+                let value = lsp_manager::install_latest()?;
+                print_value(&value, cli.output)?;
+            }
+            LspCommand::Doctor => {
+                let value = lsp_manager::doctor()?;
+                #[cfg(not(unix))]
+                let value = lspd::with_startup_diagnostic(value);
+                print_value(&value, cli.output)?;
+            }
+        },
+        Command::Cli { command } => match command {
+            CliCommand::Install { force } => {
+                let value = lsp_manager::cli_install_latest(*force)?;
+                print_value(&value, cli.output)?;
+            }
+            CliCommand::Doctor => {
+                let value = lsp_manager::cli_doctor()?;
+                print_value(&value, cli.output)?;
+            }
+        },
+        Command::Lspd { command } => match command {
+            LspdCommand::Start => {
+                let value = lspd::start_background()?;
+                print_value(&value, cli.output)?;
+            }
+            LspdCommand::Stop => {
+                let value = lspd::stop()?;
+                print_value(&value, cli.output)?;
+            }
+            LspdCommand::Status => {
+                let value = lspd::status()?;
+                print_value(&value, cli.output)?;
+            }
+            LspdCommand::Serve => {
+                lspd::serve_forever()?;
+            }
+        },
+        Command::Unityd { command } => match command {
+            UnitydCommand::Start => {
+                // Wait for the self-update to finish before starting the daemon
+                // so the daemon process uses the latest binary.
+                if let Some(handle) = update_handle.take() {
+                    let _ = handle.join();
+                }
+                let value = unityd::start_background()?;
+                print_value(&value, cli.output)?;
+            }
+            UnitydCommand::Stop => {
+                let value = unityd::stop()?;
+                print_value(&value, cli.output)?;
+            }
+            UnitydCommand::Status => {
+                let value = unityd::status()?;
+                print_value(&value, cli.output)?;
+            }
+            UnitydCommand::Serve => {
+                unityd::serve_forever().await?;
+            }
+        },
+        Command::Skills { command } => match command {
+            SkillsCommand::Install {
+                client,
+                local,
+                force,
+            } => {
+                let paths = crate::skills::distribution::distribute(
+                    Some(*client),
+                    *local,
+                    *force,
+                    cli.dry_run,
+                    false,
+                )?;
+                if matches!(cli.output, OutputFormat::Json) {
+                    print_value(&json!(paths), cli.output)?;
+                } else {
+                    for path in paths {
+                        println!("{}", path.display());
+                    }
+                }
+            }
+            SkillsCommand::Refresh {
+                client,
+                local,
+                force,
+            } => {
+                let paths = crate::skills::distribution::distribute(
+                    *client,
+                    *local,
+                    *force,
+                    cli.dry_run,
+                    true,
+                )?;
+                if matches!(cli.output, OutputFormat::Json) {
+                    print_value(&json!(paths), cli.output)?;
+                } else {
+                    for path in paths {
+                        println!("{}", path.display());
+                    }
+                }
+            }
+            SkillsCommand::Show { name } => {
+                print_value(
+                    &json!(crate::skills::distribution::show(name.as_deref())?),
+                    cli.output,
+                )?;
+            }
+            SkillsCommand::Lint {
+                root,
+                format,
+                severity,
+            } => {
+                run_skills_lint_output(
+                    root.as_deref(),
+                    *format,
+                    *severity,
+                    cli.output,
+                    "skills lint",
+                )?;
+            }
+        },
+        Command::Reference { command } => {
+            let (tool, params) = build_reference_call(command);
+            let value = execute_tool(&cli, tool, params).await?;
+            print_value(&value, cli.output)?;
+        }
+        Command::Setup {
+            project_path,
+            launch_editor,
+            wait_secs,
+            json,
+        } => {
+            let cwd = std::env::current_dir()?;
+            let overrides = runtime_overrides_from_cli(&cli);
+            let root = crate::core::bridge::resolve_project_root(project_path.as_deref(), &cwd)?;
+            let endpoint = crate::core::endpoint::resolve_endpoint_for_project(
+                overrides.host.clone(),
+                overrides.port,
+                &root,
+            )?;
+            let config = RuntimeConfig {
+                host: endpoint.host,
+                port: endpoint.port,
+                timeout: std::time::Duration::from_millis(
+                    overrides
+                        .timeout_ms
+                        .unwrap_or_else(crate::core::config::default_timeout_ms),
+                ),
+            };
+            let options = super::setup::SetupOptions {
+                project_path: project_path.clone(),
+                launch_editor: *launch_editor,
+                wait_secs: *wait_secs,
+                dry_run: cli.dry_run,
+            };
+            let value = super::setup::run(&options, &config, &cwd).await?;
+            if value["ok"] != json!(true) {
+                let mut failure = value;
+                failure["code"] = json!("PRECONDITION_FAILED");
+                failure["error"] = json!(
+                    "setup incomplete: the Unity Editor bridge is not ready for this project"
+                );
+                return Err(UnityCommandError::new(failure).into());
+            }
+            print_value(
+                &value,
+                if *json {
+                    OutputFormat::Json
+                } else {
+                    cli.output
+                },
+            )?;
+        }
+        Command::Bridge { command } => {
+            let value = run_bridge_command(command, cli.dry_run)?;
+            print_value(&value, cli.output)?;
+        }
+        Command::Doctor(args) => {
+            let value = run_doctor(&cli, args).await?;
+            print_value(&value, cli.output)?;
+        }
+        Command::Batch { json, stdin } => {
+            let value = execute_batch(&cli, json.as_deref(), *stdin).await?;
+            print_value(&value, cli.output)?;
+        }
+    }
+
+    // Wait for background self-update to complete before process exit so the
+    // downloaded binary is fully written to disk.  Command output has already
+    // been printed, so the user sees results immediately.
+    if let Some(handle) = update_handle {
+        let _ = handle.join();
+    }
+
+    Ok(())
+}
+
+fn is_test_command(args: &[std::ffi::OsString]) -> bool {
+    let mut args = args.iter().skip(1);
+    while let Some(arg) = args.next() {
+        let arg = arg.to_string_lossy();
+        if [
+            "--output",
+            "--host",
+            "--port",
+            "--project-path",
+            "--timeout-ms",
+        ]
+        .contains(&arg.as_ref())
+        {
+            args.next();
+        } else if !arg.starts_with('-') {
+            return arg == "test";
+        }
+    }
+    false
+}
+
+fn run_bridge_command(command: &BridgeCommand, dry_run: bool) -> Result<Value> {
+    use crate::core::bridge::{self, BridgeAction};
+    let cwd = std::env::current_dir()?;
+    match command {
+        BridgeCommand::Install { project_path } => bridge::apply(
+            &bridge::resolve_project_root(project_path.as_deref(), &cwd)?,
+            BridgeAction::Install,
+            dry_run,
+        ),
+        BridgeCommand::Upgrade { project_path } => bridge::apply(
+            &bridge::resolve_project_root(project_path.as_deref(), &cwd)?,
+            BridgeAction::Upgrade,
+            dry_run,
+        ),
+        BridgeCommand::Status { project_path } => bridge::status(&bridge::resolve_project_root(
+            project_path.as_deref(),
+            &cwd,
+        )?),
+    }
+}
+
+/// Add the CLI ↔ bridge `versionCheck` to a ping result and warn on mismatch.
+fn attach_ping_version_check(value: &mut Value) {
+    let Some(object) = value.as_object_mut() else {
+        return;
+    };
+    let check =
+        crate::core::bridge::version_check(object.get("bridgeVersion").and_then(Value::as_str));
+    if check["status"] == "mismatch" {
+        if let Some(message) = check["message"].as_str() {
+            eprintln!("Warning: {message}");
+        }
+    }
+    object.insert("versionCheck".to_string(), check);
+}
+
+fn build_reference_call(command: &ReferenceCommand) -> (&'static str, Value) {
+    let mut params = serde_json::Map::new();
+    let tool: &'static str = match command {
+        ReferenceCommand::Fetch {
+            version,
+            branch,
+            force,
+            accept_license,
+        } => {
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            if let Some(b) = branch {
+                params.insert("branch".to_string(), Value::String(b.clone()));
+            }
+            params.insert("force".to_string(), Value::Bool(*force));
+            params.insert("acceptLicense".to_string(), Value::Bool(*accept_license));
+            "reference_fetch"
+        }
+        ReferenceCommand::Status { version } => {
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            "reference_status"
+        }
+        ReferenceCommand::Search {
+            pattern,
+            version,
+            path,
+            max_results,
+            regex,
+        } => {
+            params.insert("pattern".to_string(), Value::String(pattern.clone()));
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            if let Some(p) = path {
+                params.insert("path".to_string(), Value::String(p.clone()));
+            }
+            if let Some(n) = max_results {
+                params.insert("maxResults".to_string(), Value::Number((*n).into()));
+            }
+            params.insert("regex".to_string(), Value::Bool(*regex));
+            "reference_search"
+        }
+        ReferenceCommand::Grep {
+            pattern,
+            version,
+            file_glob,
+            context,
+        } => {
+            params.insert("pattern".to_string(), Value::String(pattern.clone()));
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            if let Some(g) = file_glob {
+                params.insert("fileGlob".to_string(), Value::String(g.clone()));
+            }
+            params.insert(
+                "context".to_string(),
+                Value::Number((u64::from(*context)).into()),
+            );
+            "reference_grep"
+        }
+        ReferenceCommand::View {
+            path,
+            version,
+            start_line,
+            max_lines,
+        } => {
+            params.insert("path".to_string(), Value::String(path.clone()));
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            if let Some(n) = start_line {
+                params.insert(
+                    "startLine".to_string(),
+                    Value::Number((u64::from(*n)).into()),
+                );
+            }
+            if let Some(n) = max_lines {
+                params.insert(
+                    "maxLines".to_string(),
+                    Value::Number((u64::from(*n)).into()),
+                );
+            }
+            "reference_view"
+        }
+        ReferenceCommand::FindSymbol {
+            name,
+            kind,
+            namespace,
+            version,
+        } => {
+            params.insert("name".to_string(), Value::String(name.clone()));
+            if let Some(k) = kind {
+                params.insert("kind".to_string(), Value::String(k.clone()));
+            }
+            if let Some(ns) = namespace {
+                params.insert("namespace".to_string(), Value::String(ns.clone()));
+            }
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            return ("reference_find_symbol", Value::Object(params));
+        }
+        ReferenceCommand::Diff {
+            from,
+            to,
+            symbol,
+            path,
+            max_symbols,
+        } => {
+            params.insert("from".to_string(), Value::String(from.clone()));
+            params.insert("to".to_string(), Value::String(to.clone()));
+            if let Some(s) = symbol {
+                params.insert("symbol".to_string(), Value::String(s.clone()));
+            }
+            if let Some(p) = path {
+                params.insert("path".to_string(), Value::String(p.clone()));
+            }
+            if let Some(n) = max_symbols {
+                params.insert("maxSymbols".to_string(), Value::Number((*n).into()));
+            }
+            return ("reference_diff", Value::Object(params));
+        }
+        ReferenceCommand::ResolveSymbolAt {
+            path,
+            line,
+            column,
+            version,
+        } => {
+            params.insert("path".to_string(), Value::String(path.clone()));
+            params.insert("line".to_string(), Value::Number((u64::from(*line)).into()));
+            params.insert(
+                "column".to_string(),
+                Value::Number((u64::from(*column)).into()),
+            );
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            return ("reference_resolve_symbol_at", Value::Object(params));
+        }
+        ReferenceCommand::EmbedBuild { version } => {
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            return ("reference_embed_build", Value::Object(params));
+        }
+        ReferenceCommand::EmbedSearch {
+            query,
+            version,
+            top_k,
+        } => {
+            params.insert("query".to_string(), Value::String(query.clone()));
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            if let Some(k) = top_k {
+                params.insert("topK".to_string(), Value::Number((*k).into()));
+            }
+            return ("reference_embed_search", Value::Object(params));
+        }
+        ReferenceCommand::Clean {
+            keep,
+            version,
+            dry_run,
+        } => {
+            params.insert("keep".to_string(), Value::Number((*keep).into()));
+            if let Some(v) = version {
+                params.insert("version".to_string(), Value::String(v.clone()));
+            }
+            params.insert("dryRun".to_string(), Value::Bool(*dry_run));
+            "reference_clean"
+        }
+    };
+    (tool, Value::Object(params))
+}
+
+async fn run_doctor(cli: &Cli, args: &DoctorArgs) -> Result<Value> {
+    use crate::core::doctor;
+
+    let project_path = doctor::resolve_project_path(args.project_path.as_deref());
+    let explicit_port = cli
+        .port
+        .or_else(|| crate::config::read_env_u16("UNITY_CLI_PORT"));
+    let project_port = project_path
+        .as_deref()
+        .and_then(doctor::read_project_bridge_port);
+    let (host, port, port_source) = match (explicit_port, project_port) {
+        (Some(port), _) => {
+            let endpoint =
+                crate::core::endpoint::resolve_endpoint(cli.host.clone(), Some(port), None)?;
+            (endpoint.host, port, "cli")
+        }
+        (None, Some(port)) => {
+            let endpoint =
+                crate::core::endpoint::resolve_endpoint(cli.host.clone(), Some(port), None)?;
+            (endpoint.host, port, "projectSettings")
+        }
+        (None, None) => {
+            let endpoint = match project_path.as_deref() {
+                Some(project) => crate::core::endpoint::resolve_endpoint_for_project(
+                    cli.host.clone(),
+                    None,
+                    project,
+                )?,
+                None => crate::core::endpoint::resolve_endpoint(cli.host.clone(), None, None)?,
+            };
+            (endpoint.host, endpoint.port, "default")
+        }
+    };
+    doctor::run(&doctor::DoctorOptions {
+        project_path,
+        host,
+        port,
+        port_source,
+        probe_timeout: cli
+            .timeout_ms
+            .map(std::time::Duration::from_millis)
+            .unwrap_or_else(doctor::default_probe_timeout),
+    })
+    .await
+}
+
+async fn execute_raw(cli: &Cli, args: &RawArgs) -> Result<Value> {
+    let params = load_params(args).context(FailureKind::Usage)?;
+    execute_tool(cli, &args.tool_name, params).await
+}
+
+async fn discover_for_cli(cli: &Cli) -> Result<Vec<DiscoveredTool>> {
+    let mut config = match RuntimeConfig::from_overrides(&runtime_overrides_from_cli(cli)) {
+        Err(error)
+            if matches!(
+                error.downcast_ref::<TargetError>(),
+                Some(TargetError::NotFound { .. })
+            ) =>
+        {
+            // An unopened, explicitly selected project still has the offline
+            // builtin catalog. Ambiguous selection and invalid config remain errors.
+            return Ok(discovery::builtin_tool_specs());
+        }
+        result => result?,
+    };
+    // Listing remains useful offline. Bound the optional discovery probe, but
+    // honor an explicit timeout for busy/remote Editors.
+    if cli.timeout_ms.is_none() {
+        config.timeout = config.timeout.min(std::time::Duration::from_secs(2));
+    }
+    match discovery::discover_tool_specs(&config).await {
+        Ok(tools) => Ok(tools),
+        Err(error)
+            if matches!(
+                error.downcast_ref::<FailureKind>(),
+                Some(FailureKind::Unreachable)
+            ) =>
+        {
+            Ok(discovery::builtin_tool_specs())
+        }
+        Err(error) => Err(error),
+    }
+}
+
+fn find_discovered_tool(tools: &[DiscoveredTool], name: &str) -> Result<DiscoveredTool> {
+    tools.iter().find(|tool| tool.name == name).cloned()
+        .ok_or_else(|| anyhow!("Unknown tool `{name}`. Use `unity-cli tool list` with the target Editor connected to see supported names."))
+        .context(FailureKind::Usage)
+}
+
+async fn execute_custom_tool(cli: &Cli, name: &str, params: Value) -> Result<Value> {
+    let spec = find_discovered_tool(&discover_for_cli(cli).await?, name)?;
+    validate_value_against_schema(&params, &spec.params_schema, "$")
+        .with_context(|| format!("Invalid parameters for tool `{name}`"))
+        .context(FailureKind::Usage)?;
+    if cli.dry_run && spec.mutating {
+        return Ok(json!({"dryRun":true, "executed":false, "tool":name,
+            "reason":"mutating_tool_blocked_by_dry_run", "params":params}));
+    }
+    let config = RuntimeConfig::from_overrides(&runtime_overrides_from_cli(cli))?;
+    // User methods can have arbitrary side effects. A lost response must never
+    // cause the daemon fallback path to invoke the method a second time.
+    let (value, timing) = call_remote_tool_direct(&config, name, params).await?;
+    if let Some(timing) = timing {
+        command_stats::record_cli_tool_call(name, timing);
+    }
+    Ok(value)
+}
+
+pub(crate) async fn execute_tool(cli: &Cli, tool_name: &str, mut params: Value) -> Result<Value> {
+    if !is_known_tool(tool_name) {
+        return execute_custom_tool(cli, tool_name, params).await;
+    }
+    if tool_name == "package_manager" {
+        super::package::apply_cache_override(&mut params);
+    }
+    validate_tool_params(tool_name, &params).context(FailureKind::Usage)?;
+
+    if should_skip_for_dry_run(cli, tool_name) {
+        return Ok(json!({
+            "dryRun": true,
+            "executed": false,
+            "tool": tool_name,
+            "reason": "mutating_tool_blocked_by_dry_run",
+            "params": params
+        }));
+    }
+
+    if let Some(local_result) = local_tools::maybe_execute_local_tool(tool_name, &params) {
+        return local_tools::run_csharp_post_write_pipeline(
+            local_result?,
+            &params,
+            &runtime_overrides_from_cli(cli),
+        )
+        .await;
+    }
+
+    let config = RuntimeConfig::from_overrides(&runtime_overrides_from_cli(cli))?;
+    if tool_name == "package_manager" && super::package::is_download_flow(&params) {
+        return super::package::download_and_wait(&config, params).await;
+    }
+    if tool_name == "package_manager" && super::package::is_import(&params) {
+        return super::package::import_and_wait(&config, params).await;
+    }
+    let eval_id = if tool_name == "eval_csharp" {
+        if params.get("requestId").is_none() {
+            static NEXT_EVAL_ID: std::sync::atomic::AtomicU64 =
+                std::sync::atomic::AtomicU64::new(0);
+            let timestamp = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos();
+            let sequence = NEXT_EVAL_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            params["requestId"] = json!(format!(
+                "cli-{}-{timestamp:x}-{sequence:x}",
+                std::process::id()
+            ));
+        }
+        params["requestId"].as_str().map(str::to_owned)
+    } else {
+        None
+    };
+    let os_fallback =
+        tool_name == "capture_screenshot" && os_capture::take_fallback_flag(&mut params);
+    let capture_mode = params["captureMode"].as_str().unwrap_or("game").to_string();
+    let call = match call_remote_tool_with_timing(&config, tool_name, params).await {
+        Err(error) if os_fallback => {
+            return os_capture::recover_from_timeout(error, true, || {
+                os_capture::capture_desktop(&capture_mode)
+            });
+        }
+        call => call,
+    };
+    let (mut value, timing) = match eval_id {
+        Some(id) => call.with_context(|| format!(
+            "Evaluation may still be running (requestId={id}). Query `unity-cli editor eval-status {id}` on the same endpoint; do not automatically rerun"
+        ))?,
+        None => call?,
+    };
+    if tool_name == "get_command_stats" {
+        augment_command_stats(&mut value);
+    }
+    if let Some(timing) = timing {
+        command_stats::record_cli_tool_call(tool_name, timing);
+    }
+    Ok(value)
+}
+
+async fn call_remote_tool_with_timing(
+    config: &RuntimeConfig,
+    tool_name: &str,
+    params: Value,
+) -> Result<(Value, Option<CliCommandTiming>)> {
+    // A daemon transport failure may occur after evaluation began. Avoid the
+    // daemon/fallback path entirely so explicit C# is never automatically resent.
+    if tool_name == "eval_csharp" {
+        return call_remote_tool_direct(config, tool_name, params).await;
+    }
+    // Try daemon first (fast path).
+    match unityd::try_call_tool_with_timing(tool_name, &params, config).await {
+        Ok(call) => {
+            tracing::debug!(
+                route = "daemon",
+                startup_ms = ?call.startup_ms,
+                operation_ms = call.daemon_roundtrip_ms,
+                "Unity remote operation"
+            );
+            let remote_timing = call.timing;
+            let connect_ms = remote_timing.as_ref().and_then(|timing| timing.connect_ms);
+            let unity_roundtrip_ms = remote_timing
+                .as_ref()
+                .map(|timing| timing.transport.total_ms);
+            let daemon_ipc_ms = Some(
+                (call.daemon_roundtrip_ms
+                    - connect_ms.unwrap_or_default()
+                    - unity_roundtrip_ms.unwrap_or_default())
+                .max(0.0),
+            );
+            return Ok((
+                call.value,
+                Some(CliCommandTiming {
+                    route: "daemon",
+                    success: true,
+                    total_ms: call.daemon_roundtrip_ms,
+                    daemon_ipc_ms,
+                    connect_ms,
+                    unity_roundtrip_ms,
+                    send_ms: remote_timing
+                        .as_ref()
+                        .map(|timing| timing.transport.send_ms),
+                    read_ms: remote_timing
+                        .as_ref()
+                        .map(|timing| timing.transport.read_ms),
+                    normalize_ms: remote_timing
+                        .as_ref()
+                        .map(|timing| timing.transport.normalize_ms),
+                }),
+            ));
+        }
+        Err(error) if error.is_transport() => {
+            tracing::warn!(
+                error = %format!("{error:#}"),
+                host = %config.host,
+                port = config.port,
+                "unityd unavailable; falling back to direct TCP"
+            );
+        }
+        Err(unityd::DaemonCallError::UnityCommand(error)) => return Err(error.into()),
+        Err(error) => return Err(error.into()),
+    }
+
+    call_remote_tool_direct(config, tool_name, params).await
+}
+
+async fn call_remote_tool_direct(
+    config: &RuntimeConfig,
+    tool_name: &str,
+    params: Value,
+) -> Result<(Value, Option<CliCommandTiming>)> {
+    let connect_started_at = std::time::Instant::now();
+    let mut client = UnityClient::connect(config)
+        .await
+        .with_context(|| crate::core::doctor::connect_failure_message(&config.host, config.port))?;
+    let connect_ms = connect_started_at.elapsed().as_secs_f64() * 1000.0;
+    let outcome = client.call_tool_with_timing(tool_name, params).await?;
+    let unity_roundtrip_ms = outcome.timing.total_ms;
+    tracing::debug!(
+        route = "direct",
+        operation_ms = connect_ms + unity_roundtrip_ms,
+        "Unity remote operation"
+    );
+    Ok((
+        outcome.value,
+        Some(CliCommandTiming {
+            route: "direct",
+            success: true,
+            total_ms: connect_ms + unity_roundtrip_ms,
+            daemon_ipc_ms: None,
+            connect_ms: Some(connect_ms),
+            unity_roundtrip_ms: Some(unity_roundtrip_ms),
+            send_ms: Some(outcome.timing.send_ms),
+            read_ms: Some(outcome.timing.read_ms),
+            normalize_ms: Some(outcome.timing.normalize_ms),
+        }),
+    ))
+}
+
+async fn execute_batch(cli: &Cli, json_str: Option<&str>, use_stdin: bool) -> Result<Value> {
+    let raw = if use_stdin {
+        let mut buf = String::new();
+        std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf)
+            .context("Failed to read batch JSON from stdin")?;
+        buf
+    } else if let Some(inline) = json_str {
+        inline.to_string()
+    } else {
+        return Err(
+            anyhow!("Provide --json or --stdin for batch input").context(FailureKind::Usage)
+        );
+    };
+
+    let commands: Vec<BatchItem> = serde_json::from_str(&raw)
+        .context("Batch input must be a JSON array of {tool, params}")
+        .context(FailureKind::Usage)?;
+
+    if commands.is_empty() {
+        return Ok(json!([]));
+    }
+
+    let has_custom = commands.iter().any(|item| !is_known_tool(&item.tool));
+    let custom_catalog = if has_custom {
+        discover_for_cli(cli).await?
+    } else {
+        Vec::new()
+    };
+    for item in &commands {
+        let validation = if is_known_tool(&item.tool) {
+            validate_tool_params(&item.tool, &item.params)
+        } else {
+            let spec = find_discovered_tool(&custom_catalog, &item.tool)?;
+            validate_value_against_schema(&item.params, &spec.params_schema, "$")
+        };
+        validation
+            .with_context(|| format!("Batch command validation failed for tool `{}`", item.tool))
+            .context(FailureKind::Usage)?;
+    }
+
+    if !cli.dry_run
+        && !has_custom
+        && !commands.iter().any(|item| {
+            item.tool == "eval_csharp"
+                || (item.tool == "package_manager"
+                    && (super::package::is_import(&item.params)
+                        || super::package::is_download_flow(&item.params)))
+        })
+    {
+        let config = RuntimeConfig::from_overrides(&runtime_overrides_from_cli(cli))?;
+        match unityd::try_batch(commands, &config).await {
+            Ok(value) => return Ok(value),
+            Err(error) if error.is_transport() => {
+                tracing::warn!(
+                    error = %format!("{error:#}"),
+                    host = %config.host,
+                    port = config.port,
+                    "unityd unavailable; falling back to direct TCP for batch"
+                );
+                let commands2: Vec<BatchItem> = serde_json::from_str(&raw)
+                    .context("Batch input must be a JSON array of {tool, params}")?;
+                return execute_batch_direct(&config, commands2).await;
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
+
+    let mut results = Vec::with_capacity(commands.len());
+    for item in commands {
+        if should_skip_for_dry_run(cli, &item.tool) {
+            results.push(json!({
+                "ok": true,
+                "skipped": true,
+                "result": {
+                    "dryRun": true,
+                    "executed": false,
+                    "tool": item.tool,
+                    "reason": "mutating_tool_blocked_by_dry_run",
+                    "params": item.params
+                }
+            }));
+            continue;
+        }
+
+        match execute_tool(cli, &item.tool, item.params).await {
+            Ok(value) if value["dryRun"] == true && value["executed"] == false => {
+                results.push(json!({ "ok": true, "skipped": true, "result": value }));
+            }
+            Ok(value) => results.push(json!({ "ok": true, "result": value })),
+            Err(error) => results.push(crate::core::failure::batch_error(&error)),
+        }
+    }
+
+    Ok(Value::Array(results))
+}
+
+async fn execute_batch_direct(config: &RuntimeConfig, commands: Vec<BatchItem>) -> Result<Value> {
+    let started_at = std::time::Instant::now();
+    let mut client = UnityClient::connect(config)
+        .await
+        .with_context(|| crate::core::doctor::connect_failure_message(&config.host, config.port))?;
+
+    let mut results = Vec::with_capacity(commands.len());
+    for item in commands {
+        match client.call_tool(&item.tool, item.params).await {
+            Ok(value) => results.push(json!({ "ok": true, "result": value })),
+            Err(error) => results.push(crate::core::failure::batch_error(&error)),
+        }
+    }
+
+    tracing::debug!(
+        route = "direct",
+        operation_ms = started_at.elapsed().as_secs_f64() * 1000.0,
+        "Unity remote batch"
+    );
+    Ok(Value::Array(results))
+}
+
+fn should_skip_for_dry_run(cli: &Cli, tool_name: &str) -> bool {
+    if !cli.dry_run {
+        return false;
+    }
+    get_tool_spec(tool_name)
+        .map(|spec| spec.mutating)
+        .unwrap_or(false)
+}
+
+pub(crate) fn runtime_overrides_from_cli(cli: &Cli) -> RuntimeOverrides {
+    RuntimeOverrides {
+        host: cli.host.clone(),
+        port: cli.port,
+        timeout_ms: cli.timeout_ms,
+        dry_run: cli.dry_run,
+        project_root: cli.project_path.clone(),
+    }
+}
+
+fn augment_command_stats(value: &mut Value) {
+    let cli_stats = command_stats::snapshot_value();
+    if let Some(object) = value.as_object_mut() {
+        object.insert("cli".to_string(), cli_stats);
+    }
+}
+
+fn validate_tool_params(tool_name: &str, params: &Value) -> Result<()> {
+    let Some(spec) = get_tool_spec(tool_name) else {
+        return Ok(());
+    };
+
+    validate_value_against_schema(params, &spec.params_schema, "$")
+        .with_context(|| format!("Invalid parameters for tool `{tool_name}`"))
+}
+
+fn validate_value_against_schema(value: &Value, schema: &Value, path: &str) -> Result<()> {
+    if let Some(expected_type) = schema.get("type").and_then(Value::as_str) {
+        match expected_type {
+            "object" => validate_object(value, schema, path)?,
+            "array" => validate_array(value, schema, path)?,
+            "string" if !value.is_string() => {
+                return Err(anyhow!("{path} must be a string"));
+            }
+            "boolean" if !value.is_boolean() => {
+                return Err(anyhow!("{path} must be a boolean"));
+            }
+            "null" if !value.is_null() => {
+                return Err(anyhow!("{path} must be null"));
+            }
+            "integer" => {
+                let is_integer = value.as_i64().is_some()
+                    || value.as_u64().is_some()
+                    || matches!(value, Value::Number(n) if n.as_i64().is_some() || n.as_u64().is_some());
+                if !is_integer {
+                    return Err(anyhow!("{path} must be an integer"));
+                }
+            }
+            "number" if value.as_f64().is_none() => {
+                return Err(anyhow!("{path} must be a number"));
+            }
+            _ => {}
+        }
+    }
+
+    if value.is_number() {
+        // Keep integral comparisons exact at i64/u64 boundaries rather than
+        // rounding both sides to the same f64 (e.g. i64::MAX and MAX+1).
+        let integer = |v: &Value| {
+            v.as_i64()
+                .map(i128::from)
+                .or_else(|| v.as_u64().map(i128::from))
+        };
+        for (key, minimum) in [("minimum", true), ("maximum", false)] {
+            if let Some(bound) = schema.get(key).filter(|bound| bound.is_number()) {
+                let order = match (integer(value), integer(bound)) {
+                    (Some(value), Some(bound)) => Some(value.cmp(&bound)),
+                    _ => value.as_f64().and_then(|value| {
+                        bound.as_f64().and_then(|bound| value.partial_cmp(&bound))
+                    }),
+                };
+                if matches!(order, Some(std::cmp::Ordering::Less) if minimum)
+                    || matches!(order, Some(std::cmp::Ordering::Greater) if !minimum)
+                {
+                    return Err(anyhow!("{path} violates {key} {bound}"));
+                }
+            }
+        }
+    }
+
+    if let Some(enum_values) = schema.get("enum").and_then(Value::as_array) {
+        if !enum_values.iter().any(|candidate| candidate == value) {
+            return Err(anyhow!("{path} must be one of the allowed enum values"));
+        }
+    }
+
+    if let Some(one_of) = schema.get("oneOf").and_then(Value::as_array) {
+        let mut matches = 0usize;
+        let mut failures: Vec<(bool, String)> = Vec::new();
+        let action = value
+            .as_object()
+            .and_then(|obj| obj.get("action"))
+            .and_then(Value::as_str);
+        for variant in one_of {
+            match validate_value_against_schema(value, variant, path) {
+                Ok(()) => matches += 1,
+                Err(err) => {
+                    let action_matched = action
+                        .map(|a| schema_variant_matches_action(variant, a))
+                        .unwrap_or(false);
+                    failures.push((action_matched, err.to_string()));
+                }
+            }
+        }
+        if matches != 1 {
+            let detail = failures
+                .iter()
+                .find(|(action_matched, _)| *action_matched)
+                .or_else(|| failures.first())
+                .map(|(_, msg)| msg.as_str());
+            return Err(anyhow!(
+                "{path} must satisfy exactly one schema variant (matched {matches}){}",
+                detail
+                    .map(|msg| format!("; details: {msg}"))
+                    .unwrap_or_default()
+            ));
+        }
+    }
+
+    if let Some(any_of) = schema.get("anyOf").and_then(Value::as_array) {
+        let mut matches = 0usize;
+        let mut failures: Vec<(bool, String)> = Vec::new();
+        let action = value
+            .as_object()
+            .and_then(|obj| obj.get("action"))
+            .and_then(Value::as_str);
+        for variant in any_of {
+            match validate_value_against_schema(value, variant, path) {
+                Ok(()) => matches += 1,
+                Err(err) => {
+                    let action_matched = action
+                        .map(|a| schema_variant_matches_action(variant, a))
+                        .unwrap_or(false);
+                    failures.push((action_matched, err.to_string()));
+                }
+            }
+        }
+        if matches == 0 {
+            let detail = failures
+                .iter()
+                .find(|(action_matched, _)| *action_matched)
+                .or_else(|| failures.first())
+                .map(|(_, msg)| msg.as_str());
+            return Err(anyhow!(
+                "{path} must satisfy at least one schema variant{}",
+                detail
+                    .map(|msg| format!("; details: {msg}"))
+                    .unwrap_or_default()
+            ));
+        }
+    }
+
+    Ok(())
+}
+
+fn validate_object(value: &Value, schema: &Value, path: &str) -> Result<()> {
+    let obj = value
+        .as_object()
+        .ok_or_else(|| anyhow!("{path} must be an object"))?;
+
+    let required = schema
+        .get("required")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default();
+    for key in required {
+        let Some(key_name) = key.as_str() else {
+            continue;
+        };
+        if !obj.contains_key(key_name) {
+            return Err(anyhow!("{path}.{key_name} is required"));
+        }
+    }
+
+    let properties = schema.get("properties").and_then(Value::as_object);
+    let allow_additional = schema
+        .get("additionalProperties")
+        .and_then(Value::as_bool)
+        .unwrap_or(true);
+
+    for (key, child_value) in obj {
+        if let Some(prop_schema) = properties.and_then(|props| props.get(key)) {
+            let child_path = format!("{path}.{key}");
+            validate_value_against_schema(child_value, prop_schema, &child_path)?;
+        } else if !allow_additional {
+            return Err(anyhow!("{path}.{key} is not allowed"));
+        }
+    }
+
+    Ok(())
+}
+
+fn validate_array(value: &Value, schema: &Value, path: &str) -> Result<()> {
+    let items = value
+        .as_array()
+        .ok_or_else(|| anyhow!("{path} must be an array"))?;
+    if let Some(item_schema) = schema.get("items") {
+        for (idx, item) in items.iter().enumerate() {
+            let item_path = format!("{path}[{idx}]");
+            validate_value_against_schema(item, item_schema, &item_path)?;
+        }
+    }
+    Ok(())
+}
+
+fn schema_variant_matches_action(variant: &Value, action: &str) -> bool {
+    variant
+        .get("properties")
+        .and_then(Value::as_object)
+        .and_then(|props| props.get("action"))
+        .and_then(|action_schema| action_schema.get("enum"))
+        .and_then(Value::as_array)
+        .map(|candidates| {
+            candidates
+                .iter()
+                .any(|candidate| candidate.as_str() == Some(action))
+        })
+        .unwrap_or(false)
+}
+
+fn load_params(args: &RawArgs) -> Result<Value> {
+    if args.json.is_some() && args.params_file.is_some() {
+        return Err(anyhow!("Use either --json or --params-file, not both"));
+    }
+
+    if let Some(file) = &args.params_file {
+        let content = fs::read_to_string(file)
+            .with_context(|| format!("Failed to read params file: {}", file.display()))?;
+        return parse_json_object(&content);
+    }
+
+    if let Some(inline) = &args.json {
+        return parse_json_object(inline);
+    }
+
+    Ok(json!({}))
+}
+
+fn parse_external_tool_command(args: &[String]) -> Result<RawArgs> {
+    if args.is_empty() {
+        return Err(anyhow!(
+            "Tool name is required. Use `unity-cli tool list` to see available tools."
+        ));
+    }
+
+    let tool_name = args[0].clone();
+    let mut json = None;
+    let mut params_file = None;
+
+    let mut idx = 1;
+    while idx < args.len() {
+        let arg = &args[idx];
+        if arg == "--json" {
+            idx += 1;
+            let value = args
+                .get(idx)
+                .ok_or_else(|| anyhow!("`--json` requires a value"))?;
+            json = Some(value.clone());
+        } else if let Some(value) = arg.strip_prefix("--json=") {
+            json = Some(value.to_string());
+        } else if arg == "--params-file" {
+            idx += 1;
+            let value = args
+                .get(idx)
+                .ok_or_else(|| anyhow!("`--params-file` requires a value"))?;
+            params_file = Some(PathBuf::from(value));
+        } else if let Some(value) = arg.strip_prefix("--params-file=") {
+            params_file = Some(PathBuf::from(value));
+        } else {
+            return Err(anyhow!(
+                "Unsupported argument `{arg}` for `unity-cli tool <tool>`. Use --json or --params-file."
+            ));
+        }
+        idx += 1;
+    }
+
+    Ok(RawArgs {
+        tool_name,
+        json,
+        params_file,
+    })
+}
+
+fn parse_json_object(raw: &str) -> Result<Value> {
+    let value: Value = serde_json::from_str(raw).context("Failed to parse JSON parameters")?;
+    if !value.is_object() {
+        return Err(anyhow!("Tool parameters must be a JSON object"));
+    }
+    Ok(value)
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct ParsedPorts {
+    ports: Vec<u16>,
+    duplicate_ports: Vec<u16>,
+}
+
+#[cfg(test)]
+fn parse_ports(raw: &Option<String>) -> Result<Vec<u16>> {
+    Ok(parse_ports_with_diagnostics(raw)?.ports)
+}
+
+fn parse_ports_with_diagnostics(raw: &Option<String>) -> Result<ParsedPorts> {
+    let Some(csv) = raw else {
+        return Ok(ParsedPorts {
+            ports: Vec::new(),
+            duplicate_ports: Vec::new(),
+        });
+    };
+
+    let mut ports = Vec::new();
+    let mut duplicate_ports = Vec::new();
+    for token in csv
+        .split(',')
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    {
+        let port = token
+            .parse::<u16>()
+            .with_context(|| format!("Invalid port in --ports: {token}"))?;
+        if !ports.contains(&port) {
+            ports.push(port);
+        } else if !duplicate_ports.contains(&port) {
+            duplicate_ports.push(port);
+        }
+    }
+
+    Ok(ParsedPorts {
+        ports,
+        duplicate_ports,
+    })
+}
+
+fn run_skills_lint_output(
+    root: Option<&std::path::Path>,
+    format: SkillFormat,
+    severity: SkillSeverity,
+    output_format: OutputFormat,
+    command: &str,
+) -> Result<()> {
+    use crate::skills::model::Severity;
+    use crate::skills::report::{render, ReportFormat};
+    use crate::skills::{lint, LintOptions};
+
+    let cwd = std::env::current_dir().context("get current_dir")?;
+    let (skills_root, repo_root) = match root {
+        Some(p) => {
+            let abs = if p.is_absolute() {
+                p.to_path_buf()
+            } else {
+                cwd.join(p)
+            };
+            let repo = abs
+                .ancestors()
+                .find(|a| a.join(".claude-plugin").is_dir() || a.join(".git").is_dir())
+                .map(|p| p.to_path_buf())
+                .unwrap_or_else(|| cwd.clone());
+            (abs, repo)
+        }
+        None => match crate::skills::runner::discover_root(&cwd) {
+            Some(pair) => pair,
+            None => {
+                return Err(anyhow!(
+                    "could not auto-detect skills root; pass `--root <path>`"
+                ));
+            }
+        },
+    };
+
+    let sev = match severity {
+        SkillSeverity::Warning => Severity::Warning,
+        SkillSeverity::Error => Severity::Error,
+    };
+    let outcome = lint(&LintOptions {
+        root: skills_root,
+        repo_root,
+        severity: sev,
+    })?;
+
+    if matches!(output_format, OutputFormat::Json) {
+        let violations: Value = serde_json::from_str(&render(&outcome, ReportFormat::Json, sev))?;
+        if outcome.has_errors(sev) {
+            return Err(UnityCommandError::new(json!({"code":"GENERAL_ERROR", "error":"Skill lint failed", "violations":violations})).into());
+        }
+        return output::print_result(command, &violations, output_format);
+    }
+    let fmt = match format {
+        SkillFormat::Text => ReportFormat::Text,
+        SkillFormat::Json => ReportFormat::Json,
+    };
+    let rendered = render(&outcome, fmt, sev);
+    print!("{rendered}");
+    if let SkillFormat::Json = format {
+        if !rendered.ends_with('\n') {
+            println!();
+        }
+    }
+
+    if outcome.has_errors(sev) {
+        std::process::exit(1);
+    }
+    Ok(())
+}
+
+fn init_tracing(verbose: u8) -> Result<()> {
+    let level = match verbose {
+        0 => "info",
+        1 => "debug",
+        _ => "trace",
+    };
+
+    let env_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(level));
+    tracing_subscriber::fmt()
+        .with_env_filter(env_filter)
+        .with_writer(std::io::stderr)
+        .with_target(false)
+        .compact()
+        .try_init()
+        .ok();
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    #[tokio::test]
+    #[allow(clippy::await_holding_lock)]
+    async fn eval_transport_error_keeps_generated_request_id() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|p| p.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let server = tokio::spawn(async move {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            let size = stream.read_i32().await.unwrap();
+            let mut bytes = vec![0; size as usize];
+            stream.read_exact(&mut bytes).await.unwrap();
+            let request: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+            stream.shutdown().await.unwrap();
+            request
+        });
+        let cli = Cli::try_parse_from([
+            "unity-cli",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            &port.to_string(),
+            "editor",
+            "eval",
+            "1+2",
+        ])
+        .unwrap();
+        let error = execute_tool(&cli, "eval_csharp", json!({"code":"1+2"}))
+            .await
+            .unwrap_err();
+        let request = server.await.unwrap();
+        let id = request["params"]["requestId"]
+            .as_str()
+            .expect("CLI assigns a recoverable ID");
+        assert!(!id.is_empty());
+        let message = format!("{error:#}");
+        assert!(message.contains(id), "{message}");
+        assert!(message.contains("eval-status"), "{message}");
+    }
+    #[tokio::test]
+    async fn capture_screenshot_timeout_respects_os_fallback_flag() {
+        // Bridge accepts and reads the request but never answers, like an Editor
+        // whose main thread is blocked by a modal dialog.
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let server = tokio::spawn(async move {
+            let mut held = Vec::new();
+            for _ in 0..2 {
+                let (stream, _) = listener.accept().await.unwrap();
+                held.push(stream);
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+        });
+        let config = super::RuntimeConfig {
+            host: "127.0.0.1".to_string(),
+            port,
+            timeout: std::time::Duration::from_millis(200),
+        };
+
+        let mut params = serde_json::json!({"captureMode": "game", "osFallback": false});
+        let enabled = super::os_capture::take_fallback_flag(&mut params);
+        let error = super::call_remote_tool_direct(&config, "capture_screenshot", params)
+            .await
+            .unwrap_err();
+        let error = super::os_capture::recover_from_timeout(error, enabled, || {
+            panic!("disabled fallback must not capture")
+        })
+        .unwrap_err();
+        assert!(format!("{error:#}").contains("Timed out"), "{error:#}");
+
+        let mut params = serde_json::json!({"captureMode": "game"});
+        let enabled = super::os_capture::take_fallback_flag(&mut params);
+        let error = super::call_remote_tool_direct(&config, "capture_screenshot", params)
+            .await
+            .unwrap_err();
+        let value = super::os_capture::recover_from_timeout(error, enabled, || {
+            Ok(serde_json::json!({"path": "desktop.png"}))
+        })
+        .unwrap();
+        assert_eq!(value["fallback"], "os");
+        server.abort();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn eval_bypasses_daemon_in_single_and_batch_calls() {
+        use std::io::{BufRead, Write};
+        use std::sync::{
+            atomic::{AtomicBool, Ordering},
+            Arc,
+        };
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|p| p.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        let temp = tempfile::tempdir().unwrap();
+        let _tools = EnvVarGuard::set("UNITY_CLI_TOOLS_ROOT", temp.path().to_str().unwrap());
+        let socket = crate::daemon::runtime::DaemonRuntimePaths::new("unityd")
+            .unwrap()
+            .socket_file()
+            .unwrap();
+        let listener = std::os::unix::net::UnixListener::bind(socket).unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let done = Arc::new(AtomicBool::new(false));
+        let stop = done.clone();
+        let daemon = std::thread::spawn(move || {
+            let mut calls = 0;
+            while !stop.load(Ordering::Relaxed) {
+                if let Ok((mut stream, _)) = listener.accept() {
+                    let mut request = String::new();
+                    std::io::BufReader::new(stream.try_clone().unwrap())
+                        .read_line(&mut request)
+                        .unwrap();
+                    stream
+                        .write_all(b"{\"ok\":true,\"result\":{\"daemon\":true}}\n")
+                        .unwrap();
+                    calls += 1;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(1));
+            }
+            calls
+        });
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let (single, batch) = runtime.block_on(async {
+            let (port, server) = spawn_mock_bridge(2).await;
+            let mut cli = cli_for(Command::System {
+                command: SystemCommand::Ping { message: None },
+            });
+            cli.host = Some("127.0.0.1".into());
+            cli.port = Some(port);
+            let single = execute_tool(&cli, "eval_csharp", json!({"code":"1+2"}))
+                .await
+                .unwrap();
+            let batch = super::execute_batch(
+                &cli,
+                Some(r#"[{"tool":"eval_csharp","params":{"code":"1+2"}}]"#),
+                false,
+            )
+            .await
+            .unwrap();
+            server.abort();
+            (single, batch)
+        });
+        done.store(true, Ordering::Relaxed);
+        let calls = daemon.join().unwrap();
+        assert_eq!(calls, 0, "eval must not enter the daemon retry path");
+        assert_eq!(single["pong"], true);
+        assert_eq!(batch[0]["result"]["pong"], true);
+    }
+    use crate::tool_catalog::get_tool_spec;
+    use clap::Parser;
+    #[test]
+    fn eval_cli_accepts_code_and_rejects_invalid_mode() {
+        assert!(
+            Cli::try_parse_from(["unity-cli", "editor", "eval", "1+2", "--request-id", "sum"])
+                .is_ok()
+        );
+        assert!(Cli::try_parse_from(["unity-cli", "editor", "eval-status", "sum"]).is_ok());
+        assert!(Cli::try_parse_from(["unity-cli", "editor", "eval-stats", "--collect"]).is_ok());
+        assert!(
+            Cli::try_parse_from(["unity-cli", "editor", "eval", "1+2", "--mode", "script"])
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn eval_schemas_require_code_and_status_id() {
+        let eval = get_tool_spec("eval_csharp").expect("eval registered");
+        assert!(eval.mutating);
+        assert!(!get_tool_spec("get_eval_status").unwrap().mutating);
+        validate_tool_params("eval_csharp", &json!({"code":"1+2"})).unwrap();
+        validate_tool_params(
+            "eval_csharp",
+            &json!({"code":"return 3;", "mode":"statements", "requestId":"sum"}),
+        )
+        .unwrap();
+        assert!(validate_tool_params("eval_csharp", &json!({})).is_err());
+        assert!(
+            validate_tool_params("eval_csharp", &json!({"code":"1", "mode":"script"})).is_err()
+        );
+        assert!(validate_tool_params("get_eval_status", &json!({})).is_err());
+        validate_tool_params("get_eval_status", &json!({"requestId":"sum"})).unwrap();
+        assert!(!get_tool_spec("get_eval_stats").unwrap().mutating);
+        validate_tool_params("get_eval_stats", &json!({})).unwrap();
+        validate_tool_params("get_eval_stats", &json!({"collect":true})).unwrap();
+        assert!(validate_tool_params("get_eval_stats", &json!({"collect":"yes"})).is_err());
+    }
+
+    #[test]
+    fn instances_list_defaults_host_to_ipv4_loopback() {
+        let cli = Cli::try_parse_from(["unity-cli", "instances", "list"]).unwrap();
+        let Command::Instances {
+            command: InstancesCommand::List { host, .. },
+        } = cli.command
+        else {
+            panic!("expected instances list");
+        };
+        assert_eq!(host, crate::config::DEFAULT_HOST);
+    }
+
+    #[tokio::test]
+    async fn eval_dry_run_does_not_execute_arbitrary_code() {
+        let cli = Cli::try_parse_from(["unity-cli", "--dry-run", "editor", "eval", "1+2"]).unwrap();
+        let result = execute_tool(&cli, "eval_csharp", json!({"code":"1+2"}))
+            .await
+            .unwrap();
+        assert_eq!(result["reason"], "mutating_tool_blocked_by_dry_run");
+    }
+    use super::{
+        attach_ping_version_check, build_reference_call, execute_tool, init_tracing, load_params,
+        parse_external_tool_command, parse_json_object, parse_ports, parse_ports_with_diagnostics,
+        run_bridge_command, run_with_cli, runtime_overrides_from_cli, validate_tool_params,
+    };
+    use crate::cli::{
+        BridgeCommand, Cli, Command, InstancesCommand, LspdCommand, OutputFormat, RawArgs,
+        ReferenceCommand, SceneCommand, SystemCommand, ToolCommand, UnitydCommand,
+    };
+    use serde_json::json;
+    use tempfile::tempdir;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+    fn cli_for(command: Command) -> Cli {
+        cli_for_with_output(command, OutputFormat::Json)
+    }
+
+    fn cli_for_with_output(command: Command, output: OutputFormat) -> Cli {
+        Cli {
+            output,
+            host: Some("127.0.0.1".to_string()),
+            port: Some(9),
+            project_path: None,
+            timeout_ms: Some(20),
+            verbose: 0,
+            dry_run: false,
+            command,
+        }
+    }
+
+    fn cli_for_dry_run(command: Command) -> Cli {
+        let mut cli = cli_for(command);
+        cli.dry_run = true;
+        cli
+    }
+
+    async fn spawn_mock_bridge(accept_count: usize) -> (u16, tokio::task::JoinHandle<()>) {
+        let listener = tokio::net::TcpListener::bind(("127.0.0.1", 0))
+            .await
+            .expect("listener should bind");
+        let port = listener
+            .local_addr()
+            .expect("listener should expose local addr")
+            .port();
+
+        let task = tokio::spawn(async move {
+            for _ in 0..accept_count {
+                let (mut socket, _) = listener.accept().await.expect("accept should succeed");
+                let mut len_buf = [0_u8; 4];
+                socket
+                    .read_exact(&mut len_buf)
+                    .await
+                    .expect("request header should be readable");
+                let payload_len = i32::from_be_bytes(len_buf);
+                let mut payload = vec![0_u8; payload_len as usize];
+                socket
+                    .read_exact(&mut payload)
+                    .await
+                    .expect("request payload should be readable");
+
+                let response = json!({
+                    "status": "success",
+                    "result": {"pong": true}
+                });
+                let response_bytes =
+                    serde_json::to_vec(&response).expect("response should serialize");
+                socket
+                    .write_all(&(response_bytes.len() as i32).to_be_bytes())
+                    .await
+                    .expect("response header should write");
+                socket
+                    .write_all(&response_bytes)
+                    .await
+                    .expect("response payload should write");
+            }
+        });
+
+        (port, task)
+    }
+
+    struct EnvVarGuard {
+        key: &'static str,
+        previous: Option<String>,
+    }
+
+    impl EnvVarGuard {
+        fn set(key: &'static str, value: &str) -> Self {
+            let previous = std::env::var(key).ok();
+            std::env::set_var(key, value);
+            Self { key, previous }
+        }
+    }
+
+    impl Drop for EnvVarGuard {
+        fn drop(&mut self) {
+            if let Some(previous) = &self.previous {
+                std::env::set_var(self.key, previous);
+            } else {
+                std::env::remove_var(self.key);
+            }
+        }
+    }
+
+    #[test]
+    fn ping_version_check_reports_mismatch_and_unknown() {
+        let mut mismatch = json!({"message": "pong", "bridgeVersion": "0.0.1"});
+        attach_ping_version_check(&mut mismatch);
+        assert_eq!(mismatch["versionCheck"]["status"], "mismatch");
+        assert_eq!(mismatch["versionCheck"]["bridgeVersion"], "0.0.1");
+        assert_eq!(
+            mismatch["versionCheck"]["cliVersion"],
+            env!("CARGO_PKG_VERSION")
+        );
+
+        let mut matching = json!({"bridgeVersion": env!("CARGO_PKG_VERSION")});
+        attach_ping_version_check(&mut matching);
+        assert_eq!(matching["versionCheck"]["status"], "match");
+
+        let mut legacy = json!({"message": "pong"});
+        attach_ping_version_check(&mut legacy);
+        assert_eq!(legacy["versionCheck"]["status"], "unknown");
+
+        let mut scalar = json!("pong");
+        attach_ping_version_check(&mut scalar);
+        assert_eq!(scalar, json!("pong"));
+    }
+
+    #[test]
+    fn bridge_commands_resolve_explicit_project_path() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::fs::create_dir_all(dir.path().join("Packages")).unwrap();
+        std::fs::write(dir.path().join("Packages/manifest.json"), "{}").unwrap();
+        let project_path = Some(dir.path().to_path_buf());
+
+        let status = run_bridge_command(
+            &BridgeCommand::Status {
+                project_path: project_path.clone(),
+            },
+            false,
+        )
+        .unwrap();
+        assert_eq!(status["installed"], false);
+
+        let dry = run_bridge_command(
+            &BridgeCommand::Install {
+                project_path: project_path.clone(),
+            },
+            true,
+        )
+        .unwrap();
+        assert_eq!(dry["manifestChanged"], true);
+        assert_eq!(
+            std::fs::read_to_string(dir.path().join("Packages/manifest.json")).unwrap(),
+            "{}"
+        );
+
+        let upgrade = run_bridge_command(&BridgeCommand::Upgrade { project_path }, false).unwrap();
+        assert_eq!(upgrade["declared"], env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
+    fn setup_and_bridge_cli_arguments_parse() {
+        let cli = Cli::try_parse_from([
+            "unity-cli",
+            "setup",
+            "--project-path",
+            "/tmp/p",
+            "--launch-editor",
+            "--wait-secs",
+            "5",
+        ])
+        .unwrap();
+        assert!(matches!(
+            cli.command,
+            Command::Setup {
+                launch_editor: true,
+                wait_secs: Some(5),
+                ..
+            }
+        ));
+        let cli = Cli::try_parse_from(["unity-cli", "bridge", "install"]).unwrap();
+        assert!(matches!(
+            cli.command,
+            Command::Bridge {
+                command: BridgeCommand::Install { project_path: None }
+            }
+        ));
+    }
+
+    #[test]
+    fn env_var_guard_restores_previous_value() {
+        std::env::set_var("UNITY_CLI_TEST_GUARD", "before");
+        {
+            let _guard = EnvVarGuard::set("UNITY_CLI_TEST_GUARD", "during");
+            assert_eq!(
+                std::env::var("UNITY_CLI_TEST_GUARD").ok().as_deref(),
+                Some("during")
+            );
+        }
+        assert_eq!(
+            std::env::var("UNITY_CLI_TEST_GUARD").ok().as_deref(),
+            Some("before")
+        );
+        std::env::remove_var("UNITY_CLI_TEST_GUARD");
+    }
+
+    #[test]
+    fn runtime_overrides_are_derived_from_cli_at_app_boundary() {
+        let cli = cli_for_dry_run(Command::Tool {
+            command: ToolCommand::List(Default::default()),
+        });
+
+        let overrides = runtime_overrides_from_cli(&cli);
+
+        assert_eq!(overrides.host.as_deref(), Some("127.0.0.1"));
+        assert_eq!(overrides.port, Some(9));
+        assert_eq!(overrides.timeout_ms, Some(20));
+        assert!(overrides.dry_run);
+        assert!(overrides.project_root.is_none());
+    }
+
+    #[test]
+    fn project_path_flag_is_global_and_feeds_runtime_overrides() {
+        let cli = Cli::try_parse_from([
+            "unity-cli",
+            "raw",
+            "get_hierarchy",
+            "--project-path",
+            "/work/ProjectA",
+        ])
+        .unwrap();
+
+        let overrides = runtime_overrides_from_cli(&cli);
+
+        assert_eq!(
+            overrides.project_root.as_deref(),
+            Some(std::path::Path::new("/work/ProjectA"))
+        );
+    }
+
+    #[tokio::test]
+    #[allow(clippy::await_holding_lock)]
+    async fn ambiguous_editor_fails_before_contacting_any_editor() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        let dir = tempfile::tempdir().unwrap();
+        for key in ["UNITY_CLI_HOST", "UNITY_CLI_PORT", "UNITY_PROJECT_ROOT"] {
+            std::env::remove_var(key);
+        }
+        std::env::set_var("UNITY_CLI_REGISTRY_PATH", dir.path().join("instances.json"));
+        std::env::set_var("UNITY_CLI_EDITORS_DIR", dir.path().join("editors"));
+        let a = tokio::net::TcpListener::bind(("127.0.0.1", 0))
+            .await
+            .unwrap();
+        let b = tokio::net::TcpListener::bind(("127.0.0.1", 0))
+            .await
+            .unwrap();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs_f64();
+        for (name, listener) in [("A", &a), ("B", &b)] {
+            crate::core::editor_discovery::tests::write_lock(
+                &dir.path().join("editors"),
+                std::process::id(),
+                &dir.path().join(name),
+                listener.local_addr().unwrap().port(),
+                now,
+            );
+        }
+        let mut cli = cli_for(Command::Raw(RawArgs {
+            tool_name: "get_hierarchy".to_string(),
+            json: Some("{}".to_string()),
+            params_file: None,
+        }));
+        cli.host = None;
+        cli.port = None;
+
+        let error = super::run_command(cli)
+            .await
+            .expect_err("target is ambiguous");
+
+        let target = error
+            .chain()
+            .find_map(|cause| cause.downcast_ref::<super::TargetError>())
+            .expect("TargetError expected");
+        assert_eq!(target.code(), "AMBIGUOUS_EDITOR");
+        assert_eq!(target.exit_code(), 6);
+        for listener in [&a, &b] {
+            let accepted =
+                tokio::time::timeout(std::time::Duration::from_millis(200), listener.accept())
+                    .await;
+            assert!(accepted.is_err(), "no Editor may be contacted");
+        }
+        std::env::remove_var("UNITY_CLI_REGISTRY_PATH");
+        std::env::remove_var("UNITY_CLI_EDITORS_DIR");
+    }
+
+    #[test]
+    fn parse_ports_deduplicates_values() {
+        let parsed = parse_ports(&Some("6400, 6401,6400".to_string())).expect("ports should parse");
+        assert_eq!(parsed, vec![6400, 6401]);
+    }
+
+    #[test]
+    fn parse_ports_with_diagnostics_reports_duplicate_values() {
+        let parsed = parse_ports_with_diagnostics(&Some("6400, 6401,6400, 6401".to_string()))
+            .expect("ports should parse");
+        assert_eq!(parsed.ports, vec![6400, 6401]);
+        assert_eq!(parsed.duplicate_ports, vec![6400, 6401]);
+    }
+
+    #[test]
+    fn parse_ports_rejects_invalid_values() {
+        let err = parse_ports(&Some("6400,abc".to_string())).expect_err("invalid port should fail");
+        assert!(format!("{err:#}").contains("Invalid port"));
+    }
+
+    #[test]
+    fn parse_ports_returns_empty_for_none() {
+        let parsed = parse_ports(&None).expect("none ports should parse");
+        assert!(parsed.is_empty());
+    }
+
+    #[test]
+    fn parse_json_object_accepts_object() {
+        let value = parse_json_object("{\"foo\":\"bar\"}").expect("object should parse");
+        assert!(value.is_object());
+    }
+
+    #[test]
+    fn parse_json_object_rejects_non_object() {
+        let err = parse_json_object("[1,2,3]").expect_err("array should be rejected");
+        assert!(format!("{err:#}").contains("JSON object"));
+    }
+
+    #[test]
+    fn audio_mixer_arguments_are_action_specific() {
+        for params in [
+            json!({"action":"create", "assetPath":"Assets/Test.mixer"}),
+            json!({"action":"get", "assetPath":"Assets/Test.mixer"}),
+            json!({"action":"add_group", "assetPath":"Assets/Test.mixer", "parentGroup":"Master", "name":"Music"}),
+            json!({"action":"expose_parameter", "assetPath":"Assets/Test.mixer", "groupPath":"Master/Music", "parameter":"Volume", "parameterName":"MusicVolume"}),
+        ] {
+            validate_tool_params("manage_audio_mixer", &params).expect("valid mixer operation");
+        }
+        for params in [
+            json!({}),
+            json!({"action":"delete", "assetPath":"Assets/Test.mixer"}),
+            json!({"action":"add_group", "assetPath":"Assets/Test.mixer", "name":"Music"}),
+            json!({"action":"expose_parameter", "assetPath":"Assets/Test.mixer", "groupPath":"Master", "parameter":"Unsupported", "parameterName":"Volume"}),
+            json!({"action":"get", "assetPath":"Assets/Test.mixer", "name":"unexpected"}),
+        ] {
+            assert!(
+                validate_tool_params("manage_audio_mixer", &params).is_err(),
+                "accepted {params}"
+            );
+        }
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_unknown_property_when_schema_is_strict() {
+        let err = validate_tool_params("ping", &json!({ "unknown": true }))
+            .expect_err("unknown key should fail for strict schema");
+        assert!(format!("{err:#}").contains("$.unknown"));
+    }
+
+    #[test]
+    fn hot_reload_requires_revision_and_explicit_action() {
+        for params in [
+            json!({}),
+            json!({"action":"apply", "source":"class C {}"}),
+            json!({"action":"begin"}),
+            json!({"action":"recover", "force":true}),
+            json!({"action":"apply", "source":"x", "expectedRevision":"a", "timeoutSeconds":"invalid"}),
+        ] {
+            assert!(
+                validate_tool_params("hot_reload", &params).is_err(),
+                "{params}"
+            );
+        }
+        for params in [
+            json!({"action":"begin", "path":"Assets/Player.cs"}),
+            json!({"action":"apply", "source":"class C {}", "expectedRevision":"a", "timeoutSeconds":10}),
+            json!({"action":"recover"}),
+        ] {
+            validate_tool_params("hot_reload", &params).expect("valid explicit hot reload action");
+        }
+    }
+
+    #[test]
+    fn prefab_override_validation_requires_explicit_scope_and_apply_target() {
+        for params in [
+            json!({"gameObjectPath":"/Player", "action":"apply", "scope":"all"}),
+            json!({"gameObjectPath":"/Player", "action":"revert", "scope":"all", "assetPath":"Assets/Base.prefab"}),
+            json!({"gameObjectPath":"/Player", "action":"revert", "scope":"property", "instanceId":42}),
+            json!({"gameObjectPath":"/Player", "action":"revert", "scope":"removed_component", "instanceId":42}),
+            json!({"gameObjectPath":"/Player", "action":"revert", "scope":"invalid"}),
+        ] {
+            assert!(
+                validate_tool_params("manage_prefab_overrides", &params).is_err(),
+                "{params}"
+            );
+        }
+        for params in [
+            json!({"gameObjectPath":"/Player", "action":"apply", "scope":"all", "assetPath":"Assets/Variant.prefab"}),
+            json!({"gameObjectPath":"/Player", "action":"revert", "scope":"all"}),
+            json!({"gameObjectPath":"/Player", "action":"revert", "scope":"property", "instanceId":42, "propertyPath":"m_Size.x"}),
+            json!({"gameObjectPath":"/Player", "action":"apply", "scope":"removed_component", "instanceId":42, "assetComponentId":43, "assetPath":"Assets/Base.prefab"}),
+        ] {
+            validate_tool_params("manage_prefab_overrides", &params)
+                .expect("valid prefab override selection");
+        }
+    }
+
+    #[test]
+    fn timeline_validation_requires_target_and_valid_action() {
+        assert!(validate_tool_params("get_timeline", &json!({})).is_err());
+        for params in [
+            json!({"assetPath": "Assets/Sequence.playable"}),
+            json!({"directorPath": "/Root/Director"}),
+        ] {
+            validate_tool_params("get_timeline", &params).expect("valid Timeline target");
+        }
+        assert!(validate_tool_params("manage_timeline", &json!({"action": "play"})).is_err());
+        assert!(validate_tool_params(
+            "manage_timeline",
+            &json!({"action": "update_clip", "expectedClip": {"start": 0}})
+        )
+        .is_err());
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn timeline_manage_is_skipped_in_dry_run() {
+        let value = execute_tool(
+            &cli_for_dry_run(Command::Tool {
+                command: ToolCommand::List(Default::default()),
+            }),
+            "manage_timeline",
+            json!({"action": "create_asset", "assetPath": "Assets/Sequence.playable"}),
+        )
+        .await
+        .expect("Timeline mutation should support dry-run");
+        assert_eq!(value["dryRun"], true);
+        assert_eq!(value["executed"], false);
+    }
+
+    #[test]
+    fn augment_command_stats_inserts_cli_snapshot() {
+        crate::core::command_stats::reset_for_tests();
+        crate::core::command_stats::record_cli_tool_call(
+            "ping",
+            crate::core::command_stats::CliCommandTiming {
+                route: "direct",
+                success: true,
+                total_ms: 5.0,
+                daemon_ipc_ms: None,
+                connect_ms: Some(1.0),
+                unity_roundtrip_ms: Some(4.0),
+                send_ms: Some(1.0),
+                read_ms: Some(2.0),
+                normalize_ms: Some(1.0),
+            },
+        );
+
+        let mut value = json!({ "counts": {} });
+        super::augment_command_stats(&mut value);
+
+        assert_eq!(value["cli"]["perTool"]["ping"]["count"], 1);
+        assert_eq!(value["cli"]["perTool"]["ping"]["routeCounts"]["direct"], 1);
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_missing_required_property() {
+        let err = validate_tool_params("create_scene", &json!({}))
+            .expect_err("missing required property should fail");
+        assert!(format!("{err:#}").contains("$.sceneName is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_valid_payload() {
+        validate_tool_params(
+            "create_scene",
+            &json!({
+                "sceneName": "Main",
+                "loadScene": true,
+                "addToBuildSettings": false
+            }),
+        )
+        .expect("valid payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_create_animator_controller_payload() {
+        validate_tool_params(
+            "create_animator_controller",
+            &json!({
+                "controllerPath": "Assets/Animations/Hero.controller",
+                "parameters": [
+                    {
+                        "name": "isMoving",
+                        "type": "Bool",
+                        "defaultBool": false
+                    }
+                ],
+                "states": [
+                    {
+                        "name": "Idle",
+                        "motionPath": "Assets/Animations/Hero/Idle.anim"
+                    },
+                    {
+                        "name": "Run"
+                    }
+                ],
+                "defaultState": "Idle",
+                "transitions": [
+                    {
+                        "from": "Idle",
+                        "to": "Run",
+                        "conditions": [
+                            {
+                                "parameter": "isMoving",
+                                "mode": "If"
+                            }
+                        ]
+                    }
+                ]
+            }),
+        )
+        .expect("create_animator_controller payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_invalid_animator_condition_mode() {
+        let err = validate_tool_params(
+            "create_animator_controller",
+            &json!({
+                "controllerPath": "Assets/Animations/Hero.controller",
+                "transitions": [
+                    {
+                        "from": "Idle",
+                        "to": "Run",
+                        "conditions": [
+                            {
+                                "parameter": "isMoving",
+                                "mode": "Always"
+                            }
+                        ]
+                    }
+                ]
+            }),
+        )
+        .expect_err("invalid animator condition mode should fail");
+        assert!(format!("{err:#}").contains("$.transitions[0].conditions[0].mode"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_create_animation_clip_payload() {
+        validate_tool_params(
+            "create_animation_clip",
+            &json!({
+                "clipPath": "Assets/Animations/Hero.anim",
+                "spritePaths": [
+                    "Assets/Sprites/Hero/idle_0.png",
+                    "Assets/Sprites/Hero/idle_1.png"
+                ],
+                "frameRate": 12.0,
+                "loopTime": true,
+                "bindingPath": "Root/Hero"
+            }),
+        )
+        .expect("create_animation_clip payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_create_animation_clip_without_sprite_paths() {
+        let err = validate_tool_params(
+            "create_animation_clip",
+            &json!({
+                "clipPath": "Assets/Animations/Hero.anim"
+            }),
+        )
+        .expect_err("missing spritePaths should fail");
+        assert!(format!("{err:#}").contains("$.spritePaths is required"));
+    }
+
+    #[test]
+    fn animation_curve_queries_validate_complete_binding_filters() {
+        for params in [
+            json!({"clipPath": "Assets/Test.anim"}),
+            json!({"clipPath": "Assets/Test.anim", "binding": {
+                "path": "", "component": "UnityEngine.Transform", "property": "m_LocalPosition.x"
+            }}),
+        ] {
+            validate_tool_params("get_animation_curves", &params).unwrap();
+        }
+        for params in [
+            json!({}),
+            json!({"clipPath": 1}),
+            json!({"clipPath": "Assets/Test.anim", "unknown": true}),
+            json!({"clipPath": "Assets/Test.anim", "binding": {"path": ""}}),
+            json!({"clipPath": "Assets/Test.anim", "binding": {
+                "path": "", "component": "UnityEngine.Transform", "property": "m_LocalPosition.x", "unknown": true
+            }}),
+        ] {
+            assert!(
+                validate_tool_params("get_animation_curves", &params).is_err(),
+                "{params}"
+            );
+        }
+    }
+
+    fn animation_curve_edit_params() -> serde_json::Value {
+        json!({
+            "clipPath": "Assets/Test.anim", "animationRoot": 42,
+            "binding": {"path": "", "component": "UnityEngine.Transform", "property": "m_LocalPosition.x"},
+            "operation": "set", "createIfMissing": true,
+            "keys": [{"time": 0.0, "value": 1.0}]
+        })
+    }
+
+    #[test]
+    fn animation_curve_edits_accept_operations_and_tangent_modes() {
+        for operation in ["set", "upsert_keys", "remove_keys", "remove_curve"] {
+            let mut params = animation_curve_edit_params();
+            params["operation"] = json!(operation);
+            params["times"] = json!([0.0, 1.0]);
+            validate_tool_params("edit_animation_curve", &params).unwrap();
+        }
+        for mode in ["Linear", "Constant", "Auto", "ClampedAuto", "Free"] {
+            let mut params = animation_curve_edit_params();
+            params["keys"][0]["leftTangentMode"] = json!(mode);
+            params["keys"][0]["rightTangentMode"] = json!(mode);
+            params["keys"][0]["inTangent"] = json!(0.5);
+            params["keys"][0]["outTangent"] = json!(-0.5);
+            validate_tool_params("edit_animation_curve", &params).unwrap();
+        }
+    }
+
+    #[test]
+    fn animation_curve_edits_reject_missing_identifiers_and_invalid_nested_fields() {
+        for required in ["clipPath", "animationRoot", "binding", "operation"] {
+            let mut params = animation_curve_edit_params();
+            params.as_object_mut().unwrap().remove(required);
+            assert!(
+                validate_tool_params("edit_animation_curve", &params).is_err(),
+                "{required}"
+            );
+        }
+        for (field, invalid) in [
+            ("animationRoot", json!("Root")),
+            ("animationRoot", json!(1.5)),
+            ("operation", json!("delete")),
+            ("createIfMissing", json!("yes")),
+            ("times", json!(["zero"])),
+            (
+                "binding",
+                json!({"path": "", "component": "UnityEngine.Transform"}),
+            ),
+            ("keys", json!([{"time": 0.0}])),
+            ("keys", json!([{"time": "zero", "value": 1.0}])),
+            ("keys", json!([{"time": 0.0, "value": 1.0, "weight": 0.5}])),
+            (
+                "keys",
+                json!([{"time": 0.0, "value": 1.0, "leftTangentMode": "Smooth"}]),
+            ),
+            (
+                "keys",
+                json!([{"time": 0.0, "value": 1.0, "outTangent": "flat"}]),
+            ),
+        ] {
+            let mut params = animation_curve_edit_params();
+            params[field] = invalid;
+            assert!(
+                validate_tool_params("edit_animation_curve", &params).is_err(),
+                "{params}"
+            );
+        }
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_create_sprite_atlas_payload() {
+        validate_tool_params(
+            "create_sprite_atlas",
+            &json!({
+                "atlasPath": "Assets/Atlases/UI.spriteatlas",
+                "overwrite": true,
+                "packables": ["Assets/Sprites/UI"],
+                "packingSettings": {
+                    "padding": 8,
+                    "allowRotation": false,
+                    "tightPacking": true
+                },
+                "textureSettings": {
+                    "filterMode": "Bilinear",
+                    "generateMipMaps": false
+                }
+            }),
+        )
+        .expect("create_sprite_atlas payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_invalid_sprite_atlas_filter_mode() {
+        let err = validate_tool_params(
+            "create_sprite_atlas",
+            &json!({
+                "atlasPath": "Assets/Atlases/UI.spriteatlas",
+                "textureSettings": {
+                    "filterMode": "Nearest"
+                }
+            }),
+        )
+        .expect_err("invalid sprite atlas filter mode should fail");
+        assert!(format!("{err:#}").contains("$.textureSettings.filterMode"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_lsp_write_payload_with_path_alias() {
+        validate_tool_params(
+            "rename_symbol",
+            &json!({
+                "path": "Assets/Scripts/Player.cs",
+                "namePath": "Player",
+                "newName": "Hero",
+                "apply": true
+            }),
+        )
+        .expect("rename_symbol payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_build_index_output_path() {
+        validate_tool_params(
+            "build_index",
+            &json!({
+                "scope": "assets",
+                "outputPath": "Library/unity-cli/index.json"
+            }),
+        )
+        .expect("build_index outputPath should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_write_csharp_file_payload() {
+        validate_tool_params(
+            "write_csharp_file",
+            &json!({
+                "relative": "Assets/Scripts/Player.cs",
+                "newText": "public class Player {}",
+                "apply": true,
+                "validate": true,
+                "refresh": true,
+                "waitForCompile": true,
+                "updateIndex": true
+            }),
+        )
+        .expect("write_csharp_file payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_create_package_setting_without_value() {
+        let err = validate_tool_params(
+            "set_package_setting",
+            &json!({
+                "package": "com.example.demo",
+                "key": "coverage/enabled",
+                "confirmChanges": true
+            }),
+        )
+        .expect_err("missing value should fail");
+        assert!(format!("{err:#}").contains("$.value is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_create_gameobject_with_vector_fields() {
+        validate_tool_params(
+            "create_gameobject",
+            &json!({
+                "name": "Player",
+                "primitiveType": "cube",
+                "position": { "x": 0.0, "y": 1.0, "z": 2.0 },
+                "rotation": { "x": 0.0, "y": 90.0, "z": 0.0 },
+                "scale": { "x": 1.0, "y": 1.0, "z": 1.0 }
+            }),
+        )
+        .expect("create_gameobject payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_unknown_run_tests_property() {
+        let err = validate_tool_params(
+            "run_tests",
+            &json!({
+                "testMode": "EditMode",
+                "unknown": true
+            }),
+        )
+        .expect_err("unknown key should fail for run_tests schema");
+        assert!(format!("{err:#}").contains("$.unknown is not allowed"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_load_scene_by_name() {
+        validate_tool_params(
+            "load_scene",
+            &json!({
+                "sceneName": "SampleScene",
+                "loadMode": "Single"
+            }),
+        )
+        .expect("load_scene sceneName payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_load_scene_with_both_identifiers() {
+        let err = validate_tool_params(
+            "load_scene",
+            &json!({
+                "scenePath": "Assets/Scenes/SampleScene.unity",
+                "sceneName": "SampleScene"
+            }),
+        )
+        .expect_err("load_scene should reject both scenePath and sceneName");
+        assert!(format!("{err:#}").contains("exactly one schema variant"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_delete_gameobject_without_target() {
+        let err = validate_tool_params("delete_gameobject", &json!({}))
+            .expect_err("delete_gameobject should require path or paths");
+        assert!(format!("{err:#}").contains("at least one schema variant"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_delete_gameobject_with_path_and_paths() {
+        validate_tool_params(
+            "delete_gameobject",
+            &json!({
+                "path": "/Root/Player",
+                "paths": ["/Root/Enemy"]
+            }),
+        )
+        .expect("delete_gameobject should allow path and paths together");
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_add_component_payload() {
+        validate_tool_params(
+            "add_component",
+            &json!({
+                "gameObjectPath": "/Main Camera",
+                "componentType": "UnityEngine.Camera",
+                "properties": {
+                    "fieldOfView": 60.0
+                }
+            }),
+        )
+        .expect("add_component payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_set_component_field_missing_required() {
+        let err = validate_tool_params(
+            "set_component_field",
+            &json!({
+                "componentType": "UnityEngine.Camera"
+            }),
+        )
+        .expect_err("set_component_field should require fieldPath");
+        assert!(format!("{err:#}").contains("$.fieldPath is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_input_keyboard_batch_actions() {
+        validate_tool_params(
+            "input_keyboard",
+            &json!({
+                "actions": [
+                    { "action": "press", "key": "space" },
+                    { "action": "release", "key": "space" }
+                ]
+            }),
+        )
+        .expect("input_keyboard batched actions should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_analyze_screenshot_without_source() {
+        let err = validate_tool_params("analyze_screenshot", &json!({}))
+            .expect_err("analyze_screenshot should require imagePath or base64Data");
+        assert!(format!("{err:#}").contains("at least one schema variant"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_unknown_field_for_clear_logs() {
+        let err = validate_tool_params("clear_logs", &json!({ "unknown": true }))
+            .expect_err("clear_logs should reject unknown keys");
+        assert!(format!("{err:#}").contains("$.unknown is not allowed"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_profiler_start_payload() {
+        validate_tool_params(
+            "profiler_start",
+            &json!({
+                "mode": "normal",
+                "recordToFile": true,
+                "metrics": ["System Used Memory"],
+                "maxDurationSec": 10.0
+            }),
+        )
+        .expect("profiler_start payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_manage_layers_get_by_index() {
+        validate_tool_params(
+            "manage_layers",
+            &json!({
+                "action": "get_by_index",
+                "layerIndex": 8
+            }),
+        )
+        .expect("manage_layers get_by_index payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_manage_layers_invalid_action() {
+        let err = validate_tool_params(
+            "manage_layers",
+            &json!({
+                "action": "invalid"
+            }),
+        )
+        .expect_err("invalid manage_layers action should fail");
+        assert!(format!("{err:#}").contains("allowed enum"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_manage_layers_add_without_layer_name() {
+        let err = validate_tool_params(
+            "manage_layers",
+            &json!({
+                "action": "add"
+            }),
+        )
+        .expect_err("manage_layers add should require layerName");
+        assert!(format!("{err:#}").contains("$.layerName is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_addressables_manage_add_entry() {
+        validate_tool_params(
+            "addressables_manage",
+            &json!({
+                "action": "add_entry",
+                "assetPath": "Assets/Prefabs/Player.prefab",
+                "address": "player",
+                "groupName": "Default"
+            }),
+        )
+        .expect("addressables_manage add_entry payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_addressables_manage_move_entry_without_target_group() {
+        let err = validate_tool_params(
+            "addressables_manage",
+            &json!({
+                "action": "move_entry",
+                "assetPath": "Assets/Prefabs/Player.prefab"
+            }),
+        )
+        .expect_err("addressables_manage move_entry should require targetGroupName");
+        assert!(format!("{err:#}").contains("$.targetGroupName is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_get_input_actions_state_with_asset_path() {
+        validate_tool_params(
+            "get_input_actions_state",
+            &json!({
+                "assetPath": "Assets/Input/Controls.inputactions",
+                "includeBindings": true
+            }),
+        )
+        .expect("get_input_actions_state payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_remove_input_binding_without_selector() {
+        let err = validate_tool_params(
+            "remove_input_binding",
+            &json!({
+                "assetPath": "Assets/Input/Controls.inputactions",
+                "mapName": "Gameplay",
+                "actionName": "Move"
+            }),
+        )
+        .expect_err("remove_input_binding should require bindingIndex or bindingPath");
+        assert!(format!("{err:#}").contains("at least one schema variant"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_package_manager_list_action() {
+        validate_tool_params(
+            "package_manager",
+            &json!({
+                "action": "list",
+                "includeBuiltIn": false
+            }),
+        )
+        .expect("package_manager list payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_package_manager_search_without_keyword() {
+        let err = validate_tool_params(
+            "package_manager",
+            &json!({
+                "action": "search"
+            }),
+        )
+        .expect_err("package_manager search should require keyword");
+        assert!(format!("{err:#}").contains("$.keyword is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_registry_config_add_scope_without_scope() {
+        let err = validate_tool_params(
+            "registry_config",
+            &json!({
+                "action": "add_scope",
+                "registryName": "OpenUPM"
+            }),
+        )
+        .expect_err("registry_config add_scope should require scope");
+        assert!(format!("{err:#}").contains("$.scope is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_manage_selection_set_without_object_paths() {
+        let err = validate_tool_params(
+            "manage_selection",
+            &json!({
+                "action": "set"
+            }),
+        )
+        .expect_err("manage_selection set should require objectPaths");
+        assert!(format!("{err:#}").contains("$.objectPaths is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_manage_tools_activate_without_tool_name() {
+        let err = validate_tool_params(
+            "manage_tools",
+            &json!({
+                "action": "activate"
+            }),
+        )
+        .expect_err("manage_tools activate should require toolName");
+        assert!(format!("{err:#}").contains("$.toolName is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_manage_windows_focus_without_window_type() {
+        let err = validate_tool_params(
+            "manage_windows",
+            &json!({
+                "action": "focus"
+            }),
+        )
+        .expect_err("manage_windows focus should require windowType");
+        assert!(format!("{err:#}").contains("$.windowType is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_execute_menu_item_without_action() {
+        validate_tool_params(
+            "execute_menu_item",
+            &json!({
+                "menuPath": "Assets/Refresh",
+                "safetyCheck": true
+            }),
+        )
+        .expect("execute_menu_item should support omitted action (default execute)");
+    }
+
+    #[test]
+    fn baking_surface_requires_path_before_contacting_editor() {
+        assert!(validate_tool_params(
+            "start_scene_bake",
+            &json!({
+                "target": "navmesh-surface", "scenePath": "Assets/Level.unity"
+            })
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn baking_valid_targets_and_polling_are_accepted() {
+        for target in ["lighting", "navmesh-legacy", "occlusion"] {
+            validate_tool_params(
+                "start_scene_bake",
+                &json!({
+                    "target": target, "scenePath": "Assets/Level.unity"
+                }),
+            )
+            .unwrap();
+        }
+        validate_tool_params("start_scene_bake", &json!({
+            "target": "navmesh-surface", "scenePath": "Assets/Level.unity", "surfacePath": "/Navigation"
+        })).unwrap();
+        validate_tool_params("get_scene_bake_status", &json!({"jobId": "abc"})).unwrap();
+    }
+
+    #[test]
+    fn baking_invalid_target_missing_scene_and_missing_job_are_rejected() {
+        for params in [
+            json!({"target": "lighting"}),
+            json!({"target": "unknown", "scenePath": "Assets/Level.unity"}),
+        ] {
+            assert!(validate_tool_params("start_scene_bake", &params).is_err());
+        }
+        assert!(validate_tool_params("get_scene_bake_status", &json!({})).is_err());
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_execute_menu_item_without_menu_path() {
+        let err = validate_tool_params(
+            "execute_menu_item",
+            &json!({
+                "action": "execute"
+            }),
+        )
+        .expect_err("execute_menu_item execute should require menuPath");
+        assert!(format!("{err:#}").contains("$.menuPath is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_execute_menu_item_get_available_menus() {
+        validate_tool_params(
+            "execute_menu_item",
+            &json!({
+                "action": "get_available_menus"
+            }),
+        )
+        .expect("execute_menu_item get_available_menus payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_execute_menu_item_without_action_or_menu_path() {
+        let err = validate_tool_params("execute_menu_item", &json!({}))
+            .expect_err("execute_menu_item should require menuPath when action is omitted");
+        assert!(format!("{err:#}").contains("$.menuPath is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_manage_asset_database_move_without_to_path() {
+        let err = validate_tool_params(
+            "manage_asset_database",
+            &json!({
+                "action": "move_asset",
+                "fromPath": "Assets/A.prefab"
+            }),
+        )
+        .expect_err("manage_asset_database move_asset should require toPath");
+        assert!(format!("{err:#}").contains("$.toPath is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_addressables_analyze_dependencies_without_asset_path() {
+        let err = validate_tool_params(
+            "addressables_analyze",
+            &json!({
+                "action": "analyze_dependencies"
+            }),
+        )
+        .expect_err("addressables_analyze analyze_dependencies should require assetPath");
+        assert!(format!("{err:#}").contains("$.assetPath is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_accepts_analyze_asset_dependencies_get_dependencies() {
+        validate_tool_params(
+            "analyze_asset_dependencies",
+            &json!({
+                "action": "get_dependencies",
+                "assetPath": "Assets/Prefabs/Player.prefab",
+                "recursive": true
+            }),
+        )
+        .expect("analyze_asset_dependencies get_dependencies payload should pass");
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_analyze_asset_dependencies_get_dependencies_without_asset_path()
+    {
+        let err = validate_tool_params(
+            "analyze_asset_dependencies",
+            &json!({
+                "action": "get_dependencies"
+            }),
+        )
+        .expect_err("get_dependencies should require assetPath");
+        assert!(format!("{err:#}").contains("$.assetPath is required"));
+    }
+
+    #[test]
+    fn validate_tool_params_rejects_analyze_asset_dependencies_invalid_action() {
+        let err = validate_tool_params(
+            "analyze_asset_dependencies",
+            &json!({
+                "action": "unknown"
+            }),
+        )
+        .expect_err("invalid analyze_asset_dependencies action should fail");
+        assert!(format!("{err:#}").contains("allowed enum"));
+    }
+
+    #[test]
+    fn parse_external_tool_command_accepts_json_flag() {
+        let args = vec![
+            "ping".to_string(),
+            "--json".to_string(),
+            "{\"message\":\"hi\"}".to_string(),
+        ];
+        let parsed = parse_external_tool_command(&args).expect("external args should parse");
+        assert_eq!(parsed.tool_name, "ping");
+        assert_eq!(parsed.json.as_deref(), Some("{\"message\":\"hi\"}"));
+        assert!(parsed.params_file.is_none());
+    }
+
+    #[test]
+    fn parse_external_tool_command_rejects_unknown_flag() {
+        let args = vec!["ping".to_string(), "--unknown".to_string()];
+        let err =
+            parse_external_tool_command(&args).expect_err("unsupported option should be rejected");
+        assert!(format!("{err:#}").contains("Unsupported argument"));
+    }
+
+    #[test]
+    fn parse_external_tool_command_supports_equals_forms() {
+        let args = vec![
+            "ping".to_string(),
+            "--json={\"message\":\"hi\"}".to_string(),
+            "--params-file=/tmp/params.json".to_string(),
+        ];
+        let parsed = parse_external_tool_command(&args).expect("external args should parse");
+        assert_eq!(parsed.tool_name, "ping");
+        assert_eq!(parsed.json.as_deref(), Some("{\"message\":\"hi\"}"));
+        assert_eq!(
+            parsed.params_file.as_deref().and_then(|p| p.to_str()),
+            Some("/tmp/params.json")
+        );
+    }
+
+    #[test]
+    fn parse_external_tool_command_requires_values_for_flags() {
+        let json_err = parse_external_tool_command(&["ping".to_string(), "--json".to_string()])
+            .expect_err("missing json value should fail");
+        assert!(format!("{json_err:#}").contains("requires a value"));
+
+        let file_err =
+            parse_external_tool_command(&["ping".to_string(), "--params-file".to_string()])
+                .expect_err("missing params file value should fail");
+        assert!(format!("{file_err:#}").contains("requires a value"));
+    }
+
+    #[test]
+    fn parse_external_tool_command_requires_tool_name() {
+        let err = parse_external_tool_command(&[]).expect_err("tool name should be required");
+        assert!(format!("{err:#}").contains("Tool name is required"));
+    }
+
+    #[test]
+    fn load_params_rejects_when_json_and_params_file_are_both_set() {
+        let args = RawArgs {
+            tool_name: "ping".to_string(),
+            json: Some("{\"message\":\"hi\"}".to_string()),
+            params_file: Some("/tmp/params.json".into()),
+        };
+        let err = load_params(&args).expect_err("both json and params file should fail");
+        assert!(err.to_string().contains("either --json or --params-file"));
+    }
+
+    #[test]
+    fn load_params_reads_json_from_file() {
+        let dir = tempdir().expect("tempdir should succeed");
+        let path = dir.path().join("params.json");
+        std::fs::write(&path, "{\"message\":\"from-file\"}")
+            .expect("params fixture should be writable");
+
+        let args = RawArgs {
+            tool_name: "ping".to_string(),
+            json: None,
+            params_file: Some(path.clone()),
+        };
+        let value = load_params(&args).expect("params file should parse");
+        assert_eq!(value["message"], "from-file");
+    }
+
+    #[test]
+    fn load_params_defaults_to_empty_object() {
+        let args = RawArgs {
+            tool_name: "ping".to_string(),
+            json: None,
+            params_file: None,
+        };
+        let value = load_params(&args).expect("default params should succeed");
+        assert_eq!(value, serde_json::json!({}));
+    }
+
+    #[test]
+    fn load_params_reads_inline_json() {
+        let args = RawArgs {
+            tool_name: "ping".to_string(),
+            json: Some("{\"message\":\"inline\"}".to_string()),
+            params_file: None,
+        };
+        let value = load_params(&args).expect("inline json should parse");
+        assert_eq!(value["message"], "inline");
+    }
+
+    #[test]
+    fn print_value_text_handles_string_and_object() {
+        super::output::print_result("test", &serde_json::json!("hello"), OutputFormat::Text)
+            .expect("string text output should succeed");
+        super::output::print_result("test", &serde_json::json!({"ok": true}), OutputFormat::Text)
+            .expect("object text output should succeed");
+    }
+
+    #[test]
+    fn init_tracing_accepts_verbose_levels() {
+        init_tracing(1).expect("debug tracing should initialize");
+        init_tracing(2).expect("trace tracing should initialize");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_with_cli_handles_local_tool_and_batch_paths() {
+        run_with_cli(cli_for(Command::Tool {
+            command: ToolCommand::List(Default::default()),
+        }))
+        .await
+        .expect("tool list should succeed");
+
+        run_with_cli(cli_for(Command::Raw(RawArgs {
+            tool_name: "list_packages".to_string(),
+            json: None,
+            params_file: None,
+        })))
+        .await
+        .expect("raw local tool should succeed");
+
+        run_with_cli(cli_for(Command::Tool {
+            command: ToolCommand::Call(RawArgs {
+                tool_name: "list_packages".to_string(),
+                json: None,
+                params_file: None,
+            }),
+        }))
+        .await
+        .expect("tool call should succeed");
+
+        run_with_cli(cli_for(Command::Batch {
+            json: Some("[]".to_string()),
+            stdin: false,
+        }))
+        .await
+        .expect("empty batch should succeed");
+
+        run_with_cli(cli_for_with_output(
+            Command::Tool {
+                command: ToolCommand::List(Default::default()),
+            },
+            OutputFormat::Text,
+        ))
+        .await
+        .expect("tool list text output should succeed");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_with_cli_supports_tool_schema_command() {
+        run_with_cli(cli_for(Command::Tool {
+            command: ToolCommand::Schema { tool_name: None },
+        }))
+        .await
+        .expect("schema list should succeed");
+
+        run_with_cli(cli_for(Command::Tool {
+            command: ToolCommand::Schema {
+                tool_name: Some("ping".to_string()),
+            },
+        }))
+        .await
+        .expect("single schema should succeed");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn execute_tool_skips_mutating_tool_in_dry_run_mode() {
+        let value = execute_tool(
+            &cli_for_dry_run(Command::Tool {
+                command: ToolCommand::List(Default::default()),
+            }),
+            "create_scene",
+            json!({
+                "sceneName": "Main"
+            }),
+        )
+        .await
+        .expect("dry-run mutating tool should not fail");
+
+        assert_eq!(value["dryRun"], true);
+        assert_eq!(value["executed"], false);
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    #[allow(clippy::await_holding_lock)]
+    async fn run_with_cli_batch_marks_skipped_items_in_dry_run_mode() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|p| p.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        run_with_cli(cli_for_dry_run(Command::Batch {
+            json: Some(
+                r#"[{"tool":"create_scene","params":{"sceneName":"Main"}},{"tool":"list_packages","params":{}}]"#
+                    .to_string(),
+            ),
+            stdin: false,
+        }))
+        .await
+        .expect("batch with dry-run should succeed");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_with_cli_rejects_unknown_external_tool() {
+        let err = run_with_cli(cli_for(Command::Tool {
+            command: ToolCommand::External(vec!["not_existing_tool".to_string()]),
+        }))
+        .await
+        .expect_err("unknown tool should fail");
+        assert!(format!("{err:#}").contains("Unknown tool"));
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    #[allow(clippy::await_holding_lock)]
+    async fn run_with_cli_exercises_remote_command_error_paths() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|p| p.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        let ping_err = run_with_cli(cli_for(Command::System {
+            command: SystemCommand::Ping {
+                message: Some("hello".to_string()),
+            },
+        }))
+        .await
+        .expect_err("system ping should fail when unity is unreachable");
+        assert!(format!("{ping_err:#}").contains("Failed to connect to Unity"));
+
+        let scene_err = run_with_cli(cli_for(Command::Scene {
+            command: SceneCommand::Create {
+                scene_name: "Main".to_string(),
+                path: Some("Assets/Main.unity".to_string()),
+                load_scene: true,
+                add_to_build_settings: false,
+            },
+        }))
+        .await
+        .expect_err("scene create should fail when unity is unreachable");
+        assert!(format!("{scene_err:#}").contains("Failed to connect to Unity"));
+
+        let batch_err = run_with_cli(cli_for(Command::Batch {
+            json: Some(r#"[{"tool":"ping","params":{}}]"#.to_string()),
+            stdin: false,
+        }))
+        .await
+        .expect_err("non-empty batch should fail when unity is unreachable");
+        assert!(format!("{batch_err:#}").contains("Failed to connect to Unity"));
+    }
+
+    #[allow(clippy::await_holding_lock)]
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_with_cli_handles_instances_and_daemon_commands_without_server() {
+        // `instances list` rewrites the registry; isolate it from other registry tests.
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        let registry = tempdir().expect("tempdir should succeed");
+        let _registry_env = EnvVarGuard::set(
+            "UNITY_CLI_REGISTRY_PATH",
+            registry
+                .path()
+                .join("instances.json")
+                .to_str()
+                .expect("registry path should be valid UTF-8"),
+        );
+
+        run_with_cli(cli_for(Command::Instances {
+            command: InstancesCommand::List {
+                ports: Some("9".to_string()),
+                host: "127.0.0.1".to_string(),
+                timeout_ms: 20,
+            },
+        }))
+        .await
+        .expect("instances list should succeed");
+
+        let set_active_err = run_with_cli(cli_for(Command::Instances {
+            command: InstancesCommand::SetActive {
+                id: "127.0.0.1:9".to_string(),
+                timeout_ms: 20,
+            },
+        }))
+        .await
+        .expect_err("set-active should fail for unreachable id");
+        assert!(format!("{set_active_err:#}").contains("Instance unreachable"));
+
+        run_with_cli(cli_for(Command::Lspd {
+            command: LspdCommand::Status,
+        }))
+        .await
+        .expect("lspd status should succeed");
+        run_with_cli(cli_for(Command::Lspd {
+            command: LspdCommand::Stop,
+        }))
+        .await
+        .expect("lspd stop should succeed");
+
+        run_with_cli(cli_for(Command::Unityd {
+            command: UnitydCommand::Status,
+        }))
+        .await
+        .expect("unityd status should succeed");
+        run_with_cli(cli_for(Command::Unityd {
+            command: UnitydCommand::Stop,
+        }))
+        .await
+        .expect("unityd stop should succeed");
+
+        run_with_cli(cli_for_with_output(
+            Command::Instances {
+                command: InstancesCommand::List {
+                    ports: Some("9".to_string()),
+                    host: "127.0.0.1".to_string(),
+                    timeout_ms: 20,
+                },
+            },
+            OutputFormat::Text,
+        ))
+        .await
+        .expect("instances list text output should succeed");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_with_cli_requires_batch_input_source() {
+        let err = run_with_cli(cli_for(Command::Batch {
+            json: None,
+            stdin: false,
+        }))
+        .await
+        .expect_err("batch command must require input");
+        assert!(format!("{err:#}").contains("Provide --json or --stdin"));
+    }
+
+    #[test]
+    fn build_reference_call_status_includes_explicit_version() {
+        let cmd = ReferenceCommand::Status {
+            version: Some("2023.2.20f1".to_string()),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_status");
+        assert_eq!(params["version"], "2023.2.20f1");
+    }
+
+    #[test]
+    fn build_reference_call_status_omits_optional_version() {
+        let cmd = ReferenceCommand::Status { version: None };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_status");
+        assert!(params.get("version").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_fetch_carries_all_flags() {
+        let cmd = ReferenceCommand::Fetch {
+            version: Some("2023.2.20f1".to_string()),
+            branch: Some("2023.2/staging".to_string()),
+            force: true,
+            accept_license: true,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_fetch");
+        assert_eq!(params["version"], "2023.2.20f1");
+        assert_eq!(params["branch"], "2023.2/staging");
+        assert_eq!(params["force"], true);
+        assert_eq!(params["acceptLicense"], true);
+    }
+
+    #[test]
+    fn build_reference_call_fetch_defaults_without_overrides() {
+        let cmd = ReferenceCommand::Fetch {
+            version: None,
+            branch: None,
+            force: false,
+            accept_license: false,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_fetch");
+        assert!(params.get("version").is_none());
+        assert!(params.get("branch").is_none());
+        assert_eq!(params["force"], false);
+        assert_eq!(params["acceptLicense"], false);
+    }
+
+    #[test]
+    fn build_reference_call_search_with_all_options() {
+        let cmd = ReferenceCommand::Search {
+            pattern: "Animator".to_string(),
+            version: Some("2023.2.20f1".to_string()),
+            path: Some("Runtime/Animator*.cs".to_string()),
+            max_results: Some(5),
+            regex: true,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_search");
+        assert_eq!(params["pattern"], "Animator");
+        assert_eq!(params["version"], "2023.2.20f1");
+        assert_eq!(params["path"], "Runtime/Animator*.cs");
+        assert_eq!(params["maxResults"], 5);
+        assert_eq!(params["regex"], true);
+    }
+
+    #[test]
+    fn build_reference_call_search_minimal_pattern() {
+        let cmd = ReferenceCommand::Search {
+            pattern: "Foo".to_string(),
+            version: None,
+            path: None,
+            max_results: None,
+            regex: false,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_search");
+        assert_eq!(params["pattern"], "Foo");
+        assert_eq!(params["regex"], false);
+        assert!(params.get("version").is_none());
+        assert!(params.get("maxResults").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_grep_with_file_glob_and_context() {
+        let cmd = ReferenceCommand::Grep {
+            pattern: "class".to_string(),
+            version: Some("2023.2.20f1".to_string()),
+            file_glob: Some("*.cs".to_string()),
+            context: 3,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_grep");
+        assert_eq!(params["pattern"], "class");
+        assert_eq!(params["fileGlob"], "*.cs");
+        assert_eq!(params["context"], 3);
+        assert_eq!(params["version"], "2023.2.20f1");
+    }
+
+    #[test]
+    fn build_reference_call_grep_defaults_context_to_zero() {
+        let cmd = ReferenceCommand::Grep {
+            pattern: "class".to_string(),
+            version: None,
+            file_glob: None,
+            context: 0,
+        };
+        let (_tool, params) = build_reference_call(&cmd);
+        assert_eq!(params["context"], 0);
+        assert!(params.get("fileGlob").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_view_with_range() {
+        let cmd = ReferenceCommand::View {
+            path: "Runtime/Export/Animation/Animator.bindings.cs".to_string(),
+            version: Some("2023.2.20f1".to_string()),
+            start_line: Some(100),
+            max_lines: Some(60),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_view");
+        assert_eq!(
+            params["path"],
+            "Runtime/Export/Animation/Animator.bindings.cs"
+        );
+        assert_eq!(params["startLine"], 100);
+        assert_eq!(params["maxLines"], 60);
+    }
+
+    #[test]
+    fn build_reference_call_view_omits_optional_lines() {
+        let cmd = ReferenceCommand::View {
+            path: "Editor/Foo.cs".to_string(),
+            version: None,
+            start_line: None,
+            max_lines: None,
+        };
+        let (_tool, params) = build_reference_call(&cmd);
+        assert_eq!(params["path"], "Editor/Foo.cs");
+        assert!(params.get("startLine").is_none());
+        assert!(params.get("maxLines").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_clean_with_version() {
+        let cmd = ReferenceCommand::Clean {
+            keep: 2,
+            version: Some("legacy".to_string()),
+            dry_run: true,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_clean");
+        assert_eq!(params["keep"], 2);
+        assert_eq!(params["version"], "legacy");
+        assert_eq!(params["dryRun"], true);
+    }
+
+    #[test]
+    fn build_reference_call_diff_symbol_mode() {
+        let cmd = ReferenceCommand::Diff {
+            from: "2022.3.10f1".to_string(),
+            to: "2023.2.20f1".to_string(),
+            symbol: Some("UnityEngine.Animator".to_string()),
+            path: None,
+            max_symbols: None,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_diff");
+        assert_eq!(params["from"], "2022.3.10f1");
+        assert_eq!(params["to"], "2023.2.20f1");
+        assert_eq!(params["symbol"], "UnityEngine.Animator");
+        assert!(params.get("path").is_none());
+        assert!(params.get("maxSymbols").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_diff_path_mode_with_limit() {
+        let cmd = ReferenceCommand::Diff {
+            from: "v1".to_string(),
+            to: "v2".to_string(),
+            symbol: None,
+            path: Some("Runtime/Export".to_string()),
+            max_symbols: Some(20),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_diff");
+        assert_eq!(params["path"], "Runtime/Export");
+        assert_eq!(params["maxSymbols"], 20);
+        assert!(params.get("symbol").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_resolve_symbol_at_with_version() {
+        let cmd = ReferenceCommand::ResolveSymbolAt {
+            path: "Assets/Scripts/Player.cs".to_string(),
+            line: 42,
+            column: 18,
+            version: Some("2023.2.20f1".to_string()),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_resolve_symbol_at");
+        assert_eq!(params["path"], "Assets/Scripts/Player.cs");
+        assert_eq!(params["line"], 42);
+        assert_eq!(params["column"], 18);
+        assert_eq!(params["version"], "2023.2.20f1");
+    }
+
+    #[test]
+    fn build_reference_call_resolve_symbol_at_minimal() {
+        let cmd = ReferenceCommand::ResolveSymbolAt {
+            path: "Packages/com.acme/Foo.cs".to_string(),
+            line: 1,
+            column: 1,
+            version: None,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_resolve_symbol_at");
+        assert!(params.get("version").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_embed_build_includes_version() {
+        let cmd = ReferenceCommand::EmbedBuild {
+            version: Some("2023.2.20f1".to_string()),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_embed_build");
+        assert_eq!(params["version"], "2023.2.20f1");
+    }
+
+    #[test]
+    fn build_reference_call_embed_build_omits_optional_version() {
+        let cmd = ReferenceCommand::EmbedBuild { version: None };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_embed_build");
+        assert!(params.get("version").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_embed_search_with_top_k() {
+        let cmd = ReferenceCommand::EmbedSearch {
+            query: "animator state callback".to_string(),
+            version: Some("2023.2.20f1".to_string()),
+            top_k: Some(5),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_embed_search");
+        assert_eq!(params["query"], "animator state callback");
+        assert_eq!(params["version"], "2023.2.20f1");
+        assert_eq!(params["topK"], 5);
+    }
+
+    #[test]
+    fn build_reference_call_embed_search_omits_optional_top_k() {
+        let cmd = ReferenceCommand::EmbedSearch {
+            query: "foo".to_string(),
+            version: None,
+            top_k: None,
+        };
+        let (_tool, params) = build_reference_call(&cmd);
+        assert_eq!(params["query"], "foo");
+        assert!(params.get("topK").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_find_symbol_with_filters() {
+        let cmd = ReferenceCommand::FindSymbol {
+            name: "Animator".to_string(),
+            kind: Some("class".to_string()),
+            namespace: Some("UnityEngine".to_string()),
+            version: Some("2023.2.20f1".to_string()),
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_find_symbol");
+        assert_eq!(params["name"], "Animator");
+        assert_eq!(params["kind"], "class");
+        assert_eq!(params["namespace"], "UnityEngine");
+        assert_eq!(params["version"], "2023.2.20f1");
+    }
+
+    #[test]
+    fn build_reference_call_find_symbol_minimal() {
+        let cmd = ReferenceCommand::FindSymbol {
+            name: "Foo".to_string(),
+            kind: None,
+            namespace: None,
+            version: None,
+        };
+        let (tool, params) = build_reference_call(&cmd);
+        assert_eq!(tool, "reference_find_symbol");
+        assert_eq!(params["name"], "Foo");
+        assert!(params.get("kind").is_none());
+        assert!(params.get("namespace").is_none());
+        assert!(params.get("version").is_none());
+    }
+
+    #[test]
+    fn build_reference_call_clean_defaults() {
+        let cmd = ReferenceCommand::Clean {
+            keep: 1,
+            version: None,
+            dry_run: false,
+        };
+        let (_tool, params) = build_reference_call(&cmd);
+        assert_eq!(params["keep"], 1);
+        assert_eq!(params["dryRun"], false);
+        assert!(params.get("version").is_none());
+    }
+
+    #[allow(clippy::await_holding_lock)]
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_with_cli_set_active_text_output_when_reachable() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&_guard);
+        let registry = tempdir().expect("tempdir should succeed");
+        let registry_path = registry.path().join("instances.json");
+        std::fs::write(&registry_path, "{\n  \"entries\": []\n}\n")
+            .expect("registry fixture should be initialized");
+        let _registry_env = EnvVarGuard::set(
+            "UNITY_CLI_REGISTRY_PATH",
+            registry_path
+                .to_str()
+                .expect("registry path should be valid UTF-8"),
+        );
+
+        let (port, accept_task) = spawn_mock_bridge(1).await;
+
+        run_with_cli(cli_for_with_output(
+            Command::Instances {
+                command: InstancesCommand::SetActive {
+                    id: format!("127.0.0.1:{port}"),
+                    timeout_ms: 200,
+                },
+            },
+            OutputFormat::Text,
+        ))
+        .await
+        .expect("set-active text output should succeed for reachable instance");
+
+        tokio::time::timeout(std::time::Duration::from_secs(1), accept_task)
+            .await
+            .expect("listener task should finish")
+            .expect("listener task should succeed");
+    }
+}

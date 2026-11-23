@@ -1,0 +1,2243 @@
+use std::collections::{BTreeMap, BTreeSet};
+use std::env;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+use anyhow::{anyhow, Context, Result};
+use regex::Regex;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use walkdir::{DirEntry, WalkDir};
+
+use crate::config::{RuntimeConfig, RuntimeOverrides};
+use crate::transport::UnityClient;
+
+const INDEX_REL_PATH: &str = ".unity/cache/unity-cli/symbol-index.json";
+const INDEX_VERSION: u32 = 1;
+const MAX_SNIPPET_CHARS: usize = 400;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SymbolEntry {
+    path: String,
+    name: String,
+    kind: String,
+    line: usize,
+    column: usize,
+    #[serde(rename = "namePath", default)]
+    name_path: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    container: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    namespace: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+struct IndexedFile {
+    signature: String,
+    symbols: Vec<SymbolEntry>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SymbolIndex {
+    version: u32,
+    generated_at_epoch_ms: u64,
+    files: BTreeMap<String, IndexedFile>,
+}
+
+impl Default for SymbolIndex {
+    fn default() -> Self {
+        Self {
+            version: INDEX_VERSION,
+            generated_at_epoch_ms: 0,
+            files: BTreeMap::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+struct ScopedType {
+    name: String,
+    depth: i32,
+}
+
+pub fn maybe_execute_local_tool(tool_name: &str, params: &Value) -> Option<Result<Value>> {
+    if let Some(result) = crate::reference::maybe_execute_reference_tool(tool_name, params) {
+        return Some(result);
+    }
+    match tool_name {
+        "read" => Some(local_read(params)),
+        "search" => Some(local_search(params)),
+        "list_packages" => Some(local_list_packages()),
+        "get_symbols" | "build_index" | "find_symbol" | "find_refs" => {
+            Some(local_symbol_search(tool_name, params))
+        }
+        "update_index" => Some(local_update_index(params)),
+        "get_index_status" => Some(local_get_index_status()),
+        "rename_symbol" => Some(local_lsp_write("rename_symbol", params)),
+        "replace_symbol_body" => Some(local_lsp_write("replace_symbol_body", params)),
+        "insert_before_symbol" => Some(local_lsp_write("insert_before_symbol", params)),
+        "insert_after_symbol" => Some(local_lsp_write("insert_after_symbol", params)),
+        "remove_symbol" => Some(local_lsp_write("remove_symbol", params)),
+        "validate_text_edits" => Some(local_lsp_write("validate_text_edits", params)),
+        "write_csharp_file" => Some(local_lsp_write("write_csharp_file", params)),
+        "create_csharp_file" => Some(local_lsp_write("create_csharp_file", params)),
+        "apply_csharp_edits" => Some(local_lsp_write("apply_csharp_edits", params)),
+        "create_class" => Some(local_create_class(params)),
+        _ => None,
+    }
+}
+
+fn local_read(params: &Value) -> Result<Value> {
+    let path = params
+        .get("path")
+        .and_then(Value::as_str)
+        .ok_or_else(|| anyhow!("read requires `path`"))?;
+
+    let start_line = params
+        .get("startLine")
+        .and_then(Value::as_u64)
+        .unwrap_or(1)
+        .max(1);
+    let max_lines = params
+        .get("maxLines")
+        .and_then(Value::as_u64)
+        .unwrap_or(200)
+        .clamp(1, 1000);
+
+    let root = project_root()?;
+    let rel = normalize_rel_path(path)
+        .ok_or_else(|| anyhow!("path must start with Assets/ or Packages/"))?;
+    let abs = resolve_existing_project_path(&root, &rel)?;
+    let content = fs::read_to_string(&abs)
+        .with_context(|| format!("Failed to read file: {}", abs.display()))?;
+
+    let lines: Vec<&str> = content.lines().collect();
+    let start_idx = (start_line as usize).saturating_sub(1).min(lines.len());
+    let end_idx = (start_idx + max_lines as usize).min(lines.len());
+    let selected = &lines[start_idx..end_idx];
+    let body = selected.join("\n");
+
+    Ok(json!({
+        "success": true,
+        "path": rel,
+        "startLine": start_idx + 1,
+        "endLine": end_idx,
+        "lineCount": selected.len(),
+        "content": body,
+        "text": selected.join("\n")
+    }))
+}
+
+fn local_search(params: &Value) -> Result<Value> {
+    let pattern = params
+        .get("pattern")
+        .and_then(Value::as_str)
+        .ok_or_else(|| anyhow!("search requires `pattern`"))?;
+    let regex = Regex::new(pattern).with_context(|| format!("Invalid regex pattern: {pattern}"))?;
+    let limit = params
+        .get("limit")
+        .and_then(Value::as_u64)
+        .unwrap_or(50)
+        .clamp(1, 500) as usize;
+
+    let root = project_root()?;
+    let search_root = params.get("path").and_then(Value::as_str);
+
+    let roots = if let Some(raw_rel) = search_root {
+        let rel = normalize_rel_path(raw_rel)
+            .ok_or_else(|| anyhow!("path must start with Assets/ or Packages/"))?;
+        vec![resolve_candidate_project_path(&root, &rel)?]
+    } else {
+        vec![root.join("Assets"), root.join("Packages")]
+    };
+
+    let mut matches = Vec::new();
+
+    for dir in roots {
+        if !dir.exists() {
+            continue;
+        }
+
+        for entry in WalkDir::new(&dir)
+            .follow_links(false)
+            .into_iter()
+            .filter_entry(is_included_entry)
+            .filter_map(|entry| entry.ok())
+        {
+            let p = entry.path();
+            if !entry.file_type().is_file() || !is_csharp_file(p) {
+                continue;
+            }
+
+            let text = match fs::read_to_string(p) {
+                Ok(text) => text,
+                Err(_) => continue,
+            };
+
+            let rel = to_rel_project_path(&root, p);
+            for (idx, line) in text.lines().enumerate() {
+                if regex.is_match(line) {
+                    matches.push(json!({
+                        "path": rel,
+                        "line": idx + 1,
+                        "text": line
+                    }));
+                    if matches.len() >= limit {
+                        return Ok(json!({
+                            "success": true,
+                            "pattern": pattern,
+                            "matches": matches,
+                            "count": matches.len(),
+                            "truncated": true
+                        }));
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(json!({
+        "success": true,
+        "pattern": pattern,
+        "matches": matches,
+        "count": matches.len(),
+        "truncated": false
+    }))
+}
+
+fn local_list_packages() -> Result<Value> {
+    let root = project_root()?;
+    let packages_dir = root.join("Packages");
+    if !packages_dir.exists() {
+        return Ok(json!({
+            "success": true,
+            "packages": [],
+            "count": 0
+        }));
+    }
+
+    let mut packages = Vec::new();
+    for entry in fs::read_dir(&packages_dir)
+        .with_context(|| format!("Failed to read packages dir: {}", packages_dir.display()))?
+    {
+        let entry = entry?;
+        let path = entry.path();
+        if !path.is_dir() {
+            continue;
+        }
+
+        let name = entry.file_name().to_string_lossy().to_string();
+        let rel = to_rel_project_path(&root, &path);
+        packages.push(json!({
+            "name": name,
+            "path": rel
+        }));
+    }
+
+    packages.sort_by(|a, b| a["name"].as_str().cmp(&b["name"].as_str()));
+
+    Ok(json!({
+        "success": true,
+        "packages": packages,
+        "count": packages.len()
+    }))
+}
+
+fn local_symbol_search(tool_name: &str, params: &Value) -> Result<Value> {
+    let index_search: fn(&Value) -> Result<Value> = match tool_name {
+        "get_symbols" => local_get_symbols,
+        "build_index" => local_build_index,
+        "find_symbol" => local_find_symbol,
+        _ => local_find_refs,
+    };
+    let root = project_root()?;
+    let fallback = match crate::lsp::route_search(tool_name, params, &root) {
+        crate::lsp::SearchRoute::Lsp(result) => return result,
+        crate::lsp::SearchRoute::Index(fallback) => fallback,
+    };
+    let mut value = index_search(params)?;
+    fallback.annotate(&mut value);
+    Ok(value)
+}
+
+fn local_get_symbols(params: &Value) -> Result<Value> {
+    let root = project_root()?;
+    let path = params
+        .get("path")
+        .and_then(Value::as_str)
+        .ok_or_else(|| anyhow!("get_symbols requires `path`"))?;
+    let rel = normalize_rel_path(path)
+        .ok_or_else(|| anyhow!("path must start with Assets/ or Packages/"))?;
+
+    if !rel.to_ascii_lowercase().ends_with(".cs") {
+        return Err(anyhow!("Only .cs files are supported"));
+    }
+
+    let abs = resolve_existing_project_path(&root, &rel)?;
+    let symbols = extract_symbols_from_file(&abs, &rel)?;
+    let list = symbols.iter().map(symbol_to_value).collect::<Vec<_>>();
+
+    Ok(json!({
+        "success": true,
+        "path": rel,
+        "symbols": list
+    }))
+}
+
+fn local_build_index(params: &Value) -> Result<Value> {
+    let root = project_root()?;
+    let exclude_package_cache = params
+        .get("excludePackageCache")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    let scope = params
+        .get("scope")
+        .and_then(Value::as_str)
+        .unwrap_or("all")
+        .to_ascii_lowercase();
+
+    let mut dirs = match scope.as_str() {
+        "assets" => vec![root.join("Assets")],
+        "packages" => vec![root.join("Packages")],
+        "embedded" => vec![root.join("Packages")],
+        "library" => vec![root.join("Library/PackageCache")],
+        _ => vec![root.join("Assets"), root.join("Packages")],
+    };
+    if !exclude_package_cache && scope != "assets" && scope != "embedded" {
+        dirs.push(root.join("Library/PackageCache"));
+    }
+
+    let files = collect_cs_files(&root, &dirs);
+    let mut index = SymbolIndex::default();
+    let mut indexed_symbols = 0usize;
+    let mut skipped = Vec::new();
+
+    for (rel, abs) in files {
+        match extract_symbols_from_file(&abs, &rel) {
+            Ok(symbols) => {
+                indexed_symbols += symbols.len();
+                index.files.insert(
+                    rel,
+                    IndexedFile {
+                        signature: file_signature(&abs),
+                        symbols,
+                    },
+                );
+            }
+            Err(error) => {
+                skipped.push(json!({
+                    "path": rel,
+                    "reason": error.to_string()
+                }));
+            }
+        }
+    }
+
+    index.generated_at_epoch_ms = now_epoch_ms();
+    let index_path = save_index(&root, &index)?;
+
+    Ok(json!({
+        "success": skipped.is_empty(),
+        "indexedFiles": index.files.len(),
+        "indexedSymbols": indexed_symbols,
+        "indexPath": to_rel_project_path(&root, &index_path),
+        "generatedAtEpochMs": index.generated_at_epoch_ms,
+        "skipped": skipped
+    }))
+}
+
+fn local_get_index_status() -> Result<Value> {
+    let root = project_root()?;
+    let index_path = index_file_path(&root);
+    let rel_index_path = to_rel_project_path(&root, &index_path);
+    let Some(index) = load_index_if_exists(&root)? else {
+        return Ok(json!({
+            "success": true,
+            "ready": false,
+            "indexPath": rel_index_path,
+            "indexedFiles": 0,
+            "indexedSymbols": 0,
+            "message": "Code index is not built. Run build_index first."
+        }));
+    };
+
+    let indexed_symbols: usize = index.files.values().map(|file| file.symbols.len()).sum();
+    Ok(json!({
+        "success": true,
+        "ready": index_is_ready(&index),
+        "indexPath": rel_index_path,
+        "version": index.version,
+        "indexedFiles": index.files.len(),
+        "indexedSymbols": indexed_symbols,
+        "generatedAtEpochMs": index.generated_at_epoch_ms
+    }))
+}
+
+fn local_update_index(params: &Value) -> Result<Value> {
+    let paths = params
+        .get("paths")
+        .and_then(Value::as_array)
+        .ok_or_else(|| anyhow!("update_index requires `paths` array"))?;
+    if paths.is_empty() {
+        return Ok(json!({
+            "success": false,
+            "error": "invalid_arguments",
+            "message": "paths must be a non-empty array."
+        }));
+    }
+
+    let root = project_root()?;
+    let mut index = match load_index_if_exists(&root) {
+        Ok(Some(index)) => index,
+        Ok(None) => SymbolIndex::default(),
+        Err(_) => SymbolIndex::default(),
+    };
+
+    let mut dedup = BTreeSet::new();
+    let mut requested = Vec::new();
+    for raw in paths {
+        let Some(path_raw) = raw.as_str() else {
+            continue;
+        };
+        let rel = match normalize_rel_or_abs_path(&root, path_raw) {
+            Ok(rel) => rel,
+            Err(error) => {
+                requested.push((path_raw.to_string(), None, Some(error.to_string())));
+                continue;
+            }
+        };
+        if dedup.insert(rel.clone()) {
+            requested.push((path_raw.to_string(), Some(rel), None));
+        }
+    }
+
+    let mut updated = 0usize;
+    let mut skipped = Vec::new();
+    let mut failures = Vec::new();
+
+    for (requested_path, rel_path, rel_error) in requested {
+        if let Some(reason) = rel_error {
+            failures.push(json!({ "path": requested_path, "reason": reason }));
+            continue;
+        }
+        let rel = rel_path.expect("relative path should exist");
+        let abs = resolve_candidate_project_path(&root, &rel)?;
+
+        if !abs.exists() {
+            skipped.push(json!({ "path": requested_path, "reason": "missing" }));
+            failures.push(json!({ "path": requested_path, "reason": "missing" }));
+            continue;
+        }
+        if !is_csharp_file(&abs) {
+            skipped.push(json!({ "path": requested_path, "reason": "unsupported_extension" }));
+            failures.push(json!({ "path": requested_path, "reason": "unsupported_extension" }));
+            continue;
+        }
+
+        match extract_symbols_from_file(&abs, &rel) {
+            Ok(symbols) => {
+                updated += 1;
+                index.files.insert(
+                    rel,
+                    IndexedFile {
+                        signature: file_signature(&abs),
+                        symbols,
+                    },
+                );
+            }
+            Err(error) => {
+                failures.push(json!({
+                    "path": requested_path,
+                    "reason": error.to_string()
+                }));
+            }
+        }
+    }
+
+    index.generated_at_epoch_ms = now_epoch_ms();
+    save_index(&root, &index)?;
+
+    let mut result = json!({
+        "success": failures.is_empty(),
+        "updated": updated,
+        "skipped": skipped
+    });
+    if !failures.is_empty() {
+        result["partialSuccess"] = Value::Bool(updated > 0);
+        result["failures"] = Value::Array(failures);
+    }
+
+    Ok(result)
+}
+
+fn local_find_symbol(params: &Value) -> Result<Value> {
+    let root = project_root()?;
+    let name = params
+        .get("name")
+        .and_then(Value::as_str)
+        .ok_or_else(|| anyhow!("find_symbol requires `name`"))?;
+    let kind = params.get("kind").and_then(Value::as_str);
+    let scope = params
+        .get("scope")
+        .and_then(Value::as_str)
+        .unwrap_or("all")
+        .to_ascii_lowercase();
+    let exact = params
+        .get("exact")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+
+    let index = match load_index_if_exists(&root) {
+        Ok(Some(index)) if index_is_ready(&index) => index,
+        Ok(_) => {
+            return Ok(index_not_ready_response());
+        }
+        Err(error) => {
+            return Ok(json!({
+                "success": false,
+                "error": "index_corrupted",
+                "message": format!("Failed to read local symbol index: {error}")
+            }));
+        }
+    };
+
+    let mut grouped: BTreeMap<String, Vec<Value>> = BTreeMap::new();
+    let mut total = 0usize;
+
+    for (path, file) in &index.files {
+        if !path_matches_scope(path, &scope) {
+            continue;
+        }
+
+        for symbol in &file.symbols {
+            if !symbol_name_matches(&symbol.name, name, exact) {
+                continue;
+            }
+            if let Some(expected_kind) = kind {
+                if !symbol.kind.eq_ignore_ascii_case(expected_kind) {
+                    continue;
+                }
+            }
+
+            grouped
+                .entry(path.clone())
+                .or_default()
+                .push(symbol_to_value(symbol));
+            total += 1;
+        }
+    }
+
+    let results = grouped
+        .into_iter()
+        .map(|(path, symbols)| json!({ "path": path, "symbols": symbols }))
+        .collect::<Vec<_>>();
+
+    Ok(json!({
+        "success": true,
+        "results": results,
+        "total": total
+    }))
+}
+
+fn local_find_refs(params: &Value) -> Result<Value> {
+    let name = params
+        .get("name")
+        .and_then(Value::as_str)
+        .ok_or_else(|| anyhow!("find_refs requires `name`"))?;
+    let scope = params
+        .get("scope")
+        .and_then(Value::as_str)
+        .unwrap_or("all")
+        .to_ascii_lowercase();
+    let start_after = params.get("startAfter").and_then(Value::as_str);
+    let path_filter = params.get("path").and_then(Value::as_str);
+    let page_size = params
+        .get("pageSize")
+        .and_then(Value::as_u64)
+        .unwrap_or(50)
+        .clamp(1, 1000) as usize;
+    let max_bytes = params
+        .get("maxBytes")
+        .and_then(Value::as_u64)
+        .unwrap_or((1024 * 64) as u64)
+        .clamp(128, (1024 * 1024) as u64) as usize;
+    let max_matches_per_file = params
+        .get("maxMatchesPerFile")
+        .and_then(Value::as_u64)
+        .unwrap_or(5)
+        .clamp(1, 100) as usize;
+    let snippet_context = params
+        .get("snippetContext")
+        .and_then(Value::as_u64)
+        .unwrap_or(1)
+        .clamp(0, 20) as usize;
+
+    let root = project_root()?;
+    let index = match load_index_if_exists(&root) {
+        Ok(Some(index)) if index_is_ready(&index) => index,
+        Ok(_) => {
+            return Ok(index_not_ready_response());
+        }
+        Err(error) => {
+            return Ok(json!({
+                "success": false,
+                "error": "index_corrupted",
+                "message": format!("Failed to read local symbol index: {error}")
+            }));
+        }
+    };
+    drop(index);
+
+    let name_regex = Regex::new(&format!(r"\b{}\b", regex::escape(name)))
+        .with_context(|| format!("Invalid identifier for references search: {name}"))?;
+
+    let dirs = match scope.as_str() {
+        "assets" => vec![root.join("Assets")],
+        "packages" => vec![root.join("Packages"), root.join("Library/PackageCache")],
+        "embedded" => vec![root.join("Packages")],
+        "library" => vec![root.join("Library/PackageCache")],
+        _ => vec![
+            root.join("Assets"),
+            root.join("Packages"),
+            root.join("Library/PackageCache"),
+        ],
+    };
+
+    let files = collect_cs_files(&root, &dirs);
+    let mut results = Vec::new();
+    let mut total = 0usize;
+    let mut bytes = 0usize;
+    let mut truncated = false;
+    let mut last_path: Option<String> = None;
+
+    for (path, abs) in files {
+        if let Some(cursor) = start_after {
+            if path.as_str() <= cursor {
+                continue;
+            }
+        }
+        if let Some(filter) = path_filter {
+            if !path.contains(filter) {
+                continue;
+            }
+        }
+
+        let text = match fs::read_to_string(&abs) {
+            Ok(text) => text,
+            Err(_) => continue,
+        };
+        let lines = text.lines().collect::<Vec<_>>();
+        let mut refs = Vec::new();
+
+        for (idx, line) in lines.iter().enumerate() {
+            if refs.len() >= max_matches_per_file {
+                break;
+            }
+            for found in name_regex.find_iter(line) {
+                if refs.len() >= max_matches_per_file {
+                    break;
+                }
+                if total >= page_size {
+                    truncated = true;
+                    break;
+                }
+
+                let (snippet, snippet_truncated) =
+                    build_snippet(&lines, idx, snippet_context, MAX_SNIPPET_CHARS);
+                let mut item = json!({
+                    "line": idx + 1,
+                    "column": found.start() + 1,
+                    "snippet": snippet
+                });
+                if snippet_truncated {
+                    item["snippetTruncated"] = Value::Bool(true);
+                }
+
+                let item_bytes = serde_json::to_vec(&item)
+                    .context("Failed to encode find_refs result item")?
+                    .len();
+                if bytes + item_bytes > max_bytes {
+                    truncated = true;
+                    break;
+                }
+
+                bytes += item_bytes;
+                total += 1;
+                refs.push(item);
+            }
+            if truncated {
+                break;
+            }
+        }
+
+        if !refs.is_empty() {
+            last_path = Some(path.clone());
+            results.push(json!({ "path": path, "references": refs }));
+        }
+
+        if truncated {
+            break;
+        }
+    }
+
+    let mut response = json!({
+        "success": true,
+        "results": results,
+        "total": total,
+        "truncated": truncated
+    });
+    if truncated {
+        if let Some(cursor) = last_path {
+            response["cursor"] = Value::String(cursor);
+        }
+    }
+
+    Ok(response)
+}
+
+fn local_lsp_write(tool_name: &str, params: &Value) -> Result<Value> {
+    let root = project_root()?;
+    let result = if let Some(result) = crate::lsp::maybe_execute(tool_name, params, &root) {
+        result?
+    } else {
+        let mode = env::var("UNITY_CLI_LSP_MODE")
+            .ok()
+            .map(|value| value.to_ascii_lowercase());
+        if matches!(mode.as_deref(), Some("off")) {
+            return Err(anyhow!(
+                "{tool_name} requires LSP; set UNITY_CLI_LSP_MODE=auto or required"
+            ));
+        }
+
+        crate::lsp::execute_direct(tool_name, params, &root)?
+    };
+
+    if tool_name == "validate_text_edits" {
+        return Ok(result);
+    }
+
+    Ok(result)
+}
+
+pub async fn run_csharp_post_write_pipeline(
+    mut result: Value,
+    params: &Value,
+    overrides: &RuntimeOverrides,
+) -> Result<Value> {
+    let success = result
+        .get("success")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    let applied = result
+        .get("applied")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    if !(success && applied) {
+        return Ok(result);
+    }
+
+    let wait_for_compile = params
+        .get("waitForCompile")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    let refresh = params
+        .get("refresh")
+        .and_then(Value::as_bool)
+        .unwrap_or(false)
+        || wait_for_compile;
+    let update_index = params
+        .get("updateIndex")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+
+    if update_index {
+        let changed_files = changed_files_from_result(&result);
+        if !changed_files.is_empty() {
+            match local_update_index(&json!({ "paths": changed_files })) {
+                Ok(update_result) => {
+                    result["indexUpdate"] = update_result;
+                    if !result["indexUpdate"]["success"].as_bool().unwrap_or(false) {
+                        mark_post_write_failure(
+                            &mut result,
+                            "index_update_failed",
+                            "Index update failed",
+                        );
+                    }
+                }
+                Err(error) => {
+                    mark_post_write_failure(
+                        &mut result,
+                        "index_update_failed",
+                        &format!("{error:#}"),
+                    );
+                }
+            }
+        }
+    }
+
+    if refresh {
+        let config = match RuntimeConfig::from_overrides(overrides) {
+            Ok(config) => config,
+            Err(error) => {
+                mark_post_write_failure(
+                    &mut result,
+                    "endpoint_resolution_failed",
+                    &format!("{error:#}"),
+                );
+                return Ok(result);
+            }
+        };
+        match call_remote_tool(&config, "refresh_assets", json!({})).await {
+            Ok(refresh_result) => {
+                result["refresh"] = refresh_result;
+            }
+            Err(error) => {
+                mark_post_write_failure(&mut result, "refresh_failed", &format!("{error:#}"));
+                return Ok(result);
+            }
+        }
+
+        if wait_for_compile {
+            match wait_for_compile_state(&config).await {
+                Ok(compile_result) => {
+                    if let Some(messages) = compile_result.get("messages").and_then(Value::as_array)
+                    {
+                        if !result["diagnostics"].is_array() {
+                            result["diagnostics"] = json!([]);
+                        }
+                        let diagnostics = result["diagnostics"].as_array_mut().unwrap();
+                        diagnostics.extend(messages.iter().cloned());
+                    }
+                    result["compileState"] = compile_result;
+                }
+                Err(error) => {
+                    mark_post_write_failure(
+                        &mut result,
+                        "compile_wait_failed",
+                        &format!("{error:#}"),
+                    );
+                }
+            }
+        }
+    }
+
+    Ok(result)
+}
+
+fn mark_post_write_failure(result: &mut Value, reason: &str, message: &str) {
+    result["success"] = Value::Bool(false);
+    result["reason"] = Value::String(reason.to_string());
+    result["error"] = json!({"code": reason, "message": message});
+}
+
+fn changed_files_from_result(result: &Value) -> Vec<String> {
+    result
+        .get("changedFiles")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .map(str::to_string)
+        .collect()
+}
+
+async fn call_remote_tool(config: &RuntimeConfig, tool_name: &str, params: Value) -> Result<Value> {
+    // Post-write calls use the already selected endpoint and the caller's
+    // runtime. Do not replay the write if a refresh loses its connection.
+    let mut client = UnityClient::connect(config)
+        .await
+        .with_context(|| crate::core::doctor::connect_failure_message(&config.host, config.port))?;
+    client.call_tool(tool_name, params).await
+}
+
+async fn wait_for_compile_state(config: &RuntimeConfig) -> Result<Value> {
+    tokio::time::timeout(Duration::from_secs(60), poll_compile_state(config))
+        .await
+        .context("Timed out waiting for Unity compilation after saving files")?
+}
+
+async fn poll_compile_state(config: &RuntimeConfig) -> Result<Value> {
+    loop {
+        let state = call_remote_tool(
+            config,
+            "get_compilation_state",
+            json!({ "includeMessages": true, "maxMessages": 100 }),
+        )
+        .await;
+        let state = match state {
+            Ok(state) => state,
+            Err(error)
+                if error
+                    .downcast_ref::<crate::transport::UnityCommandError>()
+                    .is_some() =>
+            {
+                return Err(error);
+            }
+            Err(_) => {
+                // Domain Reload drops TCP connections. Only retry the read;
+                // the saved files and refresh must never be replayed here.
+                tokio::time::sleep(Duration::from_millis(250)).await;
+                continue;
+            }
+        };
+        let is_compiling = state
+            .get("isCompiling")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
+        let is_updating = state
+            .get("isUpdating")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
+        if !(is_compiling || is_updating) {
+            return Ok(state);
+        }
+        tokio::time::sleep(Duration::from_millis(250)).await;
+    }
+}
+
+fn requires_unityengine_using(inherits: Option<&str>) -> bool {
+    matches!(
+        inherits.map(str::trim),
+        Some("MonoBehaviour" | "ScriptableObject")
+    )
+}
+
+fn local_create_class(params: &Value) -> Result<Value> {
+    let name = params
+        .get("name")
+        .and_then(Value::as_str)
+        .ok_or_else(|| anyhow!("create_class requires `name`"))?;
+    let namespace = params.get("namespace").and_then(Value::as_str);
+    let inherits = params.get("inherits").and_then(Value::as_str);
+    let folder = params
+        .get("folder")
+        .and_then(Value::as_str)
+        .unwrap_or("Assets/Scripts");
+    let path_override = params.get("path").and_then(Value::as_str);
+
+    if !name
+        .chars()
+        .next()
+        .map(|c| c.is_ascii_alphabetic() || c == '_')
+        .unwrap_or(false)
+    {
+        return Err(anyhow!("Invalid class name: {name}"));
+    }
+    if !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+        return Err(anyhow!("Invalid class name: {name}"));
+    }
+
+    let root = project_root()?;
+
+    let rel_path = if let Some(p) = path_override {
+        let normalized = normalize_rel_path(p)
+            .ok_or_else(|| anyhow!("path must start with Assets/ or Packages/"))?;
+        normalized
+    } else {
+        let normalized_folder = normalize_rel_path(folder)
+            .ok_or_else(|| anyhow!("folder must start with Assets/ or Packages/"))?;
+        format!("{normalized_folder}/{name}.cs")
+    };
+
+    let abs_path = root.join(&rel_path);
+    if abs_path.exists() {
+        return Err(anyhow!("File already exists: {rel_path}"));
+    }
+
+    let body = render_class_template(name, namespace, inherits);
+
+    if env::var("UNITY_CLI_LSP_MODE").is_ok_and(|mode| mode.eq_ignore_ascii_case("off")) {
+        if let Some(parent) = abs_path.parent() {
+            fs::create_dir_all(parent)
+                .with_context(|| format!("Failed to create directory: {}", parent.display()))?;
+        }
+        fs::write(&abs_path, &body)
+            .with_context(|| format!("Failed to write file: {}", abs_path.display()))?;
+        return Ok(json!({ "success": true, "path": rel_path, "content": body }));
+    }
+
+    // Write through the same LSP path as `create_csharp_file` so the generated
+    // class is validated and the post-write pipeline sees an LSP result.
+    let mut result = local_lsp_write(
+        "create_csharp_file",
+        &json!({
+            "relative": rel_path,
+            "text": body,
+            "overwrite": false
+        }),
+    )?;
+    result["path"] = json!(rel_path);
+    result["content"] = json!(body);
+    Ok(result)
+}
+
+fn render_class_template(name: &str, namespace: Option<&str>, inherits: Option<&str>) -> String {
+    let mut body = String::new();
+    if requires_unityengine_using(inherits) {
+        body.push_str("using UnityEngine;\n\n");
+    }
+
+    if let Some(ns) = namespace {
+        body.push_str(&format!("namespace {ns}\n{{\n"));
+    }
+
+    let indent = if namespace.is_some() { "    " } else { "" };
+    let base = inherits.map(|b| format!(" : {b}")).unwrap_or_default();
+
+    body.push_str(&format!(
+        "{indent}public class {name}{base}\n{indent}{{\n{indent}}}\n"
+    ));
+
+    if namespace.is_some() {
+        body.push_str("}\n");
+    }
+
+    body
+}
+
+fn project_root() -> Result<PathBuf> {
+    if let Ok(raw) = env::var("UNITY_PROJECT_ROOT") {
+        let trimmed = raw.trim();
+        if !trimmed.is_empty() {
+            return Ok(PathBuf::from(trimmed));
+        }
+    }
+    env::current_dir().context("Failed to resolve current directory")
+}
+
+fn resolve_existing_project_path(root: &Path, rel: &str) -> Result<PathBuf> {
+    let candidate = resolve_candidate_project_path(root, rel)?;
+    let normalized = candidate
+        .canonicalize()
+        .with_context(|| format!("Failed to resolve path: {}", candidate.display()))?;
+    let root_canon = root
+        .canonicalize()
+        .with_context(|| format!("Failed to resolve project root: {}", root.display()))?;
+
+    if !normalized.starts_with(&root_canon) {
+        return Err(anyhow!("path escapes project root"));
+    }
+    Ok(normalized)
+}
+
+fn resolve_candidate_project_path(root: &Path, rel: &str) -> Result<PathBuf> {
+    use std::path::Component;
+    let rel_path = Path::new(rel);
+    // On Windows `/etc/passwd` and `C:file` are not `is_absolute()`, yet
+    // `join` would still replace `root` with them.
+    if rel_path
+        .components()
+        .any(|component| matches!(component, Component::Prefix(_) | Component::RootDir))
+    {
+        return Err(anyhow!("path must be project-relative"));
+    }
+    if rel_path
+        .components()
+        .any(|component| matches!(component, Component::ParentDir))
+    {
+        return Err(anyhow!("path must not include `..`"));
+    }
+    Ok(root.join(rel_path))
+}
+
+fn normalize_rel_or_abs_path(root: &Path, raw: &str) -> Result<String> {
+    let path = Path::new(raw);
+    if path.is_absolute() {
+        let root_canon = root
+            .canonicalize()
+            .with_context(|| format!("Failed to resolve project root: {}", root.display()))?;
+
+        let rel = if let Ok(canon_path) = path.canonicalize() {
+            canon_path.strip_prefix(&root_canon).ok().map(PathBuf::from)
+        } else {
+            path.strip_prefix(&root_canon).ok().map(PathBuf::from)
+        }
+        .ok_or_else(|| anyhow!("path must be under project root"))?;
+
+        let rel_text = rel.to_string_lossy().replace('\\', "/");
+        return normalize_rel_path(&rel_text)
+            .ok_or_else(|| anyhow!("path must start with Assets/ or Packages/"));
+    }
+
+    normalize_rel_path(raw).ok_or_else(|| anyhow!("path must start with Assets/ or Packages/"))
+}
+
+fn normalize_rel_path(raw: &str) -> Option<String> {
+    let mut normalized = raw.trim().replace('\\', "/");
+    while normalized.starts_with("./") {
+        normalized = normalized[2..].to_string();
+    }
+    normalized = normalized.trim_start_matches('/').to_string();
+
+    let prefixes = ["Assets/", "Packages/", "Library/PackageCache/"];
+    if let Some(start) = prefixes
+        .iter()
+        .filter_map(|prefix| normalized.find(prefix))
+        .min()
+    {
+        normalized = normalized[start..].to_string();
+    }
+
+    if !prefixes.iter().any(|prefix| normalized.starts_with(prefix)) {
+        return None;
+    }
+
+    let parts = normalized
+        .split('/')
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>();
+    if parts.contains(&"..") {
+        return None;
+    }
+
+    Some(parts.join("/"))
+}
+
+fn collect_cs_files(root: &Path, dirs: &[PathBuf]) -> Vec<(String, PathBuf)> {
+    let mut by_path = BTreeMap::new();
+
+    for dir in dirs {
+        if !dir.exists() {
+            continue;
+        }
+        for entry in WalkDir::new(dir)
+            .follow_links(false)
+            .into_iter()
+            .filter_entry(is_included_entry)
+            .filter_map(|entry| entry.ok())
+        {
+            if !entry.file_type().is_file() {
+                continue;
+            }
+            let abs = entry.path();
+            if !is_csharp_file(abs) {
+                continue;
+            }
+            let rel = to_rel_project_path(root, abs);
+            by_path.insert(rel, abs.to_path_buf());
+        }
+    }
+
+    by_path.into_iter().collect()
+}
+
+fn is_included_entry(entry: &DirEntry) -> bool {
+    if entry.depth() == 0 {
+        return true;
+    }
+    if !entry.file_type().is_dir() {
+        return true;
+    }
+
+    let name = entry.file_name().to_string_lossy();
+    !matches!(name.as_ref(), ".git" | "obj" | "bin")
+}
+
+fn is_csharp_file(path: &Path) -> bool {
+    path.extension()
+        .and_then(|value| value.to_str())
+        .map(|ext| ext.eq_ignore_ascii_case("cs"))
+        .unwrap_or(false)
+}
+
+fn extract_symbols_from_file(abs: &Path, rel_path: &str) -> Result<Vec<SymbolEntry>> {
+    let text = fs::read_to_string(abs)
+        .with_context(|| format!("Failed to read C# file: {}", abs.display()))?;
+    Ok(extract_symbols_from_text(rel_path, &text))
+}
+
+fn extract_symbols_from_text(path: &str, text: &str) -> Vec<SymbolEntry> {
+    let mut symbols = Vec::new();
+    let mut namespace: Option<String> = None;
+    let mut type_stack: Vec<ScopedType> = Vec::new();
+    let mut pending_type: Option<String> = None;
+    let mut in_block_comment = false;
+    let mut brace_depth = 0i32;
+
+    for (line_idx, line) in text.lines().enumerate() {
+        while let Some(last) = type_stack.last() {
+            if last.depth > brace_depth {
+                type_stack.pop();
+            } else {
+                break;
+            }
+        }
+
+        let cleaned = strip_csharp_comments(line, &mut in_block_comment);
+        let trimmed = cleaned.trim();
+        let open_count = cleaned.chars().filter(|c| *c == '{').count() as i32;
+        let close_count = cleaned.chars().filter(|c| *c == '}').count() as i32;
+
+        if let Some(caps) = namespace_regex().captures(trimmed) {
+            namespace = Some(caps[1].to_string());
+        }
+
+        let mut push_type_now: Option<String> = None;
+        if let Some(caps) = type_regex().captures(trimmed) {
+            let kind = caps[1].to_string();
+            let symbol_name = caps[2].to_string();
+            let container = type_stack.last().map(|scope| scope.name.clone());
+            symbols.push(SymbolEntry {
+                path: path.to_string(),
+                name: symbol_name.clone(),
+                kind,
+                line: line_idx + 1,
+                column: symbol_column(line, &symbol_name),
+                name_path: build_name_path(&type_stack, &symbol_name),
+                container,
+                namespace: namespace.clone(),
+            });
+
+            if open_count > close_count {
+                push_type_now = Some(symbol_name);
+            } else if open_count == 0 {
+                pending_type = Some(symbol_name);
+            }
+        } else if let Some(container_name) = type_stack.last().map(|scope| scope.name.clone()) {
+            if trimmed.starts_with('[') {
+                // Attribute lines are intentionally ignored.
+            } else if let Some(caps) = property_regex().captures(trimmed) {
+                let symbol_name = caps[1].to_string();
+                symbols.push(SymbolEntry {
+                    path: path.to_string(),
+                    name: symbol_name.clone(),
+                    kind: "property".to_string(),
+                    line: line_idx + 1,
+                    column: symbol_column(line, &symbol_name),
+                    name_path: build_name_path(&type_stack, &symbol_name),
+                    container: Some(container_name),
+                    namespace: namespace.clone(),
+                });
+            } else if let Some(caps) = method_regex().captures(trimmed) {
+                let symbol_name = caps[1].to_string();
+                if !is_control_keyword(&symbol_name) {
+                    symbols.push(SymbolEntry {
+                        path: path.to_string(),
+                        name: symbol_name.clone(),
+                        kind: "method".to_string(),
+                        line: line_idx + 1,
+                        column: symbol_column(line, &symbol_name),
+                        name_path: build_name_path(&type_stack, &symbol_name),
+                        container: Some(container_name),
+                        namespace: namespace.clone(),
+                    });
+                }
+            } else if let Some(caps) = constructor_regex().captures(trimmed) {
+                let symbol_name = caps[1].to_string();
+                if symbol_name == container_name {
+                    symbols.push(SymbolEntry {
+                        path: path.to_string(),
+                        name: symbol_name.clone(),
+                        kind: "constructor".to_string(),
+                        line: line_idx + 1,
+                        column: symbol_column(line, &symbol_name),
+                        name_path: build_name_path(&type_stack, &symbol_name),
+                        container: Some(container_name),
+                        namespace: namespace.clone(),
+                    });
+                }
+            } else if let Some(caps) = field_regex().captures(trimmed) {
+                let symbol_name = caps[1].to_string();
+                symbols.push(SymbolEntry {
+                    path: path.to_string(),
+                    name: symbol_name.clone(),
+                    kind: "field".to_string(),
+                    line: line_idx + 1,
+                    column: symbol_column(line, &symbol_name),
+                    name_path: build_name_path(&type_stack, &symbol_name),
+                    container: Some(container_name),
+                    namespace: namespace.clone(),
+                });
+            }
+        }
+
+        brace_depth += open_count - close_count;
+        if brace_depth < 0 {
+            brace_depth = 0;
+        }
+
+        if let Some(type_name) = push_type_now {
+            type_stack.push(ScopedType {
+                name: type_name,
+                depth: brace_depth.max(1),
+            });
+        } else if pending_type.is_some() && open_count > close_count {
+            type_stack.push(ScopedType {
+                name: pending_type.take().expect("pending type should exist"),
+                depth: brace_depth.max(1),
+            });
+        }
+
+        while let Some(last) = type_stack.last() {
+            if last.depth > brace_depth {
+                type_stack.pop();
+            } else {
+                break;
+            }
+        }
+    }
+
+    symbols
+}
+
+fn strip_csharp_comments(line: &str, in_block_comment: &mut bool) -> String {
+    let mut out = String::new();
+    let chars = line.chars().collect::<Vec<_>>();
+    let mut idx = 0usize;
+    let mut in_string = false;
+    let mut escape = false;
+
+    while idx < chars.len() {
+        let ch = chars[idx];
+        let next = chars.get(idx + 1).copied();
+
+        if *in_block_comment {
+            if ch == '*' && next == Some('/') {
+                *in_block_comment = false;
+                idx += 2;
+            } else {
+                idx += 1;
+            }
+            continue;
+        }
+
+        if !in_string && ch == '/' && next == Some('*') {
+            *in_block_comment = true;
+            idx += 2;
+            continue;
+        }
+        if !in_string && ch == '/' && next == Some('/') {
+            break;
+        }
+
+        if ch == '"' && !escape {
+            in_string = !in_string;
+        }
+        escape = ch == '\\' && !escape;
+        out.push(ch);
+        idx += 1;
+    }
+
+    out
+}
+
+fn symbol_column(line: &str, name: &str) -> usize {
+    line.find(name).map(|idx| idx + 1).unwrap_or(1)
+}
+
+fn build_name_path(type_stack: &[ScopedType], symbol_name: &str) -> String {
+    let mut segments = type_stack
+        .iter()
+        .map(|scope| scope.name.as_str())
+        .collect::<Vec<_>>();
+    segments.push(symbol_name);
+    segments.join("/")
+}
+
+fn is_control_keyword(name: &str) -> bool {
+    matches!(
+        name,
+        "if" | "for" | "foreach" | "while" | "switch" | "catch" | "using" | "lock"
+    )
+}
+
+fn namespace_regex() -> &'static Regex {
+    static REGEX: OnceLock<Regex> = OnceLock::new();
+    REGEX.get_or_init(|| {
+        Regex::new(r"^\s*namespace\s+([A-Za-z_][A-Za-z0-9_.]*)")
+            .expect("namespace regex should compile")
+    })
+}
+
+fn type_regex() -> &'static Regex {
+    static REGEX: OnceLock<Regex> = OnceLock::new();
+    REGEX.get_or_init(|| {
+        Regex::new(
+            r"^\s*(?:public|private|protected|internal|static|sealed|abstract|partial|new|\s)*(class|struct|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)",
+        )
+        .expect("type regex should compile")
+    })
+}
+
+fn method_regex() -> &'static Regex {
+    static REGEX: OnceLock<Regex> = OnceLock::new();
+    REGEX.get_or_init(|| {
+        Regex::new(
+            r"^\s*(?:public|private|protected|internal|static|virtual|override|sealed|abstract|async|partial|new|extern|\s)+[A-Za-z_][A-Za-z0-9_<>,\[\]\.?]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^;{}]*\)\s*(?:\{|=>)",
+        )
+        .expect("method regex should compile")
+    })
+}
+
+fn constructor_regex() -> &'static Regex {
+    static REGEX: OnceLock<Regex> = OnceLock::new();
+    REGEX.get_or_init(|| {
+        Regex::new(
+            r"^\s*(?:public|private|protected|internal|static|extern|\s)*([A-Za-z_][A-Za-z0-9_]*)\s*\([^;{}]*\)\s*(?:\{|=>)",
+        )
+        .expect("constructor regex should compile")
+    })
+}
+
+fn property_regex() -> &'static Regex {
+    static REGEX: OnceLock<Regex> = OnceLock::new();
+    REGEX.get_or_init(|| {
+        Regex::new(
+            r"^\s*(?:public|private|protected|internal|static|virtual|override|sealed|abstract|new|\s)+[A-Za-z_][A-Za-z0-9_<>,\[\]\.?]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{\s*(?:get|set)\b",
+        )
+        .expect("property regex should compile")
+    })
+}
+
+fn field_regex() -> &'static Regex {
+    static REGEX: OnceLock<Regex> = OnceLock::new();
+    REGEX.get_or_init(|| {
+        Regex::new(
+            r"^\s*(?:public|private|protected|internal|static|readonly|const|volatile|new|\s)+[A-Za-z_][A-Za-z0-9_<>,\[\]\.?]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:=|;)",
+        )
+        .expect("field regex should compile")
+    })
+}
+
+fn index_file_path(root: &Path) -> PathBuf {
+    root.join(INDEX_REL_PATH)
+}
+
+fn load_index_if_exists(root: &Path) -> Result<Option<SymbolIndex>> {
+    let path = index_file_path(root);
+    if !path.exists() {
+        return Ok(None);
+    }
+
+    let raw = fs::read_to_string(&path)
+        .with_context(|| format!("Failed to read local index: {}", path.display()))?;
+    let mut index: SymbolIndex = serde_json::from_str(&raw)
+        .with_context(|| format!("Failed to parse local index JSON: {}", path.display()))?;
+    if index.version == 0 {
+        index.version = INDEX_VERSION;
+    }
+    Ok(Some(index))
+}
+
+fn save_index(root: &Path, index: &SymbolIndex) -> Result<PathBuf> {
+    let path = index_file_path(root);
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("Failed to create index directory: {}", parent.display()))?;
+    }
+    let serialized =
+        serde_json::to_string_pretty(index).context("Failed to serialize local index JSON")?;
+    fs::write(&path, serialized)
+        .with_context(|| format!("Failed to write local index file: {}", path.display()))?;
+    Ok(path)
+}
+
+fn index_is_ready(index: &SymbolIndex) -> bool {
+    index
+        .files
+        .values()
+        .any(|file| !file.symbols.is_empty() || !file.signature.is_empty())
+}
+
+fn index_not_ready_response() -> Value {
+    json!({
+        "success": false,
+        "error": "index_not_ready",
+        "message": "Code index is not built. Run build_index first.",
+        "hint": "Use build_index to create local symbol index, then retry."
+    })
+}
+
+fn symbol_name_matches(candidate: &str, expected: &str, exact: bool) -> bool {
+    if exact {
+        candidate == expected
+    } else {
+        candidate.contains(expected)
+    }
+}
+
+fn path_matches_scope(path: &str, scope: &str) -> bool {
+    match scope {
+        "assets" => path.starts_with("Assets/"),
+        "packages" => path.starts_with("Packages/") || path.starts_with("Library/PackageCache/"),
+        "embedded" => path.starts_with("Packages/"),
+        "library" => path.starts_with("Library/PackageCache/"),
+        _ => true,
+    }
+}
+
+fn symbol_to_value(symbol: &SymbolEntry) -> Value {
+    let mut object = serde_json::Map::new();
+    object.insert("name".to_string(), Value::String(symbol.name.clone()));
+    object.insert("kind".to_string(), Value::String(symbol.kind.clone()));
+    object.insert("line".to_string(), Value::Number(symbol.line.into()));
+    object.insert("column".to_string(), Value::Number(symbol.column.into()));
+    object.insert(
+        "namePath".to_string(),
+        Value::String(symbol.name_path.clone()),
+    );
+    if let Some(container) = &symbol.container {
+        object.insert("container".to_string(), Value::String(container.clone()));
+    }
+    if let Some(namespace) = &symbol.namespace {
+        object.insert("namespace".to_string(), Value::String(namespace.clone()));
+    }
+    Value::Object(object)
+}
+
+fn file_signature(path: &Path) -> String {
+    match fs::metadata(path) {
+        Ok(metadata) => {
+            let mtime = metadata
+                .modified()
+                .ok()
+                .and_then(|time| time.duration_since(UNIX_EPOCH).ok())
+                .map(|duration| duration.as_millis())
+                .unwrap_or(0);
+            format!("{}-{}", metadata.len(), mtime)
+        }
+        Err(_) => "0-0".to_string(),
+    }
+}
+
+fn now_epoch_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_millis() as u64)
+        .unwrap_or(0)
+}
+
+fn build_snippet(lines: &[&str], index: usize, context: usize, max_chars: usize) -> (String, bool) {
+    let start = index.saturating_sub(context);
+    let end = (index + context + 1).min(lines.len());
+    let joined = lines[start..end].join("\n");
+    if joined.chars().count() <= max_chars {
+        return (joined, false);
+    }
+
+    let mut shortened = joined.chars().take(max_chars).collect::<String>();
+    shortened.push_str("...");
+    (shortened, true)
+}
+
+fn to_rel_project_path(root: &Path, path: &Path) -> String {
+    match path.strip_prefix(root) {
+        Ok(rel) => rel.to_string_lossy().replace('\\', "/"),
+        Err(_) => path.to_string_lossy().replace('\\', "/"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        build_snippet, collect_cs_files, extract_symbols_from_text, index_is_ready,
+        index_not_ready_response, maybe_execute_local_tool, normalize_rel_or_abs_path,
+        normalize_rel_path, path_matches_scope, render_class_template, requires_unityengine_using,
+        resolve_candidate_project_path, strip_csharp_comments, symbol_name_matches, IndexedFile,
+        SymbolIndex,
+    };
+    use serde_json::json;
+    use std::path::{Path, PathBuf};
+    use std::sync::{Mutex, OnceLock};
+
+    fn env_lock() -> &'static Mutex<()> {
+        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+        LOCK.get_or_init(|| Mutex::new(()))
+    }
+
+    struct ScopedEnv {
+        key: &'static str,
+        previous: Option<std::ffi::OsString>,
+    }
+
+    impl ScopedEnv {
+        fn set(key: &'static str, value: &str) -> Self {
+            let previous = std::env::var_os(key);
+            std::env::set_var(key, value);
+            Self { key, previous }
+        }
+    }
+
+    impl Drop for ScopedEnv {
+        fn drop(&mut self) {
+            match &self.previous {
+                Some(value) => std::env::set_var(self.key, value),
+                None => std::env::remove_var(self.key),
+            }
+        }
+    }
+
+    fn write_file(path: &Path, content: &str) {
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).expect("parent directory should be created");
+        }
+        std::fs::write(path, content).expect("file should be written");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    #[allow(clippy::await_holding_lock)]
+    async fn post_write_refresh_failure_preserves_applied_files_without_runtime_panic() {
+        let guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|p| p.into_inner());
+        let _environment = crate::test_env::TestEnvironment::new(&guard);
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        std::env::set_var(
+            "UNITY_CLI_PORT",
+            listener.local_addr().unwrap().port().to_string(),
+        );
+        std::env::set_var("UNITY_CLI_TIMEOUT_MS", "20");
+        drop(listener);
+        let result = super::run_csharp_post_write_pipeline(
+            json!({"success":true,"applied":true,"changedFiles":["Assets/Test.cs"]}),
+            &json!({"refresh":true}),
+            &crate::config::RuntimeOverrides::default(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(result["success"], false);
+        assert_eq!(result["applied"], true);
+        assert_eq!(result["changedFiles"], json!(["Assets/Test.cs"]));
+        assert_eq!(result["reason"], "refresh_failed");
+    }
+
+    #[test]
+    fn default_runtime_config_falls_back_to_ipv4_loopback() {
+        let _guard = crate::test_env::env_lock()
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let saved = std::env::var("UNITY_CLI_HOST").ok();
+        std::env::remove_var("UNITY_CLI_HOST");
+        let host = crate::config::default_host();
+        if let Some(value) = saved {
+            std::env::set_var("UNITY_CLI_HOST", value);
+        }
+        assert_eq!(host, crate::config::DEFAULT_HOST);
+    }
+
+    #[test]
+    fn read_returns_file_slice() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Test.cs"),
+            "line1\nline2\nline3\nline4\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let value = maybe_execute_local_tool(
+            "read",
+            &json!({"path":"Assets/Scripts/Test.cs","startLine":2,"maxLines":2}),
+        )
+        .expect("tool should be handled")
+        .expect("read should succeed");
+
+        assert_eq!(value["startLine"], 2);
+        assert_eq!(value["endLine"], 3);
+        assert_eq!(value["lineCount"], 2);
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn search_finds_matching_lines() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Test.cs"),
+            "public class Foo {}\npublic class Bar {}\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let value = maybe_execute_local_tool("search", &json!({"pattern":"class","limit":10}))
+            .expect("tool should be handled")
+            .expect("search should succeed");
+
+        assert_eq!(value["count"], 2);
+        assert_eq!(value["truncated"], false);
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn list_packages_lists_package_dirs() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        std::fs::create_dir_all(tmp.path().join("Packages/com.test.a"))
+            .expect("package dir should be created");
+        std::fs::create_dir_all(tmp.path().join("Packages/com.test.b"))
+            .expect("package dir should be created");
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let value = maybe_execute_local_tool("list_packages", &json!({}))
+            .expect("tool should be handled")
+            .expect("list_packages should succeed");
+
+        assert_eq!(value["count"], 2);
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn get_symbols_extracts_class_and_method() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let _lsp_off = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Player.cs"),
+            "namespace Demo {\n  public class Player {\n    public int Health;\n    public void Jump() {}\n  }\n}\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let value =
+            maybe_execute_local_tool("get_symbols", &json!({"path":"Assets/Scripts/Player.cs"}))
+                .expect("tool should be handled")
+                .expect("get_symbols should succeed");
+        assert_eq!(value["backend"], "index");
+        assert_eq!(value["fallbackReason"], "lsp_disabled");
+
+        let symbols = value["symbols"]
+            .as_array()
+            .expect("symbols should be an array");
+        assert!(symbols
+            .iter()
+            .any(|symbol| symbol["name"] == "Player" && symbol["kind"] == "class"));
+        assert!(symbols
+            .iter()
+            .any(|symbol| symbol["name"] == "Jump" && symbol["kind"] == "method"));
+        assert!(symbols
+            .iter()
+            .any(|symbol| symbol["name"] == "Jump" && symbol["namePath"] == "Player/Jump"));
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn get_symbols_defaults_to_lsp_and_reports_index_fallback() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        let tools = tempfile::tempdir().expect("tools dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Player.cs"),
+            "public class Player { public void Jump() {} }\n",
+        );
+        let _root = ScopedEnv::set(
+            "UNITY_PROJECT_ROOT",
+            tmp.path().to_str().expect("project root should be UTF-8"),
+        );
+        let _tools = ScopedEnv::set(
+            "UNITY_CLI_TOOLS_ROOT",
+            tools.path().to_str().expect("tools root should be UTF-8"),
+        );
+        let previous_mode = std::env::var_os("UNITY_CLI_LSP_MODE");
+        std::env::remove_var("UNITY_CLI_LSP_MODE");
+
+        let value =
+            maybe_execute_local_tool("get_symbols", &json!({"path":"Assets/Scripts/Player.cs"}))
+                .expect("tool should be handled")
+                .expect("get_symbols should fall back to the index");
+
+        if let Some(mode) = previous_mode {
+            std::env::set_var("UNITY_CLI_LSP_MODE", mode);
+        }
+        assert_eq!(value["backend"], "index");
+        assert_eq!(value["fallbackReason"], "lsp_not_installed");
+        assert!(value["symbols"]
+            .as_array()
+            .expect("symbols should be an array")
+            .iter()
+            .any(|symbol| symbol["name"] == "Player"));
+    }
+
+    #[test]
+    fn find_symbol_returns_index_not_ready_before_build() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let _lsp_off = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Player.cs"),
+            "public class Player {}\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let value = maybe_execute_local_tool("find_symbol", &json!({"name":"Player"}))
+            .expect("tool should be handled")
+            .expect("find_symbol should return structured response");
+
+        assert_eq!(value["success"], false);
+        assert_eq!(value["error"], "index_not_ready");
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn build_index_and_find_symbol_roundtrip() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let _lsp_off = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Player.cs"),
+            "namespace Demo {\n  public class Player { public void Jump() {} }\n}\n",
+        );
+        write_file(
+            &tmp.path().join("Packages/com.demo/Runtime/Enemy.cs"),
+            "namespace Demo {\n  public class Enemy { }\n}\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let build = maybe_execute_local_tool("build_index", &json!({}))
+            .expect("tool should be handled")
+            .expect("build_index should succeed");
+        assert_eq!(build["indexedFiles"], 2);
+
+        let status = maybe_execute_local_tool("get_index_status", &json!({}))
+            .expect("tool should be handled")
+            .expect("get_index_status should succeed");
+        assert_eq!(status["success"], true);
+        assert_eq!(status["ready"], true);
+        assert_eq!(status["indexedFiles"], 2);
+        assert!(
+            status["indexedSymbols"]
+                .as_u64()
+                .expect("indexedSymbols should be number")
+                >= 2
+        );
+
+        let found = maybe_execute_local_tool(
+            "find_symbol",
+            &json!({"name":"Player","kind":"class","scope":"assets","exact":true}),
+        )
+        .expect("tool should be handled")
+        .expect("find_symbol should succeed");
+        assert_eq!(found["success"], true);
+        assert!(found["total"].as_u64().expect("total should be number") >= 1);
+        assert!(found["results"]
+            .as_array()
+            .expect("results should be array")
+            .iter()
+            .any(|result| result["path"].as_str().unwrap_or("").starts_with("Assets/")));
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn update_index_refreshes_symbol_names() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let _lsp_off = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        let target = tmp.path().join("Assets/Scripts/Player.cs");
+        write_file(&target, "public class BeforeName {}\n");
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        maybe_execute_local_tool("build_index", &json!({}))
+            .expect("tool should be handled")
+            .expect("build_index should succeed");
+        write_file(&target, "public class AfterName {}\n");
+
+        let updated = maybe_execute_local_tool(
+            "update_index",
+            &json!({"paths":["Assets/Scripts/Player.cs"]}),
+        )
+        .expect("tool should be handled")
+        .expect("update_index should succeed");
+        assert_eq!(updated["updated"], 1);
+
+        let before =
+            maybe_execute_local_tool("find_symbol", &json!({"name":"BeforeName","exact":true}))
+                .expect("tool should be handled")
+                .expect("find_symbol should succeed");
+        assert_eq!(before["total"], 0);
+
+        let after =
+            maybe_execute_local_tool("find_symbol", &json!({"name":"AfterName","exact":true}))
+                .expect("tool should be handled")
+                .expect("find_symbol should succeed");
+        assert_eq!(after["success"], true);
+        assert!(after["total"].as_u64().expect("total should be number") >= 1);
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn find_refs_supports_cursor_paging() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let _lsp_off = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Player.cs"),
+            "public class Player {}\n",
+        );
+        write_file(
+            &tmp.path().join("Assets/Scripts/UserA.cs"),
+            "public class UserA { private Player _p; }\n",
+        );
+        write_file(
+            &tmp.path().join("Assets/Scripts/UserB.cs"),
+            "public class UserB { private Player _p; }\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        maybe_execute_local_tool("build_index", &json!({}))
+            .expect("tool should be handled")
+            .expect("build_index should succeed");
+
+        let first_page = maybe_execute_local_tool(
+            "find_refs",
+            &json!({"name":"Player","pageSize":1,"maxBytes":65536,"maxMatchesPerFile":5}),
+        )
+        .expect("tool should be handled")
+        .expect("find_refs should succeed");
+
+        assert_eq!(first_page["success"], true);
+        assert_eq!(first_page["truncated"], true);
+        let cursor = first_page["cursor"]
+            .as_str()
+            .expect("cursor should be present when truncated")
+            .to_string();
+
+        let second_page = maybe_execute_local_tool(
+            "find_refs",
+            &json!({"name":"Player","pageSize":10,"startAfter":cursor}),
+        )
+        .expect("tool should be handled")
+        .expect("find_refs should succeed");
+        assert_eq!(second_page["success"], true);
+        assert!(
+            second_page["total"]
+                .as_u64()
+                .expect("total should be number")
+                >= 1,
+            "expected remaining reference results after cursor"
+        );
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn create_class_template_generates_simple_class() {
+        let content = render_class_template("EnemyAI", None, None);
+        assert!(!content.contains("using UnityEngine;"));
+        assert!(content.contains("public class EnemyAI"));
+    }
+
+    #[test]
+    fn create_class_template_with_namespace_and_inherits() {
+        let content =
+            render_class_template("Player", Some("Game.Characters"), Some("MonoBehaviour"));
+        assert!(content.contains("namespace Game.Characters"));
+        assert!(content.contains("using UnityEngine;"));
+        assert!(content.contains("public class Player : MonoBehaviour"));
+    }
+
+    #[test]
+    fn create_class_rejects_existing_file() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let _mode = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Existing.cs"),
+            "public class Existing {}\n",
+        );
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let result = maybe_execute_local_tool(
+            "create_class",
+            &json!({"name":"Existing","folder":"Assets/Scripts"}),
+        )
+        .expect("tool should be handled");
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("File already exists"));
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn create_class_rejects_invalid_name() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+
+        let result = maybe_execute_local_tool(
+            "create_class",
+            &json!({"name":"123Invalid","folder":"Assets/Scripts"}),
+        )
+        .expect("tool should be handled");
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Invalid class name"));
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+    }
+
+    #[test]
+    fn helper_path_normalization_and_resolution_cover_edge_cases() {
+        let root = tempfile::tempdir().expect("temp dir should be created");
+        let root_path = root.path();
+        write_file(
+            &root_path.join("Assets/Scripts/Player.cs"),
+            "public class Player {}\n",
+        );
+
+        assert_eq!(
+            normalize_rel_path("./Assets/Scripts/Player.cs").as_deref(),
+            Some("Assets/Scripts/Player.cs")
+        );
+        assert!(normalize_rel_path("tmp/Player.cs").is_none());
+        assert!(normalize_rel_path("Assets/../Secret.cs").is_none());
+
+        let rel = normalize_rel_or_abs_path(root_path, "Assets/Scripts/Player.cs")
+            .expect("relative project path should normalize");
+        assert_eq!(rel, "Assets/Scripts/Player.cs");
+
+        let abs = root_path.join("Assets/Scripts/Player.cs");
+        let rel_abs = normalize_rel_or_abs_path(
+            root_path,
+            abs.to_str().expect("absolute path should be valid UTF-8"),
+        )
+        .expect("absolute path under root should normalize");
+        assert_eq!(rel_abs, "Assets/Scripts/Player.cs");
+
+        let outside = PathBuf::from("/tmp/local-tools-outside.cs");
+        let outside_result = normalize_rel_or_abs_path(
+            root_path,
+            outside
+                .to_str()
+                .expect("outside path should be valid UTF-8"),
+        );
+        assert!(outside_result.is_err());
+
+        assert!(resolve_candidate_project_path(root_path, "/etc/passwd").is_err());
+        assert!(resolve_candidate_project_path(root_path, "../bad.cs").is_err());
+        assert!(resolve_candidate_project_path(root_path, "Assets/Scripts/Player.cs").is_ok());
+    }
+
+    #[test]
+    fn helper_symbol_and_scope_predicates_work() {
+        assert!(symbol_name_matches("PlayerController", "Player", false));
+        assert!(!symbol_name_matches("PlayerController", "Player", true));
+        assert!(symbol_name_matches("Player", "Player", true));
+
+        assert!(path_matches_scope("Assets/Scripts/A.cs", "assets"));
+        assert!(path_matches_scope("Packages/com.demo/A.cs", "packages"));
+        assert!(path_matches_scope(
+            "Library/PackageCache/com.demo/A.cs",
+            "packages"
+        ));
+        assert!(!path_matches_scope("Assets/Scripts/A.cs", "packages"));
+    }
+
+    #[test]
+    fn helper_comment_and_snippet_processing_works() {
+        let mut in_block = false;
+        assert_eq!(
+            strip_csharp_comments("var a = 1; // trailing", &mut in_block).trim(),
+            "var a = 1;"
+        );
+        assert!(!in_block);
+
+        let first = strip_csharp_comments("/* begin", &mut in_block);
+        assert_eq!(first, "");
+        assert!(in_block);
+        let second = strip_csharp_comments("still comment */ int x = 1;", &mut in_block);
+        assert_eq!(second.trim(), "int x = 1;");
+        assert!(!in_block);
+
+        let lines = vec!["line 1", "line 2", "line 3", "line 4"];
+        let (short, short_truncated) = build_snippet(&lines, 1, 1, 100);
+        assert!(!short_truncated);
+        assert!(short.contains("line 2"));
+
+        let (long, long_truncated) = build_snippet(&lines, 1, 2, 8);
+        assert!(long_truncated);
+        assert!(long.ends_with("..."));
+    }
+
+    #[test]
+    fn extract_symbols_from_text_covers_major_symbol_kinds() {
+        let text = r#"
+namespace Demo.Game
+{
+    public class Player
+    {
+        public int Health;
+        public int Score { get; set; }
+        public Player() {}
+        public void Jump() {}
+        public void Loop()
+        {
+            if (true) { }
+        }
+    }
+}
+"#;
+        let symbols = extract_symbols_from_text("Assets/Scripts/Player.cs", text);
+        assert!(symbols
+            .iter()
+            .any(|s| s.name == "Player" && s.kind == "class"));
+        assert!(symbols
+            .iter()
+            .any(|s| s.name == "Health" && s.kind == "field"));
+        assert!(symbols
+            .iter()
+            .any(|s| s.name == "Score" && s.kind == "property"));
+        assert!(symbols
+            .iter()
+            .any(|s| s.name == "Jump" && s.kind == "method"));
+        assert!(symbols
+            .iter()
+            .any(|s| s.name == "Player" && s.kind == "constructor"));
+        assert!(symbols
+            .iter()
+            .any(|s| s.name == "Jump" && s.name_path == "Player/Jump"));
+        assert!(!symbols.iter().any(|s| s.name == "if"));
+    }
+
+    #[test]
+    fn collect_cs_files_and_index_helpers_cover_readiness_branches() {
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        write_file(
+            &tmp.path().join("Assets/Scripts/Ok.cs"),
+            "public class Ok {}\n",
+        );
+        write_file(&tmp.path().join("Assets/Scripts/Note.txt"), "ignore\n");
+        write_file(
+            &tmp.path().join("Assets/.git/Hidden.cs"),
+            "public class Hidden {}\n",
+        );
+        write_file(
+            &tmp.path().join("Assets/obj/Build.cs"),
+            "public class Build {}\n",
+        );
+
+        let files = collect_cs_files(tmp.path(), &[tmp.path().join("Assets")]);
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].0, "Assets/Scripts/Ok.cs");
+
+        let empty = SymbolIndex::default();
+        assert!(!index_is_ready(&empty));
+
+        let mut ready = SymbolIndex::default();
+        ready.files.insert(
+            "Assets/Scripts/Ok.cs".to_string(),
+            IndexedFile {
+                signature: "sig".to_string(),
+                symbols: Vec::new(),
+            },
+        );
+        assert!(index_is_ready(&ready));
+
+        let not_ready = index_not_ready_response();
+        assert_eq!(not_ready["error"], "index_not_ready");
+    }
+
+    #[test]
+    fn requires_unityengine_using_for_unqualified_unityengine_bases() {
+        assert!(requires_unityengine_using(Some("MonoBehaviour")));
+        assert!(requires_unityengine_using(Some("ScriptableObject")));
+        assert!(requires_unityengine_using(Some(" ScriptableObject ")));
+        assert!(!requires_unityengine_using(Some(
+            "UnityEngine.ScriptableObject"
+        )));
+        assert!(!requires_unityengine_using(Some("BaseService")));
+        assert!(!requires_unityengine_using(None));
+    }
+
+    #[test]
+    fn create_class_template_scriptableobject_resolves_unityengine() {
+        let content = render_class_template("Sample", None, Some("ScriptableObject"));
+        assert_eq!(
+            content,
+            "using UnityEngine;\n\npublic class Sample : ScriptableObject\n{\n}\n"
+        );
+    }
+
+    #[test]
+    fn lsp_write_tools_require_lsp_mode() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        std::env::set_var("UNITY_PROJECT_ROOT", tmp.path());
+        std::env::set_var("UNITY_CLI_LSP_MODE", "off");
+
+        for tool in &[
+            "rename_symbol",
+            "replace_symbol_body",
+            "insert_before_symbol",
+            "insert_after_symbol",
+            "remove_symbol",
+            "validate_text_edits",
+            "write_csharp_file",
+            "create_csharp_file",
+            "apply_csharp_edits",
+        ] {
+            let result =
+                maybe_execute_local_tool(tool, &json!({})).expect("tool should be handled");
+            assert!(result.is_err(), "{tool} should fail when LSP is off");
+            assert!(
+                result.unwrap_err().to_string().contains("requires LSP"),
+                "{tool} should mention LSP requirement"
+            );
+        }
+
+        std::env::remove_var("UNITY_PROJECT_ROOT");
+        std::env::remove_var("UNITY_CLI_LSP_MODE");
+    }
+
+    #[test]
+    fn create_class_writes_directly_when_lsp_is_off() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        let _root = ScopedEnv::set("UNITY_PROJECT_ROOT", tmp.path().to_str().unwrap());
+        let _mode = ScopedEnv::set("UNITY_CLI_LSP_MODE", "off");
+
+        let result = maybe_execute_local_tool(
+            "create_class",
+            &json!({"name":"EnemyAI","folder":"Assets/Scripts/AI"}),
+        )
+        .expect("tool should be handled")
+        .expect("create_class should write directly when LSP is off");
+
+        assert_eq!(result["success"], true);
+        assert_eq!(result["path"], "Assets/Scripts/AI/EnemyAI.cs");
+        assert_eq!(result["content"], "public class EnemyAI\n{\n}\n");
+        assert_eq!(
+            std::fs::read_to_string(tmp.path().join("Assets/Scripts/AI/EnemyAI.cs")).unwrap(),
+            result["content"].as_str().unwrap()
+        );
+    }
+
+    #[test]
+    fn create_class_lsp_off_preserves_unityengine_using_and_path_override() {
+        let _guard = env_lock().lock().expect("lock should succeed");
+        let tmp = tempfile::tempdir().expect("temp dir should be created");
+        let _root = ScopedEnv::set("UNITY_PROJECT_ROOT", tmp.path().to_str().unwrap());
+        let _mode = ScopedEnv::set("UNITY_CLI_LSP_MODE", "OFF");
+
+        for inherits in ["MonoBehaviour", "ScriptableObject"] {
+            let path = format!("Packages/Game/{inherits}Sample.cs");
+            let result = maybe_execute_local_tool(
+                "create_class",
+                &json!({
+                    "name":"Sample", "namespace":"Game", "inherits":inherits, "path":path
+                }),
+            )
+            .expect("tool should be handled")
+            .expect("Unity class should be created without LSP");
+
+            let content = std::fs::read_to_string(tmp.path().join(&path)).unwrap();
+            assert_eq!(result["success"], true);
+            assert_eq!(result["path"], path);
+            assert_eq!(result["content"], content);
+            assert!(content.starts_with("using UnityEngine;\n\nnamespace Game\n"));
+            assert!(content.contains(&format!("public class Sample : {inherits}")));
+        }
+    }
+}
