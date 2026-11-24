@@ -1,0 +1,219 @@
+{
+  "command": "tool schema",
+  "success": true,
+  "data": {
+    "cli": "ast-grep",
+    "package": "ast-grep-cli",
+    "version": "0.51.3",
+    "source": "仓库维护的静态能力描述",
+    "coverage": "仅列出技能常用操作；完整参数请查看 --help",
+    "invocation": "params_schema 用于描述 CLI 参数；调用时按 argv_example 传入命令行，不接受 JSON 请求体。",
+    "tools": [
+      {
+        "name": "search",
+        "description": "按 AST 模式查找，结果可使用 --json=compact 输出",
+        "executor": "local-cli",
+        "mutating": false,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "AST 查询模式",
+              "cli_flag": "-p"
+            },
+            "lang": {
+              "type": "string",
+              "description": "语言，如 python、csharp、rust",
+              "cli_flag": "-l"
+            },
+            "path": {
+              "type": "string",
+              "description": "文件或目录",
+              "cli_flag": "positional"
+            }
+          },
+          "required": [
+            "pattern",
+            "lang",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "run",
+          "-p",
+          "old_api($A)",
+          "-l",
+          "python",
+          "--json=compact",
+          "src"
+        ]
+      },
+      {
+        "name": "rewrite_preview",
+        "description": "预览匹配的替换 diff，不写文件",
+        "executor": "local-cli",
+        "mutating": false,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "AST 查询模式",
+              "cli_flag": "-p"
+            },
+            "rewrite": {
+              "type": "string",
+              "description": "替换模板",
+              "cli_flag": "-r"
+            },
+            "lang": {
+              "type": "string",
+              "description": "语言，如 python、csharp、rust",
+              "cli_flag": "-l"
+            },
+            "path": {
+              "type": "string",
+              "description": "文件或目录",
+              "cli_flag": "positional"
+            }
+          },
+          "required": [
+            "pattern",
+            "rewrite",
+            "lang",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "run",
+          "-p",
+          "old_api($A)",
+          "-r",
+          "new_api($A)",
+          "-l",
+          "python",
+          "src"
+        ]
+      },
+      {
+        "name": "rewrite_apply",
+        "description": "写回全部匹配；必须先预览并确认范围",
+        "executor": "local-cli",
+        "mutating": true,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "AST 查询模式",
+              "cli_flag": "-p"
+            },
+            "rewrite": {
+              "type": "string",
+              "description": "替换模板",
+              "cli_flag": "-r"
+            },
+            "lang": {
+              "type": "string",
+              "description": "语言，如 python、csharp、rust",
+              "cli_flag": "-l"
+            },
+            "path": {
+              "type": "string",
+              "description": "文件或目录",
+              "cli_flag": "positional"
+            }
+          },
+          "required": [
+            "pattern",
+            "rewrite",
+            "lang",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "run",
+          "-p",
+          "old_api($A)",
+          "-r",
+          "new_api($A)",
+          "-l",
+          "python",
+          "-U",
+          "src"
+        ]
+      },
+      {
+        "name": "scan_rule",
+        "description": "使用单个 YAML 规则扫描；仅预览不写文件",
+        "executor": "local-cli",
+        "mutating": false,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "type": "string",
+              "description": "YAML 规则文件",
+              "cli_flag": "-r"
+            },
+            "path": {
+              "type": "string",
+              "description": "文件或目录",
+              "cli_flag": "positional"
+            }
+          },
+          "required": [
+            "rule",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "scan",
+          "-r",
+          "rule.yml",
+          "src"
+        ]
+      },
+      {
+        "name": "apply_rule",
+        "description": "应用 YAML 规则中的 fix；必须先预览并确认范围",
+        "executor": "local-cli",
+        "mutating": true,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "type": "string",
+              "description": "YAML 规则文件",
+              "cli_flag": "-r"
+            },
+            "path": {
+              "type": "string",
+              "description": "文件或目录",
+              "cli_flag": "positional"
+            }
+          },
+          "required": [
+            "rule",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "scan",
+          "-r",
+          "rule.yml",
+          "-U",
+          "src"
+        ]
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

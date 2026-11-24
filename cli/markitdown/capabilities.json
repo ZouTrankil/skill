@@ -1,0 +1,68 @@
+{
+  "command": "tool schema",
+  "success": true,
+  "data": {
+    "cli": "markitdown",
+    "package": "markitdown[all]",
+    "version": "0.1.9",
+    "source": "仓库维护的静态能力描述",
+    "coverage": "仅列出技能常用操作；完整参数请查看 --help",
+    "invocation": "params_schema 用于描述 CLI 参数；调用时按 argv_example 传入命令行，不接受 JSON 请求体。",
+    "tools": [
+      {
+        "name": "convert_file",
+        "description": "将本地文件转换为 Markdown；输出到文件或标准输出",
+        "executor": "local-cli",
+        "mutating": true,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "input": {
+              "type": "string",
+              "description": "输入文件",
+              "cli_flag": "positional"
+            },
+            "output": {
+              "type": "string",
+              "description": "输出文件；省略时写标准输出",
+              "cli_flag": "-o"
+            }
+          },
+          "required": [
+            "input"
+          ],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "document.pdf",
+          "-o",
+          "document.md"
+        ]
+      },
+      {
+        "name": "convert_stdin",
+        "description": "从标准输入读取并转换；可指定扩展名提示",
+        "executor": "local-cli",
+        "mutating": false,
+        "params_schema": {
+          "type": "object",
+          "properties": {
+            "extension": {
+              "type": "string",
+              "description": "输入扩展名提示，如 .pdf",
+              "cli_flag": "-x"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "argv_example": [
+          "-x",
+          ".pdf"
+        ]
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": []
+}

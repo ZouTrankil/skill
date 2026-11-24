@@ -7,7 +7,9 @@ description: 使用 MarkItDown CLI 将 PDF、Word、PPT、Excel、HTML、CSV、J
 
 需要读取或分析上述文档时，优先用 `markitdown` 转换，再按需分段读取；不要将二进制文件或大体积原始表格直接放入模型上下文。转换结果适合内容分析，不保证保留原始版式、公式、图片或全部结构；需要精确版面、表格或编辑时，结合原文件和对应专用工具核对。
 
-1. 检查 `markitdown` 是否可用。未安装时按环境约定安装，例如 `uv tool install 'markitdown[all]'`；安装不可用时说明依赖缺失，并使用合适的现有工具处理。不同格式可能需要对应可选依赖。
+仓库入口支持 `tool schema` 或 `--output json tool schema`，输出本仓库维护的常用能力描述；这是 CLI 参数说明，不接受 JSON 请求体。完整选项以 `--help` 为准。
+
+1. 优先使用本仓库 `cli/markitdown/markitdown` 入口（需要 `uvx`）；没有仓库入口时使用 PATH 中的 `markitdown`。下列示例使用 PATH 命令；使用仓库入口时将命令替换为对应绝对路径。未安装时按环境约定安装，例如 `uv tool install 'markitdown[all]'`；安装不可用时说明依赖缺失，并使用合适的现有工具处理。不同格式可能需要对应可选依赖。
 2. 将原文件转换到任务专用临时目录，保留原文件：
 
    ```bash

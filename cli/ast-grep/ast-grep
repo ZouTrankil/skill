@@ -1,0 +1,13 @@
+#!/bin/sh
+# 透传上游 CLI 的全部参数，不使用可能与系统命令冲突的 sg。
+# 能力描述由仓库维护；此入口不需要联网或启动上游 CLI。
+if { [ "$#" -eq 2 ] && [ "$1" = tool ] && [ "$2" = schema ]; } ||
+   { [ "$#" -eq 4 ] && [ "$1" = --output ] && [ "$2" = json ] && [ "$3" = tool ] && [ "$4" = schema ]; }; then
+    script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || exit 1
+    exec cat "$script_dir/capabilities.json"
+fi
+if ! command -v uvx >/dev/null 2>&1; then
+    printf '%s\n' '需要先安装 uv，并确保 uvx 在 PATH 中。' >&2
+    exit 127
+fi
+exec uvx --from 'ast-grep-cli==0.51.3' ast-grep "$@"

@@ -1,0 +1,13 @@
+# Skeletal Bastion.png
+
+[![Skeletal Bastion.png](../assets/Skeletal_Bastion.png)](../assets/Skeletal_Bastion.png)
+
+[本地原文件](../assets/Skeletal_Bastion.png) · [文件说明与署名](https://ballxpit.wiki.gg/wiki/File:Skeletal_Bastion.png) · [修订 715](https://ballxpit.wiki.gg/index.php?oldid=715)
+
+image/png · 720 × 480 · 23,863 字节
+
+**源页许可标记**　`{{License|game}}`
+
+**分类**　[分类 · 敌人图示](../categories/Enemy_sprites.md)
+
+[返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)
