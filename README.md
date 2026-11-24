@@ -4,7 +4,7 @@
 
 ## 命令行工具
 
-- [Unity CLI](./cli/unitycli/README.zh.md) 是基于 akiojin/unity-cli 的项目分支，包含 Rust CLI 和 Unity Bridge，源码在本仓库维护。
+独立命令行工具的来源、安装入口和本机状态见 [CLI 账本](./CLI账本.md)。本仓库维护 [Unity CLI](./cli/unitycli/README.zh.md) 项目分支，包含 Rust CLI 和 Unity Bridge。
 
 ## 分类与存放约定
 
@@ -27,8 +27,10 @@
 skill/
 ├── README.md
 ├── .agents/skills/              # 现有通用技能；在本仓库中也可被发现
+│   ├── answer-me-with-html/
 │   ├── aihot/
 │   ├── daily-memory-review/
+│   ├── doc-to-markdown/
 │   ├── notebooklm/
 │   └── florence-notify/
 ├── library/project-types/       # 项目类共用源码，当前通过用户级链接启用
@@ -51,7 +53,7 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 
 本仓库现有安装脚本仍使用 `${CODEX_HOME:-$HOME/.codex}/skills/`，且只安装 `florence-notify`。当前机器保留该技能已有的全局安装，`aihot`、`daily-memory-review` 及 library 中的项目类共用技能通过 `~/.agents/skills/` 下的符号链接接入源码；不要再为同一技能建立第二个用户级入口。其他客户端按各自支持的发现目录接入。
 
-本机技能入口及跨机器迁移来源见 [技能账本](./技能账本.md)。
+本机技能入口及跨机器迁移来源见 [技能账本](./技能账本.md)；独立工具见 [CLI 账本](./CLI账本.md)。
 
 ## 技能索引
 
@@ -59,9 +61,11 @@ Codex 当前官方文档列出的用户级位置是 `~/.agents/skills/`，项目
 
 | 技能 | 用途 | 来源 | 使用范围 | 状态 |
 | --- | --- | --- | --- | --- |
+| [answer-me-with-html](./.agents/skills/answer-me-with-html/SKILL.md) | 将回答生成单页 HTML 图解 | 第三方：[QingYunA/answer-me-with-html](https://github.com/QingYunA/answer-me-with-html)，含本地调整 | 全局通用：需要可视化解释时使用 | 已收录本机修改版；用户级安装为独立副本 |
 | [code-quality](./library/project-types/software-development/code-quality/SKILL.md) | 依据项目规范编码、重构与评审，给出有证据的问题和修复建议 | 本仓库维护 | 项目类共用：按当前开发任务确定项目 | 已配置全局，链接 library 源码 |
 | [florence-notify](./.agents/skills/florence-notify/SKILL.md) | 按明确要求发送 Florence 通知 | 本仓库维护 | 全局通用：已配置该通知服务的任务 | 已配置全局，保留原安装 |
 | [local-repo-sync](./library/project-types/software-development/local-repo-sync/SKILL.md) | 登记本地仓库，配置定期 fetch 与 rebase | 本仓库维护 | 项目类共用：按已有仓库清单确定范围 | 已配置全局，链接 library 源码 |
+| [doc-to-markdown](./.agents/skills/doc-to-markdown/SKILL.md) | 使用 MarkItDown CLI 将文档转换为 Markdown 供分析 | 本仓库维护；依赖 [MarkItDown](https://github.com/microsoft/markitdown) | 全局通用：文档内容提取与分析 | 已收录；当前项目可发现，CLI 需另行安装 |
 | [daily-memory-review](./.agents/skills/daily-memory-review/SKILL.md) | 复盘本地每日记录，接入 raw 增量索引与长期认知评估，建议次日行动 | 本仓库维护 | 全局通用：个人记录复盘，需配置记录来源 | 已配置全局，链接源码 |
 | [notebooklm](./.agents/skills/notebooklm/SKILL.md) | 使用 NotebookLM 管理笔记本与来源、基于来源问答研究并生成或下载产物 | 第三方独立技能：teng-lin/notebooklm-py，v0.8.6；未做本地改写 | 全局通用：NotebookLM 工作流 | 已纳入本仓库；Python CLI 安装与 Google 账号认证需另行完成 |
 | [aihot](./.agents/skills/aihot/SKILL.md) | 查询 AI 资讯、热点与日报 | 第三方：AIHOT / Virxact，2.0.0；有本地调用约束 | 全局通用：AI 资讯查询，仅明确调用 | 已配置全局，链接源码 |
