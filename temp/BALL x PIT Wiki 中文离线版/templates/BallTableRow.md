@@ -1,4 +1,4 @@
-# 模板 · 球台滚（BallTableRow）
+# 模板 · 圆球表格行（BallTableRow）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:BallTableRow) · [修订 2897](https://ballxpit.wiki.gg/index.php?oldid=2897) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

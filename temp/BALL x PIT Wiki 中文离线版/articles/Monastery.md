@@ -2,44 +2,44 @@
 
 [![Buildings Monastery Level1.png](../assets/Buildings_Monastery_Level1.png)](../files/Buildings_Monastery_Level1.png.md)
 
-一个房子 [自笞者](The_Flagellant.md) [![The Flagellant.png](../assets/The_Flagellant.png)](The_Flagellant.md).
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Monastery) · [修订 3401](https://ballxpit.wiki.gg/index.php?oldid=3401) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+[自笞者](The_Flagellant.md) [![The Flagellant.png](../assets/previews/The_Flagellant-25px-4ea6f76c.png)](The_Flagellant.md) 的房子。
 
-##### 分类（Category）
+## 信息（Information）
 
-住房
-
-##### 子类（Subcategory）
+### 分类（Category）
 
 住房
 
-##### 蓝图位置（Blueprint location）
+### 子类（Subcategory）
 
-[血腥草原](The_GORYxGRASSLANDS.md) [![The GORYxGRASSLANDS.png](../assets/The_GORYxGRASSLANDS.png)](The_GORYxGRASSLANDS.md)
+住房
 
-##### 基础资源消耗（Base resource cost）
+### 蓝图位置（Blueprint location）
 
-[![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 50
+[血腥草原](The_GORYxGRASSLANDS.md) [![The GORYxGRASSLANDS.png](../assets/previews/The_GORYxGRASSLANDS-25px-ac398f91.png)](The_GORYxGRASSLANDS.md)
 
-##### 建造点消耗（Build point cost）
+### 基础资源消耗（Base resource cost）
+
+[![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 50
+
+### 建造点消耗（Build point cost）
 
 25
 
-修道院的开锁 [自笞者](The_Flagellant.md) [![The Flagellant.png](../assets/The_Flagellant.png)](The_Flagellant.md) 作为一个可玩的角色。一旦角色获得了足够的经验值，才能达到水平 {?TDO找到房地产奖金的角色水平要求},这个建筑释放了一种被动的能力，在此时反弹对这个建筑 {?TDO:这包括收藏者的小屋运行吗?} 增加了收获时钟 (尽管每收获限于100次反弹)。这座建筑的性能可以通过进一步提高，而不是直接升级建筑本身，进一步升级角色到水平 {???}.请注意，拆除一个角色的房子将使这个角色不适用于收获模式或水平运行，并将它们从任何建筑任务中移除，直到他们的房子重建 (尽管角色仍然会保留之前的所有进展)。
+建造修道院将解锁[自笞者](The_Flagellant.md) [![The Flagellant.png](../assets/previews/The_Flagellant-25px-4ea6f76c.png)](The_Flagellant.md) 作为可玩角色。一旦该角色获得足够的经验值达到等级{?TODO：查找房屋奖励所需的角色等级要求}，该建筑将解锁一项被动能力，即该角色会反弹撞击该建筑（?TODO：这是否包括采集者的小屋跑动？），这将增加收获时间（但每次收获最多只能反弹100次）。通过进一步提升该角色等级至{???}，可以进一步提升该建筑的能力。请注意，拆除角色的房屋将使该角色在收获模式或等级提升中无法使用，并使其从任何建筑任务中移除，直到其房屋重建为止（尽管该角色仍会保留之前的所有进度）。
 
 被动效果与升级
 
-| 等级 | 图片 | 描述 | 资源消耗 | 建造点消耗 | 拆除 | 性格水平要求 |
+| 等级 | 图片 | 说明 | 资源消耗 | 建造点消耗 | 拆除 | 角色等级要求 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [![Buildings Monastery Level1.png](../assets/Buildings_Monastery_Level1.png)](../files/Buildings_Monastery_Level1.png.md) | 旗舰家的房子 | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 50 | 25 | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 50 | - |
-| 2 |  |  | - | - | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 50 |  |
-| 3 |  | 旗舰家的房子 跳出这座建筑物会使收获时间增加0.07秒 (每次收获高达100次)。 | - | - | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 50 |  |
+| 1 | [![Buildings Monastery Level1.png](../assets/previews/Buildings_Monastery_Level1-101px-f832d71e.png)](../files/Buildings_Monastery_Level1.png.md) | 一个供鞭笞者使用的房子。 | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 50 | 25 | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 50 | - |
+| 2 |  |  | - | - | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 50 |  |
+| 3 |  | 一个供鞭笞者使用的房子。 从这座建筑物上弹跳会使收获时钟增加 0.07 秒（每次收获最多可弹跳 100 次）。 | - | - | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 50 |  |
 
 [共享导航](../navigation/nav-d4956b01aa56.md)
 
-**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

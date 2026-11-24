@@ -2,13 +2,13 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:License%2Ffairuse) · [修订 537](https://ballxpit.wiki.gg/index.php?oldid=537) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板目前看起来像 :
+当前该模板看起来如下：
 
-[![《在现实中](../assets/commons--IN_COPYRIGHT.svg)](https://rightsstatements.org/page/InC/1.0/?language=en)
+[![版权所有](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)](https://rightsstatements.org/page/InC/1.0/?language=en)
 
-此文件有版权使用权。 使用方式将符合以下条件的公平使用: [美国版权法](https://en.wikipedia.org/wiki/Fair_use#Fair_use_under_United_States_law).
+此文件受版权保护。其使用方式符合[美国版权法](https://en.wikipedia.org/wiki/Fair_use#Fair_use_under_United_States_law)下的合理使用规定。
 
-见见 `{{[License](License.md)}}` 持有全许可证证件
+查看 `{{[License](License.md)}}` 如需完整的许可证文档，请查看。
 
 **分类**　[分类 · 许可证模板](../categories/License_templates.md)
 

@@ -1,4 +1,4 @@
-# 分类 · 有破损文件链接的页面（Pages with broken file links）
+# 分类 · 文件链接失效的页面（Pages with broken file links）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Pages_with_broken_file_links) · [修订 224](https://ballxpit.wiki.gg/index.php?oldid=224) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
@@ -10,13 +10,13 @@
 
 - [角色（Characters）](../articles/Characters.md)
 - [激光（Laser）](../articles/Laser.md)
-- [模板 · 字符标志（Character icon）](../templates/Character_icon.md)
-- [模板 · 字符图标/doc（Character icon/doc）](../templates/Character_icon_doc.md)
+- [模板 · 角色图标（Character icon）](../templates/Character_icon.md)
+- [模板 · 角色图标/doc（Character icon/doc）](../templates/Character_icon_doc.md)
 - [模板 · 组合（Combination）](../templates/Combination.md)
-- [模板 · 项目图标（Item icon）](../templates/Item_icon.md)
-- [模板 · 项目图标/文档（Item icon/doc）](../templates/Item_icon_doc.md)
-- [模板 · 信息框（MessageBox）](../templates/MessageBox.md)
-- [模板 · 信息盒/doc（MessageBox/doc）](../templates/MessageBox_doc.md)
+- [模板 · 物品图标（Item icon）](../templates/Item_icon.md)
+- [模板 · 物品图标/doc（Item icon/doc）](../templates/Item_icon_doc.md)
+- [模板 · MessageBox](../templates/MessageBox.md)
+- [模板 · MessageBox/文档（MessageBox/doc）](../templates/MessageBox_doc.md)
 - [同居者（The Cohabitants）](../articles/The_Cohabitants.md)
 - [潜伏者（The Embedded）](../articles/The_Embedded.md)
 - [自笞者（The Flagellant）](../articles/The_Flagellant.md)

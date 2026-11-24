@@ -1,64 +1,66 @@
 # 白发囤积者（The Hoary Hoarder）
 
-[![The Hoary Hoarder.png](../assets/The_Hoary_Hoarder.png)](../files/The_Hoary_Hoarder.png.md) ![The Hoary Hoarder mini.png](../assets/The_Hoary_Hoarder_mini.png)
-
-一个人的垃圾是另一个人的宝藏。
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/The_Hoary_Hoarder) · [修订 3999](https://ballxpit.wiki.gg/index.php?oldid=3999) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 白发囤积者 ![The Hoary Hoarder mini.png](../assets/previews/The_Hoary_Hoarder_mini-34px-f5dc78a3.png)
 
-##### 解锁
+[![The Hoary Hoarder.png](../assets/The_Hoary_Hoarder.png)](../files/The_Hoary_Hoarder.png.md)
 
-建筑物 [不稳定的塔楼](Unstable_Tower.md) [![Buildings Unstable Tower Level1.png](../assets/Buildings_Unstable_Tower_Level1.png)](Unstable_Tower.md)
+别人的垃圾可能是别人的宝藏。
 
-##### 能力
+## 基本信息
 
-只有2个球槽，但剩下的设备槽会变成被动槽。
+### 解锁
 
-**白发囤积者** 是一个可玩的 [性格](Characters.md) 在 *[球比伦战记](Ball_x_Pit.md)*已在 [自然主义者更新](https://ballxpit.wiki.gg/wiki/The_Naturalist_Update?action=edit&redlink=1)它们通过构建 [不稳定的塔楼](Unstable_Tower.md) [![Buildings Unstable Tower Level1.png](../assets/Buildings_Unstable_Tower_Level1.png)](Unstable_Tower.md) 据报道, [天堂之门](The_HEAVENLYxGATES.md) [![The HEAVENLYxGATES.png](../assets/The_HEAVENLYxGATES.png)](The_HEAVENLYxGATES.md) 这位角色有两倍的被动插槽，但只能携带两个球。
+构建 [不稳定塔](Unstable_Tower.md) [![Buildings Unstable Tower Level1.png](../assets/previews/Buildings_Unstable_Tower_Level1-25px-95219f01.png)](Unstable_Tower.md)
 
-#### 能力的机械
+### 能力
+
+只有2个球槽，但剩余的装备槽将变为被动槽。
+
+**白发囤积者** 是 *[球比伦战记](Ball_x_Pit.md)* 在 [自然主义者更新](https://ballxpit.wiki.gg/wiki/The_Naturalist_Update?action=edit&redlink=1) 中加入的一名可玩的 [角色](Characters.md)。建造 [不稳定塔](Unstable_Tower.md) [![Buildings Unstable Tower Level1.png](../assets/previews/Buildings_Unstable_Tower_Level1-25px-95219f01.png)](Unstable_Tower.md) 即可解锁该角色，其蓝图位于 [天堂之门](The_HEAVENLYxGATES.md) [![The HEAVENLYxGATES.png](../assets/previews/The_HEAVENLYxGATES-25px-476b000b.png)](The_HEAVENLYxGATES.md)。该角色拥有两倍的被动槽位，但只能携带两颗圆球，且没有初始圆球。
+
+## 能力机制
 
 **TBA**
 
-#### 配对器
+## 配对系统
 
 **TBA**
 
-#### 策略
+## 策略
 
-[单击这里，添加一个策略!](https://ballxpit.wiki.gg/wiki/The_Hoary_Hoarder?action=edit&section=new)
+[点击此处添加策略！](https://ballxpit.wiki.gg/wiki/The_Hoary_Hoarder?action=edit&section=new)
 
-#### 基本数据
+## 基础属性
 
 | 属性 | 属性 |
 | --- | --- |
-| [![Endurance.png](../assets/Endurance.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | - 什么意思? |
-| [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基地损坏? |
-| [![Leadership.png](../assets/Leadership.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 宝贝球计数?；婴儿球损伤? |
-| [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速?；移动速度? |
-| [![Dexterity.png](../assets/Dexterity.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 关键机会?；发生火灾率? |
-| [![Intelligence.png](../assets/Intelligence.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 公司发动力?；状态效应功率 - ?；动力? |
+| [![Endurance.png](../assets/previews/Endurance-18px-3606b187.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | 生命值未知 |
+| [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基础伤害 - ? |
+| [![Leadership.png](../assets/previews/Leadership-18px-002d5b4c.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 小球数量 - ?；小球伤害 - ? |
+| [![Speed.png](../assets/previews/Speed-18px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速 - ?；移动速度 - ? |
+| [![Dexterity.png](../assets/previews/Dexterity-18px-7cca380e.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 暴击率 - ?；发射频率 - ? |
+| [![Intelligence.png](../assets/previews/Intelligence-18px-41c39e56.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 范围效果强度 – 待确认；状态效果强度 - ?；被动效果强度 – 待确认 |
 
-#### 性格水平的进步
+## 角色等级进展
 
-[性格升级奖励](Character_Level_Mechanics.md)
+[角色等级提升奖励](Character_Level_Mechanics.md)
 
-| 性格水平 | 总经验值 | 提高奖励水平 | 选择 |
+| 角色等级 | 总经验值 | 升级奖励 | 选择项 |
 | --- | --- | --- | --- |
 | TBA | TBA | TBA | TBA |
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/The_Hoary_Hoarder?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/The_Hoary_Hoarder?action=edit).*
 
 [共享导航](../navigation/nav-334e23d2914f.md)
 
-**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 坚力](../categories/Stubs.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 待完善](../categories/Stubs.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

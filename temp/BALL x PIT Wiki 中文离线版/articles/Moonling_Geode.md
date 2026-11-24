@@ -1,35 +1,35 @@
-# 月亮的地质（Moonling Geode）
+# 月灵晶洞（Moonling Geode）
 
 [![Bestiary Moonling Geode.png](../assets/Bestiary_Moonling_Geode.png)](../files/Bestiary_Moonling_Geode.png.md)
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Moonling_Geode) · [修订 3571](https://ballxpit.wiki.gg/index.php?oldid=3571) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+## 信息（Information）
 
-##### 类型
+### 类型
 
-[常见的敌人](../categories/Normal_enemies.md)
+[普通敌人](../categories/Normal_enemies.md)
 
-##### 卫生规模
+### 生命值倍率（Health scale）
 
 1x
 
-##### 等级（Level）
+### 等级（Level）
 
-[浩瀚虚空](The_VASTxVOID.md) [![The VASTxVOID.png](../assets/The_VASTxVOID.png)](The_VASTxVOID.md)
+[浩瀚虚空](The_VASTxVOID.md) [![The VASTxVOID.png](../assets/previews/The_VASTxVOID-25px-77a97169.png)](The_VASTxVOID.md)
 
-其他 **月亮的地质** 是一个 [通常的敌人](../categories/Normal_enemies.md) 在 [浩瀚虚空](The_VASTxVOID.md) [![The VASTxVOID.png](../assets/The_VASTxVOID.png)](The_VASTxVOID.md) 它的健康标准是1x.
+**月灵晶洞**是出现在 [浩瀚虚空](The_VASTxVOID.md) [![The VASTxVOID.png](../assets/previews/The_VASTxVOID-25px-77a97169.png)](The_VASTxVOID.md) 中的 [普通敌人](../categories/Normal_enemies.md)。其生命值倍率为 1x。
 
-月球地质在杀死一个 [月族晶洞](Moonkin_Geode.md) [![Bestiary Moonkin Geode.png](../assets/Bestiary_Moonkin_Geode.png)](Moonkin_Geode.md).
+击败[月族晶洞（Moonkin Geode）](Moonkin_Geode.md) [![Bestiary Moonkin Geode.png](../assets/previews/Bestiary_Moonkin_Geode-16px-22c3cfff.png)](Moonkin_Geode.md)后会生成月灵晶洞（Moonling Geode）。
 
-#### 描述
+## 说明
 
 > “
-> *爆炸发生了几次 [月岩](Moonrock.md) [![Bestiary Moonrock.png](../assets/Bestiary_Moonrock.png)](Moonrock.md) 当被毁灭的时候,*
-> **- 敌国官方说明**
+> *被摧毁时，会爆裂成几片 [月岩](Moonrock.md) [![Bestiary Moonrock.png](../assets/previews/Bestiary_Moonrock-16px-1926faa5.png)](Moonrock.md)*
+> **—官方敌人说明**
 
 [共享导航](../navigation/nav-115867ac1be8.md)
 
-**分类**　[分类 · 敌人](../categories/Enemies.md) · [分类 · 普通敌人](../categories/Normal_enemies.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 敌人](../categories/Enemies.md) · [分类 · 普通敌人](../categories/Normal_enemies.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

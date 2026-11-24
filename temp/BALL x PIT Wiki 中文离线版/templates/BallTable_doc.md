@@ -1,12 +1,12 @@
-# 模板 · 球表/doc（BallTable/doc）
+# 模板 · BallTable/文档（BallTable/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:BallTable%2Fdoc) · [修订 4053](https://ballxpit.wiki.gg/index.php?oldid=4053) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-[圆球](../articles/Balls.md)上的三个球表之一，建于 [圆球](../data/Balls.md)货物表。
+位于 [圆球](../articles/Balls.md) 上的三张球桌之一，由 [圆球](../data/Balls.md) 货运桌打造而成。
 
-#### 职位安排
+## 放置方式
 
-在 [圆球](../articles/Balls.md) 上，每节一次。每个表格有一个查询覆盖所有91个球。
+在……上 [圆球](../articles/Balls.md)每个部分一次。每个表格查询涵盖所有91个球。
 
 ```
 {{BallTable|class=base}}
@@ -14,34 +14,34 @@
 {{BallTable|class=baby}}
 ```
 
-#### 参数参数
+## 参数
 
-| 参数 | 意义意思意思意思 |
+| 参数 | 含义 |
 | --- | --- |
-| `class` | `base`、 `evolved` 或是 `baby`默认默认值的默认值。默认默认值的默认值。默认值的默认值。默认默认值的默认值。 `base`. |
+| `class` | `base`、 `evolved` 或 `baby`. 默认为 `base`. |
 
-#### 列
+## 列
 
-| 班级 | 列 |
+| 类别 | 列 |
 | --- | --- |
-| `base` | 图标、名称、说明、字符、解除锁状态、触动效果、状态触发器、状态效果 |
-| `evolved` | 同样，与 **合并** 和 **可以进一步进化** 以取代字符和解除锁 |
-| `baby` | 图标、名称、说明 |
+| `base` | 图标, 名称, 说明, 角色, 解锁条件, 命中时效果, 状态触发条件, 状态效果 |
+| `evolved` | 相同，将 **组合** 和 **可进一步进化** 替换成角色和解锁条件 |
+| `baby` | 图标，名称，说明 |
 
-组合和“可以进一步演进”是从同一通行证中的 [BallRecipeEdges](../data/BallRecipeEdges.md)计算出来的，既不在任何页面上打字，也不得在添加配方时腐烂。
+“组合”和“可进一步进化”是在同一轮中根据 [圆球配方材料表](../data/BallRecipeEdges.md) 计算得出的——两者都不在任何页面上输入，因此当添加配方时，两者都不会失效。
 
-#### 示例
+## 示例
 
-`baby` 是一个小到足以在这里展示的班级—— 其他是21和69行， 属于 [圆球](../articles/Balls.md):
+`baby` 只有这一类规模足够小，可以展示在这里——其他两类分别为21行和69行，应该放在…… [圆球](../articles/Balls.md):
 
 ```
 {{BallTable|class=baby}}
 ```
 
-#### 备注
+## 备注
 
-* 利用 `data-basics` / `data-intermediates` 属性“球过滤”脚本读取。
-* 要更改一行所说的话， 请编辑该球的文章， 而不是此模板。
+* 发出 `data-basics` / `data-intermediates` 读取的球过滤脚本属性。
+* 要更改一行中的内容，请编辑该球的文章，而不是这个模板。
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

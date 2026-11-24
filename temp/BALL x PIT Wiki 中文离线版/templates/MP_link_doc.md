@@ -1,29 +1,29 @@
-# 模板 · 议员链接/doc（MP link/doc）
+# 模板 · MP链接/文档（MP link/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:MP_link%2Fdoc) · [修订 552](https://ballxpit.wiki.gg/index.php?oldid=552) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-这将创建 [main page](../articles/BALL_x_PIT_Wiki.md) 上的一个模板化和格式化链接。
+这构成了 [主页](../articles/BALL_x_PIT_Wiki.md)上那些风格化且格式化的链接之一。
 
-#### 使用率
+## 使用
 
-此模板格的组组应该包裹在 `<div class="mp-links"></div>` 每个条目应单列一行，在 [无顺序排序列表](https://en.wikipedia.org/wiki/Help%3ALists#Basically)。此 div 可以是其中的一个班级中，一个班级中，一个班级可以给予此 div 。 `columns-x` 其中 x 是 1到 8个数字， 如果空间允许的话， 链接会排成许多列( 默认是 3) 。 也可以选择给 div 分类。 `stretch` 它会垂直拉伸列表以填充空格。见 [Mediawiki:Common.css](../site/MediaWiki_Common.css.md) 用于定义这些类别的全部定义和本模板的型号。
+此模板的组应被包裹在内。 `<div class="mp-links"></div>` 并且每个条目都应该是单行文本。 [无序列表](https://en.wikipedia.org/wiki/Help%3ALists#Basically). 这个角色可以分配其中一个职业。 `columns-x` 其中 x 是一个从 1 到 8 的数字，如果空间允许，链接将排列成相应数量的列（默认值为 3）。该 div 也可以选择性地赋予该类别。 `stretch` 它将垂直拉伸列表以填充空白空间。见 [Mediawiki:Common.css](../site/MediaWiki_Common.css.md) 用于获取这些职业的完整定义以及该模板的样式。
 
-##### 参数参数
+### 参数
 
-在主页上创建标准化和格式化链接。
+在主页面上创建风格化且格式化的链接。
 
-模板参数 此模板更倾向于参数的内嵌格式化。
+模板参数 此模板更倾向于使用内联格式设置参数。
 
-| 参数 |  | 描述 | 类型 | 状态 |
+| 参数 |  | 说明 | 类型 | 状态 |
 | --- | --- | --- | --- | --- |
-| 文本 | `1` | 要显示的文字。 如果不给定链接参数， 则此选项也将是链接目标。 示例附加件 | 字符串字符串 | 建议 |
-| 链接链接链接 | `link` | 链接的目标页面，如果与显示文本不同。 示例主页 | 页面名称 | 可选 |
-| 图片 | `image` | 用链接显示的图像。 | 文件文件 | 建议 |
-| 图像图像大小 | `size` | 图像的大小， 以 px 表示。 默认默认42px (英语)。 | 字符串字符串 | 可选 |
-| 图像类 | `imageClass` | 直接给图像的类 建议数值`invert-on-dark` `invert-on-light`示例反倒对称 | 字符串字符串 | 可选 |
-| Alt 文本 | `altText` | 用于描述图像的 Alt 文字 示例维基徽标 | 字符串字符串 | 建议 |
+| 文本 | `1` | 要显示的文本。如果未提供链接参数，则也将作为链接目标。 示例物品 | 字符串 | 建议 |
+| Link | `link` | 链接的目标页面，如果与显示文本不同。 示例主页 | 页面名称 | 可选 |
+| 图片 | `image` | 带有链接的显示图片。 | 文件 | 建议 |
+| 图片大小 | `size` | 图像的大小，单位：像素。 默认42px | 字符串 | 可选 |
+| 图像类别 | `imageClass` | 直接给予该图片的一个班级 建议数值`invert-on-dark` `invert-on-light`示例invert-on-dark | 字符串 | 可选 |
+| Alt文本 | `altText` | 图片的替代文本描述 示例Wiki标志 | 字符串 | 建议 |
 
-#### 实例实例实例
+## 示例
 
 ```
 <div class="mp-links columns-3">
@@ -33,11 +33,11 @@
 </div>
 ```
 
-生产:
+显示效果
 
-* [附加件](https://ballxpit.wiki.gg/wiki/Special%3ARandom) [![Site-logo.png](../assets/Site-logo.png)](https://ballxpit.wiki.gg/wiki/Special:Random)
-* [事事事](https://ballxpit.wiki.gg/wiki/Special%3ARandom)
-* [其它东西](https://ballxpit.wiki.gg/wiki/Special%3ARandom) [![Site-logo.png](../assets/Site-logo.png)](https://ballxpit.wiki.gg/wiki/Special:Random)
+* [物品](https://ballxpit.wiki.gg/wiki/Special%3ARandom) [![Site-logo.png](../assets/previews/Site-logo-42px-7b5daa64.png)](https://ballxpit.wiki.gg/wiki/Special:Random)
+* [事情](https://ballxpit.wiki.gg/wiki/Special%3ARandom)
+* [其他内容](https://ballxpit.wiki.gg/wiki/Special%3ARandom) [![Site-logo.png](../assets/previews/Site-logo-42px-7b5daa64.png)](https://ballxpit.wiki.gg/wiki/Special:Random)
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

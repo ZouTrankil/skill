@@ -1,0 +1,618 @@
+  382  [re] 标点·半角冒号→全角
+  323  字符 → 角色
+  270  [re] 排版·句末／(紧邻表格线)
+  226  奖金 → 加成
+   96  球酒 → 圆球图像
+   87  开始的性格 → 初始角色
+   87  性格 → 角色
+   74  坚力 → 待补充条目
+   60  老板 → 首领
+   43  魅力 → 魅惑
+   40  迷你老板 → 小首领
+   36  迷人（Charm） → 魅惑（Charm）
+   35  [re] 标点·半角逗号→全角
+   33  机率 → 概率
+   32  凶手 → 刺客
+   30  [re] 标点·半角分号→全角
+   26  水平运行 → 关卡对局
+   25  贝尔塞克 → 狂暴
+   25  性格水平 → 角色等级
+   23  驱逐的火焰 → 放逐之焰
+   21  性格水平要求 → 角色等级要求
+   21  基本（Elemental） → 元素（Elemental）
+   21  性格升级奖励 → 角色升级奖励
+   18  雪风（Blizzard） → 暴风雪（Blizzard）
+   16  性格水平的进步 → 角色等级进度
+   14  麦机 → 小麦收割机
+   13  激光 （水平 / Horizontal） → 激光 (水平)（Laser (Horizontal)）
+   13  激光 （垂直 / Vertical） → 激光 (垂直)（Laser (Vertical)）
+   11  基本奖金 → 基础加成
+   10  骨球ista（Bone Ballista） → 骨制弩炮（Bone Ballista）
+   10  滴滴 → 掉落物
+    8  （范围效果 / AOE） → （AOE）
+    8  Frostburnt → 霜灼
+    8  马克斯奖金 → 最大加成
+    8  比赛开始时可用 → 对局开始时可用
+    6  冷冻射线 → 冰冻射线
+    4  游戏规律 → 游戏机制
+    4  错过页面图标 → 缺失页面图标
+    4  海关链接标签 → 自定义链接标签
+    3  骨球ista → 骨制弩炮
+    3  旗手 → 自笞者
+    2  旗星 → 自笞者
+    2  导致敌人暴躁 → 使敌人狂暴
+    2  小费者 → 蹑足者
+    2  （专用PC / PC exclusive） → （PC 专用 / PC exclusive）
+    2  关键击球 → 暴击
+    2  块小瓦 → 格
+    2  工人公会 → 工人协会
+    2  （poison或单元格 / Poison or Cell） → （毒或细胞 / Poison or Cell）
+    2  （项目 / Item） → （道具 / Item）
+    1  豪华豪华豪华者 → 挥霍者
+    1  收益水平 → 角色等级机制
+    1  卢伯园 → 木工场
+    1  马克斯 → 最大
+    1  勇士的起步球 → 战士的起步球
+    1  " 勇士 " → "战士"
+    1  因此，勇士是 → 因此，战士是
+    1  水平向上提升 Perk → 升级可选加成
+    1  每一水平的 → 每一级的
+    1  勇士协会 → 战士协会
+    1  （升级 / Achievement） → （成就 / Achievement）
+    1  冷却射线 → 冰冻射线
+
+修改文件数 554
+articles/Abbey.md
+articles/Achievements.md
+articles/Adventurer_s_Guild.md
+articles/Alchemist.md
+articles/Ancient_Warg.md
+articles/Antique_Shop.md
+articles/Archery_Range.md
+articles/Armageddon.md
+articles/Assassin.md
+articles/Attributes.md
+articles/Baby_Ball.md
+articles/Ball_House.md
+articles/Ball_x_Pit.md
+articles/Ballbylon.md
+articles/Balls.md
+articles/Banished_Flame.md
+articles/Bank.md
+articles/Banshee.md
+articles/Barracks.md
+articles/Berserk.md
+articles/Black_Hole.md
+articles/Bleed.md
+articles/Blizzard.md
+articles/Blueprints.md
+articles/Bomb.md
+articles/Bone_Ballista.md
+articles/Boneyard_Trophy.md
+articles/Boulder.md
+articles/Brimstone.md
+articles/Brood_Mother.md
+articles/Buildings.md
+articles/Burn.md
+articles/Campground.md
+articles/Capitolium.md
+articles/Captain_s_Quarters.md
+articles/Catapult.md
+articles/Cell.md
+articles/Character_Level_Mechanics.md
+articles/Characters.md
+articles/Charm.md
+articles/Clinic.md
+articles/Consulate.md
+articles/Cordyceps_Queen.md
+articles/Cozy_Home.md
+articles/Crown_of_Thorns.md
+articles/Damage.md
+articles/Dark.md
+articles/Deadeye_s_Amulet.md
+articles/Dense_Wheat.md
+articles/Desert_Trophy.md
+articles/Diplomacy_Hall.md
+articles/Dragon_Prince.md
+articles/Drill.md
+articles/Dynamite.md
+articles/Earthquake.md
+articles/Egg_Sac.md
+articles/Elder_Boomshroom.md
+articles/Elemental.md
+articles/Encyclopedia.md
+articles/Enemies.md
+articles/Erosion.md
+articles/Exorcist.md
+articles/Falconry_Hut.md
+articles/Farm.md
+articles/Fireworks.md
+articles/Flamespitter.md
+articles/Flash.md
+articles/Flesh.md
+articles/Flesh_Mound.md
+articles/Flicker.md
+articles/Forest.md
+articles/Freeze.md
+articles/Freeze_Ray.md
+articles/Frozen_Flame.md
+articles/Game_Updates.md
+articles/Gatherer_s_Hut.md
+articles/Gemsmith.md
+articles/Ghost.md
+articles/Glacier.md
+articles/Goblin_Sniper.md
+articles/Goblin_Warlord.md
+articles/Gold.md
+articles/Gold_Mine.md
+articles/Gory_Trophy.md
+articles/Grand_Museum.md
+articles/Grand_Tree.md
+articles/Granite_Slab.md
+articles/Great_Grub_Cluster.md
+articles/Great_Sentinel.md
+articles/Guild_Hall.md
+articles/Gunsmith.md
+articles/Harvest_Upgrades_Character_Bonus.md
+articles/Haunted_House.md
+articles/Heart_Swallower.md
+articles/Heavenly_Trophy.md
+articles/Hemorrhage.md
+articles/Hidden_Temple.md
+articles/Holy_Laser.md
+articles/Hospital.md
+articles/Icebound_Champion.md
+articles/Icebound_Howler.md
+articles/Icebound_Queen.md
+articles/Incubus.md
+articles/Inferno.md
+articles/Iron.md
+articles/Iron_Fortress.md
+articles/Jeweler.md
+articles/Laboratory.md
+articles/Landslide.md
+articles/Laser_Beam.md
+articles/Laser_Cutter.md
+articles/Laser_Horizontal.md
+articles/Laser_Vertical.md
+articles/Leech.md
+articles/Levels.md
+articles/Light.md
+articles/Lightning.md
+articles/Lightning_Bug.md
+articles/Lightning_Rod.md
+articles/Lord_of_Owls.md
+articles/Lovestruck.md
+articles/Lumberyard.md
+articles/Maggot.md
+articles/Magma.md
+articles/Magnet_Factory.md
+articles/Mansion.md
+articles/Market.md
+articles/Marksman_s_Guild.md
+articles/Matchmaker.md
+articles/Mausoleum.md
+articles/Meditation_Tent.md
+articles/Military_Academy.md
+articles/Monastery.md
+articles/Moonkin.md
+articles/Moonkin_Geode.md
+articles/Mosquito_King.md
+articles/Mosquito_Kingdom.md
+articles/Mosquito_Swarm.md
+articles/Necromancer.md
+articles/Nosferatu.md
+articles/Noxious.md
+articles/Nuclear_Bomb.md
+articles/Odiferous_Shell.md
+articles/Offspring.md
+articles/Overgrowth.md
+articles/Party_House.md
+articles/Passives.md
+articles/Petrify.md
+articles/Phantom.md
+articles/Poison.md
+articles/Radiation_Beam.md
+articles/Reaper.md
+articles/Resources.md
+articles/Restless_One.md
+articles/Road_Keeper.md
+articles/Rocky_Hill.md
+articles/Sabertooth.md
+articles/Sacrifice.md
+articles/Sandstorm.md
+articles/Satan.md
+articles/Schoolhouse.md
+articles/Seething_Locust.md
+articles/Sheriff_s_Office.md
+articles/Shoemaker.md
+articles/Shotgun.md
+articles/Shroom_Swarm.md
+articles/Shroom_Trophy.md
+articles/Single_Family_Home.md
+articles/Skeletal_Brigade.md
+articles/Skeleton_King.md
+articles/Smoldering_Trophy.md
+articles/Sniper.md
+articles/Snowy_Trophy.md
+articles/Soul_Sucker.md
+articles/Spider_Queen.md
+articles/Steel.md
+articles/Stone.md
+articles/Stone_Domain.md
+articles/Stone_Mine.md
+articles/Stone_resource.md
+articles/Storm.md
+articles/Succubus.md
+articles/Sun.md
+articles/Swamp.md
+articles/The_BONExYARD.md
+articles/The_Ballbearer.md
+articles/The_Carouser.md
+articles/The_Cogitator.md
+articles/The_Cohabitants.md
+articles/The_Embedded.md
+articles/The_Empty_Nester.md
+articles/The_FUNGALxFOREST.md
+articles/The_Falconer.md
+articles/The_False_Messiah.md
+articles/The_Flagellant.md
+articles/The_GORYxGRASSLANDS.md
+articles/The_HEAVENLYxGATES.md
+articles/The_Hoary_Hoarder.md
+articles/The_Itchy_Finger.md
+articles/The_Juggler.md
+articles/The_Makeshift_Sisyphus.md
+articles/The_Moon.md
+articles/The_Physicist.md
+articles/The_Radical.md
+articles/The_Repentant.md
+articles/The_Shade.md
+articles/The_Shieldbearer.md
+articles/The_Spendthrift.md
+articles/The_Tactician.md
+articles/The_Tiptoer.md
+articles/The_Tunneller.md
+articles/The_Warrior.md
+articles/Theater.md
+articles/Time.md
+articles/Time_Bomb.md
+articles/Timestop.md
+articles/Tumor.md
+articles/Turret.md
+articles/Twisted_Serpent.md
+articles/University.md
+articles/Unstable_Tower.md
+articles/Vampire.md
+articles/Vampire_Lord.md
+articles/Venom.md
+articles/Veteran_s_Hut.md
+articles/Villa.md
+articles/Virus.md
+articles/Void_Trophy.md
+articles/Voluptuous_Egg_Sac.md
+articles/Wagon_Factory.md
+articles/War_Room.md
+articles/Warp.md
+articles/Warrior_s_Guild.md
+articles/Watch_Tower.md
+articles/Wheat.md
+articles/Wheat_Field.md
+articles/Wheelwright.md
+articles/Wind.md
+articles/Wizened_Snatcher.md
+articles/Wood.md
+articles/Worker_s_Guild_Building.md
+articles/Wraith.md
+articles/X_Ray.md
+articles/Zombie.md
+articles/目录.md
+categories/Ball_sprites.md
+categories/Balls.md
+categories/Base_Balls.md
+categories/Character_sprites.md
+categories/Enemies.md
+categories/Escaped_character_templates.md
+categories/Evolved_Balls.md
+categories/Formatting_templates.md
+categories/Infobox_templates.md
+categories/Maintenance.md
+categories/Mini-bosses.md
+categories/Pages_using_IMP.md
+categories/Pages_with_broken_file_links.md
+categories/Pages_with_navboxes.md
+categories/Sprites.md
+categories/Stubs.md
+categories/Template_documentation.md
+categories/目录.md
+templates/About.md
+templates/Album.md
+templates/Ambox.md
+templates/Ambox_doc.md
+templates/Anchor.md
+templates/Ball.md
+templates/BallCreation.md
+templates/BallCreationTable.md
+templates/BallCreation_doc.md
+templates/BallData.md
+templates/BallData_Infobox.md
+templates/BallData_Infobox_doc.md
+templates/BallData_doc.md
+templates/BallEvolutions_doc.md
+templates/BallRecipeEdge.md
+templates/BallRecipeEdge_doc.md
+templates/BallStat.md
+templates/BallTable.md
+templates/BallTable_doc.md
+templates/Ball_doc.md
+templates/Balls.md
+templates/Balls_doc.md
+templates/Book.md
+templates/CC-BY-SA.md
+templates/CC-BY-SA_doc.md
+templates/CargoTableInfo.md
+templates/Cast.md
+templates/Character.md
+templates/CharacterLink.md
+templates/Character_doc.md
+templates/Character_icon.md
+templates/Character_icon_doc.md
+templates/Cite_web.md
+templates/Cite_web_doc.md
+templates/Cleanup.md
+templates/Clear.md
+templates/Color.md
+templates/Color_doc.md
+templates/Cols.md
+templates/Delete.md
+templates/Delete_doc.md
+templates/Dialogue.md
+templates/Dialogue_doc.md
+templates/Disambiguation.md
+templates/Disambiguation_doc.md
+templates/Discord.md
+templates/Discord_doc.md
+templates/Distinguish.md
+templates/Distinguish_doc.md
+templates/Documentation.md
+templates/Episode.md
+templates/Event.md
+templates/Example_character_infobox.md
+templates/Example_character_infobox_doc.md
+templates/Fairuse.md
+templates/Fairuse_doc.md
+templates/Film.md
+templates/Film_doc.md
+templates/Flag.md
+templates/For.md
+templates/For_doc.md
+templates/From_Wikimedia.md
+templates/From_Wikimedia_doc.md
+templates/From_Wikipedia.md
+templates/Further.md
+templates/GFDL.md
+templates/GFDL_doc.md
+templates/Game.md
+templates/Hatnote.md
+templates/Hatnote_doc.md
+templates/Item.md
+templates/Item_icon.md
+templates/Item_icon_doc.md
+templates/Iter.md
+templates/Key.md
+templates/Key_doc.md
+templates/LGPL.md
+templates/LGPL_doc.md
+templates/Level.md
+templates/License.md
+templates/LicenseBox.md
+templates/LicenseBox_doc.md
+templates/License_doc.md
+templates/License_nolicense.md
+templates/License_template.md
+templates/Link_icon.md
+templates/Location.md
+templates/MIT.md
+templates/MIT_doc.md
+templates/MP_link.md
+templates/MP_link_doc.md
+templates/Main.md
+templates/Main_doc.md
+templates/Main_page.md
+templates/Main_page_box_end.md
+templates/Main_page_box_end_doc.md
+templates/Main_page_box_missing.md
+templates/Main_page_box_start.md
+templates/Main_page_box_start_doc.md
+templates/Main_page_doc.md
+templates/Merge.md
+templates/MessageBox.md
+templates/MessageBox_doc.md
+templates/Move.md
+templates/Namespace.md
+templates/Namespace_doc.md
+templates/Navbox.md
+templates/Navbox_doc.md
+templates/No_direct_use.md
+templates/Nolicense.md
+templates/Nolicense_doc.md
+templates/Normal.md
+templates/Nowrap.md
+templates/Other_free.md
+templates/Other_free_doc.md
+templates/PD.md
+templates/PD_doc.md
+templates/Permission.md
+templates/Permission_doc.md
+templates/Pipe.md
+templates/Quest.md
+templates/Quote.md
+templates/Season.md
+templates/See_also.md
+templates/Self.md
+templates/Self_doc.md
+templates/Series.md
+templates/Series_doc.md
+templates/Space.md
+templates/Split.md
+templates/Spoiler.md
+templates/Spoiler_doc.md
+templates/Spoiler_warning.md
+templates/StructuredQuote.md
+templates/Stub.md
+templates/Stub_doc.md
+templates/T.md
+templates/TOC_limit.md
+templates/TOC_limit_doc.md
+templates/TOC_right.md
+templates/TOC_right_doc.md
+templates/T_doc.md
+templates/Tl.md
+templates/Tl_doc.md
+templates/Tocright.md
+templates/Topic.md
+templates/Trim.md
+templates/Uses_Lua.md
+templates/doc--p-393.md
+templates/doc--p-63.md
+templates/doc.md
+templates/p-278.md
+templates/p-362.md
+templates/p-364.md
+templates/p-365.md
+templates/p-368.md
+templates/p-370.md
+templates/p-371.md
+templates/p-374.md
+templates/p-375.md
+templates/p-377.md
+templates/p-378.md
+templates/p-382.md
+templates/p-383.md
+templates/p-385.md
+templates/p-386.md
+templates/p-388.md
+templates/p-392.md
+templates/目录.md
+files/Armageddon.png.md
+files/Assassin.png.md
+files/Baby_Ball.png.md
+files/Banished_Flame.png.md
+files/Banshee.png.md
+files/Berserk.png.md
+files/Black_Hole.png.md
+files/Bleed.png.md
+files/Blizzard.png.md
+files/Bomb.png.md
+files/Brimstone.png.md
+files/Brood_Mother.png.md
+files/Burn.png.md
+files/Catapult.png.md
+files/Cell.png.md
+files/Characters_Menu.png.md
+files/Charm.png.md
+files/Dark.png.md
+files/Drill.png.md
+files/Earthquake.png.md
+files/Egg_Sac.png.md
+files/Elemental.png.md
+files/Erosion.png.md
+files/Fireworks.png.md
+files/Flash.png.md
+files/Flesh.png.md
+files/Flesh_Mound.png.md
+files/Flicker.png.md
+files/Freeze.png.md
+files/Freeze_Ray.png.md
+files/Frozen_Flame.png.md
+files/Ghost.png.md
+files/Glacier.png.md
+files/Heart_Swallower.png.md
+files/Hemorrhage.png.md
+files/Holy_Laser.png.md
+files/Incubus.png.md
+files/Inferno.png.md
+files/Iron.png.md
+files/Landslide.png.md
+files/Laser_Beam.png.md
+files/Laser_Cutter.png.md
+files/Laser_Horizontal_.png.md
+files/Laser_Vertical_.png.md
+files/Leech.png.md
+files/Light.png.md
+files/Lightning.png.md
+files/Lightning_Bug.png.md
+files/Lightning_Rod.png.md
+files/Lovestruck.png.md
+files/Maggot.png.md
+files/Magma.png.md
+files/Mosquito_King.png.md
+files/Mosquito_Kingdom.png.md
+files/Mosquito_Swarm.png.md
+files/Nosferatu.png.md
+files/Noxious.png.md
+files/Nuclear_Bomb.png.md
+files/Offspring.png.md
+files/Overgrowth.png.md
+files/Petrify.png.md
+files/Phantom.png.md
+files/Poison.png.md
+files/Radiation_Beam.png.md
+files/Reaper.png.md
+files/Sacrifice.png.md
+files/Sandstorm.png.md
+files/Satan.png.md
+files/Shotgun.png.md
+files/Sniper.png.md
+files/Soul_Sucker.png.md
+files/Spider_Queen.png.md
+files/Steel.png.md
+files/Stone.png.md
+files/Storm.png.md
+files/Succubus.png.md
+files/Sun.png.md
+files/Swamp.png.md
+files/The_Carouser.png.md
+files/The_Cogitator.png.md
+files/The_Cohabitants.png.md
+files/The_Embedded.png.md
+files/The_Empty_Nester.png.md
+files/The_Falconer.png.md
+files/The_False_Messiah.png.md
+files/The_Flagellant.png.md
+files/The_Itchy_Finger.png.md
+files/The_Juggler.png.md
+files/The_Makeshift_Sisyphus.png.md
+files/The_Physicist.png.md
+files/The_Radical.png.md
+files/The_Repentant.png.md
+files/The_Shade.png.md
+files/The_Shieldbearer.png.md
+files/The_Spendthrift.png.md
+files/The_Tactician.png.md
+files/The_Tiptoer.png.md
+files/The_Tiptoer_mini.png.md
+files/The_Tunneller.png.md
+files/The_Tunneller_mini.png.md
+files/The_Warrior.png.md
+files/Time.png.md
+files/Time_Bomb.png.md
+files/Timestop.png.md
+files/Tumor.png.md
+files/Vampire.png.md
+files/Vampire_Lord.png.md
+files/Venom.png.md
+files/Virus.png.md
+files/Voluptuous_Egg_Sac.png.md
+files/Warp.png.md
+files/Wind.png.md
+files/Wraith.png.md
+files/X_Ray.png.md
+files/Zombie.png.md
+data/BallRecipeEdges.md
+data/BallStatsByLevel.md
+data/Balls.md
+navigation/nav-115867ac1be8.md
+navigation/nav-63012059ef49.md
+navigation/nav-caaf18cae4fb.md
+navigation/重定向.md

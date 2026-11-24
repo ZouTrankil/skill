@@ -1,87 +1,89 @@
 # 战术家（The Tactician）
 
-[![The Tactician.png](../assets/The_Tactician.png)](../files/The_Tactician.png.md) ![The Tactician mini.png](../assets/The_Tactician_mini.png)
-
-一个退休的将军，经验超乎意料。
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/The_Tactician) · [修订 4355](https://ballxpit.wiki.gg/index.php?oldid=4355) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 战术家 ![The Tactician mini.png](../assets/The_Tactician_mini.png)
 
-##### 圆球（Ball）
+[![The Tactician.png](../assets/The_Tactician.png)](../files/The_Tactician.png.md)
 
-[铁](Iron.md) [![Iron.png](../assets/Iron.png)](Iron.md)
+一位退役将军，经验之丰富令人难以置信。
 
-##### 解锁
+## 基本信息
 
-建筑物 [队长的四处](Captain_s_Quarters.md) [![Buildings Captain's Quarters Level1.png](../assets/Buildings_Captain%27s_Quarters_Level1.png)](Captain_s_Quarters.md)
+### 圆球（Ball）
 
-##### 能力
+[铁](Iron.md) [![Iron.png](../assets/previews/Iron-25px-4c2f5923.png)](Iron.md)
 
-战斗变得轮流的。
+### 解锁
 
-**战术家** 是一个可玩的 [性格](Characters.md) 在基本游戏版本中推出了 *[球比伦战记](Ball_x_Pit.md)*它们通过构建 [队长的四处](Captain_s_Quarters.md) [![Buildings Captain's Quarters Level1.png](../assets/Buildings_Captain%27s_Quarters_Level1.png)](Captain_s_Quarters.md) 据报道, [阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/The_SMOLDERINGxDEPTHS.png)](The_SMOLDERINGxDEPTHS.md) 他们的起始球是 [铁](Iron.md) [![Iron.png](../assets/Iron.png)](Iron.md).
+建造 [队长宿舍](Captain_s_Quarters.md) [![Buildings Captain's Quarters Level1.png](../assets/previews/Buildings_Captain_s_Quarters_Level1-25px-686851fb.png)](Captain_s_Quarters.md)
 
-#### 能力描述
+### 能力
 
-战术师完全重组了比赛的步伐，变成了"转型"的战斗风格，游戏在玩家和敌人的"转型"之间交替。当玩家轮到玩家时，他们可以自由移动和瞄准，而敌人和屏幕捕捉则完全冻结。一旦球员发射了他们的球，他们会致力于那次射击，不再能够移动或改变他们的目标,一旦玩家所有的球都回来了，或者玩家通过右键按下手动回忆它们， 成为敌人的轮流， 在此期间他们获得几秒钟的前进，攻击,一旦敌人的轮流过去了， 玩家的轮流又过去了， 他们可以重新定位并计划下一次射击。
+战斗将采用回合制进行。
 
-任何在野外产卵的小卡车，如宝石、 [聚变反应堆](Fusion_Reactor.md) 和 [资源](Resources.md) 等，一出现就立即收集。
+**战术家** 是 *[球比伦战记](Ball_x_Pit.md)* 基础游戏中就包含的一名可玩的 [角色](Characters.md)。建造 [队长宿舍](Captain_s_Quarters.md) [![Buildings Captain's Quarters Level1.png](../assets/previews/Buildings_Captain_s_Quarters_Level1-25px-686851fb.png)](Captain_s_Quarters.md) 即可解锁，其蓝图位于 [阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/previews/The_SMOLDERINGxDEPTHS-25px-07bc20a6.png)](The_SMOLDERINGxDEPTHS.md)。起始圆球为 [铁](Iron.md) [![Iron.png](../assets/previews/Iron-25px-4c2f5923.png)](Iron.md)。
 
-#### 策略
+## 能力说明
 
-* 战术兵的作战风格更可预测使得球员可以安全地设置高度复杂的射击否则他们就没有时间或空间计划出来这几乎可以让任何类型的建筑受益
-* 在敌人的轮流中，数秒的不动性会让玩家非常脆弱，特别是对更复杂/难以回避的攻击 [总裁](../categories/Bosses.md)因此，帮助玩家维持/减轻伤害的被动行为，如: [胸罩（Breastplate）](Breastplate.md) [![Breastplate.png](../assets/Breastplate.png)](Breastplate.md)、 [观察者的眼睛（Eye of the Beholder）](Eye_of_the_Beholder.md) [![Eye of the Beholder.png](../assets/Eye_of_the_Beholder--951b0a1f.png)](Eye_of_the_Beholder.md)、 [![Hand Mirror.png](../assets/Hand_Mirror.png)](https://ballxpit.wiki.gg/wiki/Hand_Mirror) [手镜](https://ballxpit.wiki.gg/wiki/Hand_Mirror?action=edit&redlink=1)、 [![Lover's Quiver.png](../assets/Lover%27s_Quiver.png)](https://ballxpit.wiki.gg/wiki/Lover%27s_Quiver) [恋人的箭袋（Lover's Quiver）](https://ballxpit.wiki.gg/wiki/Lover%27s_Quiver?action=edit&redlink=1)、 [![Protective Charm.png](../assets/Protective_Charm.png)](https://ballxpit.wiki.gg/wiki/Protective_Charm) [保护的魅力](https://ballxpit.wiki.gg/wiki/Protective_Charm?action=edit&redlink=1)、 [![Healer's Effigy.png](../assets/Healer%27s_Effigy.png)](https://ballxpit.wiki.gg/wiki/Healer%27s_Effigy) [医生的效果](https://ballxpit.wiki.gg/wiki/Healer%27s_Effigy?action=edit&redlink=1)球可以治愈玩家，如 [吸血鬼（Vampire）](Vampire.md) [![Vampire.png](../assets/Vampire.png)](Vampire.md)、 [蚊子王（Mosquito King）](Mosquito_King.md) [![Mosquito King.png](../assets/Mosquito_King.png)](Mosquito_King.md)、 [File:Fruit.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=Fruit.png) [果实](https://ballxpit.wiki.gg/wiki/Fruit?action=edit&redlink=1)这种方法非常有用。
-* 在玩家的轮流中，自由运动使得他们可以轻松地进行 [![Spiked Collar.png](../assets/Spiked_Collar.png)](https://ballxpit.wiki.gg/wiki/Spiked_Collar) [尖刺项圈（Spiked Collar）](https://ballxpit.wiki.gg/wiki/Spiked_Collar?action=edit&redlink=1)因为敌人不能移动或攻击玩家，因为他们太近。
-* 分散的目标效应 [婴儿摇铃（Baby Rattle）](Baby_Rattle.md) [![Baby Rattle.png](../assets/Baby_Rattle.png)](Baby_Rattle.md) 通过允许每次射击更广泛的潜在目标,许多不同的敌方位置安排可以迫使玩家选择一个或两个目标。在他们死亡后，剩下的球将被浪费，因为他们会沿着同样的道路旅行， 错过任何附近的敌人。但是，如果有分散的目标，球可以穿越稍微不同的路径,
+战术家将单局游戏的节奏彻底重构为“回合制”战斗模式，游戏在玩家和敌人之间交替进行“回合”。当轮到玩家时，他们可以自由移动和瞄准，而敌人和屏幕滚动则完全静止。一旦玩家发射出球，他们就会专注于这次射击，无法移动或改变瞄准方向，球会像往常一样反弹并造成伤害。当玩家所有的球都返回，或者玩家通过右键点击手动召回它们时，就轮到敌人了。在敌人的回合中，他们有几秒钟的时间前进、攻击和生成敌人，而玩家仍然无法移动。当敌人的回合结束时，又轮到玩家了，他们可以重新定位并计划下一次射击。
 
-#### [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/Buildings_Matchmaker_Level1.png)](Matchmaker.md)
+在战场上生成的任何拾取物，如宝石、[聚变反应堆](Fusion_Reactor.md)和[资源](Resources.md)，在出现时就会立即被收集。
 
-##### 很好。
+## 策略
 
-* [杂耍者（The Juggler）](The_Juggler.md) [![The Juggler.png](../assets/The_Juggler.png)](The_Juggler.md) - 能够让玩家通过对敌人开枪来控制目标更多得多。 对于敌人的堆叠、老板和小老板特别有用，因为敌人和后墙之间有链锁
+* 战术家战斗风格的更可预测性使得玩家能够安全地策划那些原本没有时间或空间去规划的复杂战术，这几乎适用于任何类型的构筑方式——无论是为命中时获取最大反弹效果的构筑方式，还是为扩散范围效果/状态效果伤害而设计的构筑方式。
+* 在敌人回合期间，几秒钟的静止状态会让玩家变得非常脆弱，尤其是在面对那些更难躲避的攻击时。 [首领](../categories/Bosses.md)偶尔会导致不可避免的伤害。因此，那些帮助玩家承受或减轻伤害的被动道具，比如 [胸甲（Breastplate）](Breastplate.md) [![Breastplate.png](../assets/Breastplate.png)](Breastplate.md)、 [观者之眼（Eye of the Beholder）](Eye_of_the_Beholder.md) [![Eye of the Beholder.png](../assets/Eye_of_the_Beholder--951b0a1f.png)](Eye_of_the_Beholder.md)、 [![Hand Mirror.png](../assets/Hand_Mirror.png)](https://ballxpit.wiki.gg/wiki/Hand_Mirror) [手镜](https://ballxpit.wiki.gg/wiki/Hand_Mirror?action=edit&redlink=1)、 [![Lover's Quiver.png](../assets/Lover%27s_Quiver.png)](https://ballxpit.wiki.gg/wiki/Lover%27s_Quiver) [恋人的箭袋（Lover's Quiver）](https://ballxpit.wiki.gg/wiki/Lover%27s_Quiver?action=edit&redlink=1)、 [![Protective Charm.png](../assets/Protective_Charm.png)](https://ballxpit.wiki.gg/wiki/Protective_Charm) [防护魅惑](https://ballxpit.wiki.gg/wiki/Protective_Charm?action=edit&redlink=1)、 [![Healer's Effigy.png](../assets/Healer%27s_Effigy.png)](https://ballxpit.wiki.gg/wiki/Healer%27s_Effigy) [治疗者的雕像](https://ballxpit.wiki.gg/wiki/Healer%27s_Effigy?action=edit&redlink=1)等，以及能够治疗玩家的球类物品 [吸血鬼（Vampire）](Vampire.md) [![Vampire.png](../assets/previews/Vampire-25px-decd12b9.png)](Vampire.md)、 [蚊王（Mosquito King）](Mosquito_King.md) [![Mosquito King.png](../assets/previews/Mosquito_King-25px-f89c84e1.png)](Mosquito_King.md)、 [File:Fruit.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=Fruit.png) [水果](https://ballxpit.wiki.gg/wiki/Fruit?action=edit&redlink=1)等等，可能会非常有用。
+* 在玩家的回合中，自由移动能力使他们能够轻松触发 [![Spiked Collar.png](../assets/Spiked_Collar.png)](https://ballxpit.wiki.gg/wiki/Spiked_Collar) [尖刺项圈](https://ballxpit.wiki.gg/wiki/Spiked_Collar?action=edit&redlink=1)，因为敌人由于距离过近而无法移动或攻击玩家。
+* [婴儿摇铃](Baby_Rattle.md) [![Baby Rattle.png](../assets/Baby_Rattle.png)](Baby_Rattle.md) 的分散瞄准效果可以通过让每次射击都能覆盖更广泛的潜在目标，从而独特地惠及战术家。多种不同的敌人位置布局可能会迫使玩家只选择一两个目标。当这些目标死亡后，剩余的球将白白浪费，因为它们会沿相同的路径飞行，错过任何附近的敌人。然而，通过分散瞄准，球将能够沿略有不同的路径飞行，有可能击中那些未被直接瞄准的敌人。
 
-##### 坏的
+## [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/previews/Buildings_Matchmaker_Level1-25px-79b5d151.png)](Matchmaker.md)
 
-* [File: 极速 Soundrel.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scrupulous_Scoundrel.png) [极速 Scoundrel](https://ballxpit.wiki.gg/wiki/The_Scrupulous_Scoundrel?action=edit&redlink=1) - 大幅降低球员对球球每发球程的控制
+### 好
 
-##### 不兼容
+* [杂耍者](The_Juggler.md) [![The Juggler.png](../assets/previews/The_Juggler-25px-e2dee719.png)](The_Juggler.md) - 通过能够将子弹抛向敌人上方，让玩家的瞄准更加精准。特别适用于对付敌人层叠、首领和小首领，实现敌人与后墙之间的连续命中。
 
-* [快枪手（The Itchy Finger）](The_Itchy_Finger.md) [![The Itchy Finger.png](../assets/The_Itchy_Finger.png)](The_Itchy_Finger.md)
-* [持盾者（The Shieldbearer）](The_Shieldbearer.md) [![The Shieldbearer.png](../assets/The_Shieldbearer.png)](The_Shieldbearer.md)
-* [自笞者（The Flagellant）](The_Flagellant.md) [![The Flagellant.png](../assets/The_Flagellant.png)](The_Flagellant.md)
-* [畅饮者（The Carouser）](The_Carouser.md) [![The Carouser.png](../assets/The_Carouser.png)](The_Carouser.md)
-* [File:The Scandalmonger.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scandalmonger.png) [扫描器](https://ballxpit.wiki.gg/wiki/The_Scandalmonger?action=edit&redlink=1)
+### 坏
 
-#### 基本数据
+* [文件：The Scrupulous Scoundrel.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scrupulous_Scoundrel.png) [卑鄙无赖](https://ballxpit.wiki.gg/wiki/The_Scrupulous_Scoundrel?action=edit&redlink=1) - 每次射击都会显著降低玩家对球路径的控制力。
+
+### 不兼容
+
+* [快枪手](The_Itchy_Finger.md) [![The Itchy Finger.png](../assets/previews/The_Itchy_Finger-25px-4ce66804.png)](The_Itchy_Finger.md)
+* [持盾者](The_Shieldbearer.md) [![The Shieldbearer.png](../assets/previews/The_Shieldbearer-25px-d0846fc7.png)](The_Shieldbearer.md)
+* [自笞者](The_Flagellant.md) [![The Flagellant.png](../assets/previews/The_Flagellant-25px-4ea6f76c.png)](The_Flagellant.md)
+* [畅饮者](The_Carouser.md) [![The Carouser.png](../assets/previews/The_Carouser-25px-095af649.png)](The_Carouser.md)
+* [文件：The Scandalmonger.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scandalmonger.png)  [Scandalmonger](https://ballxpit.wiki.gg/wiki/The_Scandalmonger?action=edit&redlink=1)
+
+## 基础属性
 
 | 属性 | 属性 |
 | --- | --- |
-| [![Endurance.png](../assets/Endurance.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | - 什么意思? |
-| [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基地损坏? |
-| [![Leadership.png](../assets/Leadership.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 宝贝球计数?；婴儿球损伤? |
-| [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速?；移动速度? |
-| [![Dexterity.png](../assets/Dexterity.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 关键机会?；发生火灾率? |
-| [![Intelligence.png](../assets/Intelligence.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 公司发动力?；状态效应功率 - ?；动力? |
+| [![Endurance.png](../assets/previews/Endurance-18px-3606b187.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | 生命值未知 |
+| [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基础伤害 - ? |
+| [![Leadership.png](../assets/previews/Leadership-18px-002d5b4c.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 小球数量 - ?；小球伤害 - ? |
+| [![Speed.png](../assets/previews/Speed-18px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速 - ?；移动速度 - ? |
+| [![Dexterity.png](../assets/previews/Dexterity-18px-7cca380e.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 暴击率 - ?；发射频率 - ? |
+| [![Intelligence.png](../assets/previews/Intelligence-18px-41c39e56.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 范围效果强度 – 待确认；状态效果强度 - ?；被动效果强度 – 待确认 |
 
-#### 性格水平的进步
+## 角色等级进展
 
-[性格升级奖励](Character_Level_Mechanics.md)
+[角色等级提升奖励](Character_Level_Mechanics.md)
 
-| 性格水平 | 总经验值 | 提高奖励水平 | 选择 |
+| 角色等级 | 总经验值 | 升级奖励 | 选择项 |
 | --- | --- | --- | --- |
 | TBA | TBA | TBA | TBA |
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/The_Tactician?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/The_Tactician?action=edit).*
 
 [共享导航](../navigation/nav-334e23d2914f.md)
 
-**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 有破损文件链接的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 坚力](../categories/Stubs.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 文件链接失效的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 待完善](../categories/Stubs.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

@@ -2,13 +2,13 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:License%2FCC-BY-ND) · [修订 525](https://ballxpit.wiki.gg/index.php?oldid=525) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板目前看起来像 :
+当前该模板看起来如下：
 
-[![CC-BY-ND (英语)。](../assets/commons--CC-BY-ND.svg)](https://creativecommons.org/licenses/by-nd/3.0/)
+[![CC-BY-ND](../assets/commons--CC-BY-ND.svg)](https://creativecommons.org/licenses/by-nd/3.0/)
 
-此文件在 [创用CC授权- NoDerivs 3.0许可](https://creativecommons.org/licenses/by-nd/3.0/).
+此文件受 [Creative Commons Attribution-NoDerivs 3.0 License](https://creativecommons.org/licenses/by-nd/3.0/) 许可。
 
-见见 `{{[License](License.md)}}` 持有全许可证证件
+查看 `{{[License](License.md)}}` 如需完整的许可证文档，请查看。
 
 **分类**　[分类 · 许可证模板](../categories/License_templates.md)
 

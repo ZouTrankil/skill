@@ -1,4 +1,4 @@
-# 模板 · Bxp 点（Bxp）
+# 模板 · Bxp
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Bxp) · [修订 2094](https://ballxpit.wiki.gg/index.php?oldid=2094) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

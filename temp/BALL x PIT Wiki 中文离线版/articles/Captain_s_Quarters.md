@@ -1,44 +1,44 @@
-# 队长的四处（Captain's Quarters）
+# 队长宿舍（Captain's Quarters）
 
 [![Buildings Captains Quarters Level1.png](../assets/Buildings_Captain%27s_Quarters_Level1.png)](../files/Buildings_Captain_s_Quarters_Level1.png.md)
 
-一个房子 [战术家](The_Tactician.md) [![The Tactician.png](../assets/The_Tactician.png)](The_Tactician.md).
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Captain%27s_Quarters) · [修订 3397](https://ballxpit.wiki.gg/index.php?oldid=3397) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+[战术家](The_Tactician.md) [![The Tactician.png](../assets/previews/The_Tactician-25px-ec68bac9.png)](The_Tactician.md) 的房子。
 
-##### 分类（Category）
+## 信息（Information）
 
-住房
-
-##### 子类（Subcategory）
+### 分类（Category）
 
 住房
 
-##### 蓝图位置（Blueprint location）
+### 子类（Subcategory）
 
-[阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/The_SMOLDERINGxDEPTHS.png)](The_SMOLDERINGxDEPTHS.md)
+住房
 
-##### 基础资源消耗（Base resource cost）
+### 蓝图位置（Blueprint location）
 
-[![Wood.png](../assets/Wood.png)](Wood.md) 50 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 40
+[阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/previews/The_SMOLDERINGxDEPTHS-25px-07bc20a6.png)](The_SMOLDERINGxDEPTHS.md)
 
-##### 建造点消耗（Build point cost）
+### 基础资源消耗（Base resource cost）
+
+[![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 50 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 40
+
+### 建造点消耗（Build point cost）
 
 35
 
-建造船长的房子，打开锁 [战术家](The_Tactician.md) [![The Tactician.png](../assets/The_Tactician.png)](The_Tactician.md) 作为一个可玩的角色。一旦字符获得足够的经验值达到 {?? TODO 找到字符级别 reqs 用于住房奖金},这栋大楼就释放出一种被动的能力，在这个能力中，对于其影响区的每个国家奖赏大楼，船长的区将给同一州额外+1的奖金(这也计算出每个州的基本和无限升级版本作为单独的奖金)。与其他住房不同，这座建筑的容量不能进一步提高或升级。请注意，拆除一个角色的房子将使这个角色不适用于收获模式或水平运行，并将它们从任何建筑任务中移除，直到他们的房子重建 (尽管角色仍然会保留之前的所有进展)。
+建造队长宿舍将解锁[战术家](The_Tactician.md) [![The Tactician.png](../assets/previews/The_Tactician-25px-ec68bac9.png)](The_Tactician.md) 作为可玩角色。当该角色获得足够的经验值达到等级{?TODO查找宿舍奖励所需的角色等级要求}时，这座建筑将解锁一项被动效果：在其效果区域内，每有一个属性加成建筑，队长宿舍将为该属性提供额外的+1加成（这还包括了该属性的基础版本和无限升级版本作为单独的加成）。与其他住房建筑不同，这座建筑的效果无法进一步改进或升级。请注意，拆除角色的住宅将使该角色在收获模式或等级提升中无法使用，并会将其从所有建筑任务中移除，直到其住宅重建为止（尽管该角色仍会保留之前的所有进度）。
 
 被动效果与升级
 
-| 等级 | 图片 | 描述 | 资源消耗 | 建造点消耗 | 拆除 | 性格水平要求 |
+| 等级 | 图片 | 说明 | 资源消耗 | 建造点消耗 | 拆除 | 角色等级要求 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [![Buildings Captain's Quarters Level1.png](../assets/Buildings_Captain%27s_Quarters_Level1.png)](../files/Buildings_Captain_s_Quarters_Level1.png.md) | 一个为战术师的房子。 | [![Wood.png](../assets/Wood.png)](Wood.md) 50 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 40 | 35 | [![Wood.png](../assets/Wood.png)](Wood.md) 50 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 40 | - |
-| 2 | - | 一个为战术师的房子。 附近的Stat奖金建筑提供额外的+1奖金 (\<stat\_strength.png\> \<stat\_dexterity.png\> \<stat\_intelligence.png\> \<stat\_speed.png\> \<stat\_endurance.png\> \<stat\_leadership.png\>)。 | - | - | [![Wood.png](../assets/Wood.png)](Wood.md) 50 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 40 |  |
+| 1 | [![Buildings Captain's Quarters Level1.png](../assets/previews/Buildings_Captain_s_Quarters_Level1-92px-686851fb.png)](../files/Buildings_Captain_s_Quarters_Level1.png.md) | 供战术家使用的房屋。 | [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 50 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 40 | 35 | [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 50 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 40 | - |
+| 2 | - | 供战术家使用的房屋。 附近提供属性加成的建筑会再提供 +1 对应属性（力量、敏捷、智力、速度、耐力、领导力）。 | - | - | [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 50 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 40 |  |
 
 [共享导航](../navigation/nav-d4956b01aa56.md)
 
-**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

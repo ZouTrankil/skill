@@ -1,4 +1,4 @@
-# 分类 · 级别图标（Level Icons）
+# 分类 · 等级图标（Level Icons）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Level_Icons)
 

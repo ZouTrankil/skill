@@ -1,45 +1,45 @@
-# 战士协会（Warrior's Guild）
+# 战士公会（Warrior's Guild）
 
 [![Buildings Warriors Guild Level1.png](../assets/Buildings_Warrior%27s_Guild_Level1.png)](../files/Buildings_Warrior_s_Guild_Level1.png.md)
 
-收益奖金 [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 强度，可以不断升级。
+获得 [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量的加成。可无限升级。
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Warrior%27s_Guild) · [修订 3353](https://ballxpit.wiki.gg/index.php?oldid=3353) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+## 信息（Information）
 
-##### 分类（Category）
+### 分类（Category）
 
 战争
 
-##### 子类（Subcategory）
+### 子类（Subcategory）
 
 属性加成
 
-##### 蓝图位置（Blueprint location）
+### 蓝图位置（Blueprint location）
 
 [VASTxVOID](The_VASTxVOID.md)
 
-##### 基础资源消耗（Base resource cost）
+### 基础资源消耗（Base resource cost）
 
-[![Gold.png](../assets/Gold.png)](Gold.md) 300 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 60
+[![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 300 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 60
 
-##### 建造点消耗（Build point cost）
+### 建造点消耗（Build point cost）
 
 50
 
-六座无穷无尽升级的国税分红建筑物之一勇士协会给所有人物一个奖金 [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 建筑的优势。与基数六国基数奖金大楼不同，这栋大楼不是5级封顶，可以对每级+1国基数点进行无限次升级，但是，每级资源成本指数增长，而建设点成本线性增长，但最终上限为1050。与其他建筑物一样，拆除仍将完全偿还到那个时候用于建设和升级的所有资源。在建筑物的效果区内，该建筑物可以提供额外的 +1奖励 [队长的四处](Captain_s_Quarters.md) 一次 [战术家](The_Tactician.md) [![The Tactician.png](../assets/The_Tactician.png)](The_Tactician.md) 建造这座建筑物，为"纪念碑"而升级至5级，为"结构力量"
+作为六个可无限升级属性加成建筑之一，战士工会为所有角色在建造时提供 [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量的额外加成。与基础六属性加成建筑不同，该建筑在5级后没有上限，且可无限次升级，每级增加1点属性点数。不过，每级资源消耗呈指数级增长，建造点消耗则呈线性增长，但最终会达到1050的上限。与其他建筑一样，拆除后仍可全额退还至该建筑建造及升级所花费的所有资源。当 [战术家](The_Tactician.md) [![The Tactician.png](../assets/previews/The_Tactician-25px-ec68bac9.png)](The_Tactician.md) 解锁该能力后，将该建筑放置在 [队长宿舍](Captain_s_Quarters.md)的效应区域时，可额外获得+1的加成。建造此建筑可获得“纪念碑”成就，升级至5级则可获得“结构力量”成就。
 
 被动效果与升级
 
-| 图片 | 描述 | 资源消耗 | 建造点消耗 | 拆除 |
+| 图片 | 说明 | 资源消耗 | 建造点消耗 | 拆除 |
 | --- | --- | --- | --- | --- |
-| [![Buildings Warrior's Guild Level1.png](../assets/Buildings_Warrior%27s_Guild_Level1.png)](../files/Buildings_Warrior_s_Guild_Level1.png.md) | 获得+1奖金 [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 强度，可以不断升级。 ／ 获得额外的+1 [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 每一级力量。 | [![Gold.png](../assets/Gold.png)](Gold.md) 300 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 60 | 50 | [![Gold.png](../assets/Gold.png)](Gold.md) 300 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 60 |
+| [![Buildings Warrior's Guild Level1.png](../assets/previews/Buildings_Warrior_s_Guild_Level1-141px-8c264e56.png)](../files/Buildings_Warrior_s_Guild_Level1.png.md) | 获得 +1 力量加成 [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength)。可无限升级。 ／ 每等级额外获得 +1 [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量加成。 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 300 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 60 | 50 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 300 [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 60 |
 
 |  |  |  |  |
 | --- | --- | --- | --- |
-|  | [升级到下一个水平的成本](Buildings.md#%E6%97%A0%E7%A9%B7%E6%97%A0%E5%B0%BD%E7%9A%84%E5%8D%87%E7%BA%A7%E5%BB%BA%E7%AD%91%E7%89%A9) |  |  |
-| 等级 | [![Gold.png](../assets/Gold.png)](Gold.md) | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) | 建设 ／ 问题 |
+|  | [升级到下一等级的成本](Buildings.md#%E5%8F%AF%E6%97%A0%E9%99%90%E5%8D%87%E7%BA%A7%E7%9A%84%E5%BB%BA%E7%AD%91) |  |  |
+| 等级 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) | 建造点 |
 | 1 | 700 | 100 | 50 |
 | 2 | 1,050 | 150 | 150 |
 | 3 | 1,400 | 200 | 250 |
@@ -93,6 +93,6 @@
 
 [共享导航](../navigation/nav-d4956b01aa56.md)
 
-**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 战争](../categories/Warfare.md) · [分类 · 属性加成](../categories/Stat_Bonuses.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 战争](../categories/Warfare.md) · [分类 · 属性加成](../categories/Stat_Bonuses.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

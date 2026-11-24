@@ -2,45 +2,45 @@
 
 [![Buildings Falconry Hut Level1.png](../assets/Buildings_Falconry_Hut_Level1.png)](../files/Buildings_Falconry_Hut_Level1.png.md)
 
-一个房子 [驯鹰人](The_Falconer.md) [![The Falconer.png](../assets/The_Falconer.png)](The_Falconer.md).
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Falconry_Hut) · [修订 3405](https://ballxpit.wiki.gg/index.php?oldid=3405) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+[驯鹰人](The_Falconer.md) [![The Falconer.png](../assets/previews/The_Falconer-25px-67b4d27e.png)](The_Falconer.md) 的住宅。
 
-##### 分类（Category）
+## 信息（Information）
 
-住房
-
-##### 子类（Subcategory）
+### 分类（Category）
 
 住房
 
-##### 蓝图位置（Blueprint location）
+### 子类（Subcategory）
 
-[天堂之门](The_HEAVENLYxGATES.md) [![The HEAVENLYxGATES.png](../assets/The_HEAVENLYxGATES.png)](The_HEAVENLYxGATES.md)
+住房
 
-##### 基础资源消耗（Base resource cost）
+### 蓝图位置（Blueprint location）
 
-[![Gold.png](../assets/Gold.png)](Gold.md) 150 [![Wood.png](../assets/Wood.png)](Wood.md) 120
+[天堂之门](The_HEAVENLYxGATES.md) [![The HEAVENLYxGATES.png](../assets/previews/The_HEAVENLYxGATES-25px-476b000b.png)](The_HEAVENLYxGATES.md)
 
-##### 建造点消耗（Build point cost）
+### 基础资源消耗（Base resource cost）
+
+[![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 150 [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 120
+
+### 建造点消耗（Build point cost）
 
 30
 
-其他 **驯鹰小屋** 是一个字符的住房 [建筑物](Buildings.md) 在 *[球比伦战记](Ball_x_Pit.md)*加入作为 [礼物更新](https://ballxpit.wiki.gg/wiki/Regal_Update?action=edit&redlink=1)构建“猎鹰之鹰之鹰之帆锁的锁锁， 建造“猎鹰之鹰之鹰之帆锁锁锁”的锁窗, [驯鹰人](The_Falconer.md) [![The Falconer.png](../assets/The_Falconer.png)](The_Falconer.md) 作为一个可播放的 [性格](Characters.md)一次, [字符获得了足够的经验值](Character_Level_Mechanics.md) 为了达到4级，这个建筑释放了一个被动的能力, [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1) 统计这座建筑的功能可以通过进一步提高，而不是直接升级建筑本身，进一步提高下面所述的特性。请注意，拆除一个角色的房子将使这个角色不适用于收获模式或水平运行，并将它们从任何建筑任务中移除，直到他们的房子重建 (尽管角色仍然会保留之前的所有进展)。
+**驯鹰小屋** 是一个角色房屋 [建造](Buildings.md) 在 *[球比伦战记](Ball_x_Pit.md)*作为其中一部分被添加进来。 [Regal 更新](https://ballxpit.wiki.gg/wiki/Regal_Update?action=edit&redlink=1)建造猎鹰巢屋解锁 [驯鹰人](The_Falconer.md) [![The Falconer.png](../assets/previews/The_Falconer-25px-67b4d27e.png)](The_Falconer.md) 作为可游玩角色 [角色](Characters.md). 一旦 [角色获得足够的经验值](Character_Level_Mechanics.md) 达到等级4时，这座建筑会解锁一项被动能力，所有可使用的角色都会获得加成。 [![Speed.png](../assets/previews/Speed-25px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1) stat. 该建筑的能力可以通过以下方式进一步提升：而不是直接升级建筑本身，而是继续提升角色等级。注意，拆除角色的房屋将使该角色在收获模式或等级提升中无法使用，并使其从所有建筑任务中移除，直到其房屋重建为止（尽管该角色仍会保留之前的所有进度）。
 
 被动效果与升级
 
-| 等级 | 图片 | 描述 | 资源消耗 | 建造点消耗 | 拆除 | 性格水平要求 |
+| 等级 | 图片 | 说明 | 资源消耗 | 建造点消耗 | 拆除 | 角色等级要求 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [![Buildings Falconry Hut Level1.png](../assets/Buildings_Falconry_Hut_Level1.png)](../files/Buildings_Falconry_Hut_Level1.png.md) | 猎鹰猎鹰家的一所房子一所房子, | [![Gold.png](../assets/Gold.png)](Gold.md) 150 [![Wood.png](../assets/Wood.png)](Wood.md) 120 | 30 | [![Gold.png](../assets/Gold.png)](Gold.md) 150 [![Wood.png](../assets/Wood.png)](Wood.md) 120 | - |
-| 1 | - | 猎鹰猎鹰家的一所房子一所房子, 所有字符都获得+1奖金 [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1)影响你的运动速度和球速率。 | - | - | [![Gold.png](../assets/Gold.png)](Gold.md) 150 [![Wood.png](../assets/Wood.png)](Wood.md) 120 | 4 |
-| 2 | - | 猎鹰猎鹰家的一所房子一所房子, 所有角色都获得+2奖金 [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1)影响你的运动速度和球速率。 | - | - | [![Gold.png](../assets/Gold.png)](Gold.md) 150 [![Wood.png](../assets/Wood.png)](Wood.md) 120 | 7 |
-| 3 | - | 猎鹰猎鹰家的一所房子一所房子, 所有角色都获得+3奖金 [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1)影响你的运动速度和球速率。 | - | - | [![Gold.png](../assets/Gold.png)](Gold.md) 150 [![Wood.png](../assets/Wood.png)](Wood.md) 120 | 9 |
+| 1 | [![Buildings Falconry Hut Level1.png](../assets/previews/Buildings_Falconry_Hut_Level1-125px-f34c83ea.png)](../files/Buildings_Falconry_Hut_Level1.png.md) | 给猎鹰者的一座房子 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 150 [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 120 | 30 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 150 [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 120 | - |
+| 1 | - | 给猎鹰者的一座房子 所有角色均获得 +1 加成 [![Speed.png](../assets/previews/Speed-25px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1)。此加成会影响你的移动速度和球速。 | - | - | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 150 [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 120 | 4 |
+| 2 | - | 给猎鹰者的一座房子 所有角色获得 +2 的加成 [![Speed.png](../assets/previews/Speed-25px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1)。这会影响你的移动速度和球速。 | - | - | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 150 [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 120 | 7 |
+| 3 | - | 给猎鹰者的一座房子 所有角色均可获得 +3 的额外加成 [![Speed.png](../assets/previews/Speed-25px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) [速度](https://ballxpit.wiki.gg/wiki/Speed?action=edit&redlink=1)。此效果会影响你的移动速度和球速。 | - | - | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 150 [![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md) 120 | 9 |
 
 [共享导航](../navigation/nav-d4956b01aa56.md)
 
-**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

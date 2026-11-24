@@ -1,4 +1,4 @@
-# 分类 · 未来的内容（Future Content）
+# 分类 · 未来内容（Future Content）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Future_Content)
 

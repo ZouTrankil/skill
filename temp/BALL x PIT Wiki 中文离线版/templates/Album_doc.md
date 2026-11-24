@@ -2,11 +2,11 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Album%2Fdoc) · [修订 45](https://ballxpit.wiki.gg/index.php?oldid=45) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}[专辑](Album.md)模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{[Album](Album.md)}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Album
@@ -22,35 +22,35 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 花花
+## Fleur
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 艺艺人
+### 艺术家
 
-结婚
+玛莉戈尔德
 
-##### 释放
+### 发布
 
 2012 年 6 月
 
-##### 录音录音
+### 记录
 
 2011
 
-##### 长长长
+### 长度
 
 88:88
 
-##### 标签标签
+### 标签
 
-春春
+春天
 
-##### 生产者生产者
+### 制作人
 
-达飞
+达菲
 
 ```
 {{Album

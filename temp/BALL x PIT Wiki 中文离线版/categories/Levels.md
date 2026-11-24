@@ -2,7 +2,7 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Levels) · [修订 3714](https://ballxpit.wiki.gg/index.php?oldid=3714) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-名单清单 [的水平](../articles/Levels.md) 在 *[球比伦战记](../articles/Ball_x_Pit.md)*.
+*[球比伦战记](../articles/Ball_x_Pit.md)*中的[关卡](../articles/Levels.md)。
 
 **分类**　[分类 · 球比伦战记（BALL x PIT）百科](BALL_x_PIT_Wiki.md)
 

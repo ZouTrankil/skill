@@ -1,4 +1,4 @@
-# 分类 · 资源水泥（Resource sprites）
+# 分类 · 资源精灵图（Resource sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Resource_sprites)
 

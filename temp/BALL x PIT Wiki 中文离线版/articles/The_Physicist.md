@@ -1,85 +1,87 @@
 # 物理学家（The Physicist）
 
-[![The Physicist.png](../assets/The_Physicist.png)](../files/The_Physicist.png.md) ![The Physicist mini.png](../assets/The_Physicist_mini.png)
-
-一个开拓者。
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/The_Physicist) · [修订 4339](https://ballxpit.wiki.gg/index.php?oldid=4339) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 物理学家 ![The Physicist mini.png](../assets/previews/The_Physicist_mini-34px-d8c9e62a.png)
 
-##### 圆球（Ball）
+[![The Physicist.png](../assets/The_Physicist.png)](../files/The_Physicist.png.md)
 
-[光](Light.md) [![Light.png](../assets/Light.png)](Light.md)
+该领域的先驱。
 
-##### 解锁
+## 基本信息
 
-建筑物 [实验室](Laboratory.md) [![Buildings Laboratory Level1.png](../assets/Buildings_Laboratory_Level1.png)](Laboratory.md)
+### 圆球（Ball）
 
-##### 能力
+[光](Light.md) [![Light.png](../assets/previews/Light-25px-ed053b6f.png)](Light.md)
 
-球体受到引力向屏幕后面拉动的影响。
+### 解锁
 
-**物理学家** 是一个可玩的 [性格](Characters.md) 在基本游戏版本中推出了 *[球比伦战记](Ball_x_Pit.md)*它们通过构建 [实验室](Laboratory.md) [![Buildings Laboratory Level1.png](../assets/Buildings_Laboratory_Level1.png)](Laboratory.md) 据报道, [真菌森林](The_FUNGALxFOREST.md) [![The FUNGALxFOREST.png](../assets/The_FUNGALxFOREST.png)](The_FUNGALxFOREST.md) 他们的起始球是 [光](Light.md) [![Light.png](../assets/Light.png)](Light.md).
+建造 [实验室](Laboratory.md) [![Buildings Laboratory Level1.png](../assets/previews/Buildings_Laboratory_Level1-25px-9d1b82b2.png)](Laboratory.md)
 
-#### 能力描述
+### 能力
 
-物理学家射出的球不但没有在可预见的角度上僵硬地滚动，反而表现得好像是被引力拉向屏幕顶部的物体。一旦它们到达屏幕的顶部，它们就消失了，一旦它们完成发射一伏球后，就会被送回物理家手中。
+球会受到向屏幕后方向作用的重力影响。
 
-#### 策略
+**物理学家** 是 *[球比伦战记](Ball_x_Pit.md)* 基础游戏中就包含的一名可玩的 [角色](Characters.md)。建造 [实验室](Laboratory.md) [![Buildings Laboratory Level1.png](../assets/previews/Buildings_Laboratory_Level1-25px-9d1b82b2.png)](Laboratory.md) 即可解锁，其蓝图位于 [真菌森林](The_FUNGALxFOREST.md) [![The FUNGALxFOREST.png](../assets/previews/The_FUNGALxFOREST-25px-cdabc11d.png)](The_FUNGALxFOREST.md)。起始圆球为 [光](Light.md) [![Light.png](../assets/previews/Light-25px-ed053b6f.png)](Light.md)。
 
-* 物理学家蛋蛋的独特物理物理让他们在敌人面前反复跳到敌人面前当他们得到"屎", 这可以使物理学家成为一个非常强大的选择 [流血（Bleed）](Bleed.md) [![Bleed.png](../assets/Bleed.png)](Bleed.md) 或是 [育巢母体（Brood Mother）](Brood_Mother.md) [![Brood Mother.png](../assets/Brood_Mother.png)](Brood_Mother.md) 和像 passives [钻石钻头（Diamond Hilted Dagger）](Diamond_Hilted_Dagger.md) [![Diamond Hilted Dagger.png](../assets/Diamond_Hilted_Dagger.png)](Diamond_Hilted_Dagger.md) 这也导致他们比平常更长时间停留在场上, [闪烁（Flicker）](Flicker.md) [![Flicker.png](../assets/Flicker.png)](Flicker.md) 或是 [投石机（Catapult）](Catapult.md) [![Catapult.png](../assets/Catapult.png)](Catapult.md) 也可以非常有效。
-* 另一方面，医生的重力机制使得击败敌人从后面几乎是不可能的, [Ruby 闪亮的弹跳器（Ruby Hilted Dagger）](Ruby_Hilted_Dagger.md) [![Ruby Hilted Dagger.png](../assets/Ruby_Hilted_Dagger.png)](Ruby_Hilted_Dagger.md) 及 [File:Kris Knife.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=Kris_Knife.png) [克里斯刀](https://ballxpit.wiki.gg/wiki/Kris_Knife?action=edit&redlink=1) 容易的选择 [驱魔者（Exorcist）](Exorcist.md) [![Buildings Exorcist Level1.png](../assets/Buildings_Exorcist_Level1.png)](Exorcist.md) 并且极大地限制了穿透球的有用性。 [鬼魂（Ghost）](Ghost.md) [![Ghost.png](../assets/Ghost.png)](Ghost.md).
+## 能力说明
 
-#### [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/Buildings_Matchmaker_Level1.png)](Matchmaker.md)
+与那些以可预测角度刚性弹跳的圆球不同，物理学家发射的圆球表现得就像被重力拉向屏幕顶部的物理物体。一旦它们到达屏幕顶部，就会消失，并在一轮发射结束后返回给物理学家。
 
-##### 很好。
+## 策略
 
-* [忏悔者（The Repentant）](The_Repentant.md) [![The Repentant.png](../assets/The_Repentant.png)](The_Repentant.md) 物理学家蛋蛋的独特物理往往会创造出这样的场景: 球在敌人的正面“被打碎 ” , 很快会从忏悔者的被动下造成损伤。此外，后悔者回归机械允许球在屏幕后面获得一些额外的里程。
+* 物理学家球体的独特物理特性使它们在“卡住”时容易反复弹跳到敌人前方，这使得物理学家成为以命中效果为核心的构筑中非常强大的选择，比如 [流血](Bleed.md) [![Bleed.png](../assets/previews/Bleed-25px-844cd7ee.png)](Bleed.md) 或 [育巢母体](Brood_Mother.md) [![Brood Mother.png](../assets/previews/Brood_Mother-25px-55e44e7b.png)](Brood_Mother.md) 这样的球体，以及 [钻石柄匕首](Diamond_Hilted_Dagger.md) [![Diamond Hilted Dagger.png](../assets/Diamond_Hilted_Dagger.png)](Diamond_Hilted_Dagger.md) 这样的被动道具。此外，这种特性还使得它们会在场上停留的时间比平常更长，这意味着那些在空中触发效果的球体，如 [闪烁](Flicker.md) [![Flicker.png](../assets/previews/Flicker-25px-f3081e12.png)](Flicker.md) 或 [投石机](Catapult.md) [![Catapult.png](../assets/previews/Catapult-25px-8af02507.png)](Catapult.md)，也可能非常有效。
+* 相反，物理学家的重力机制使得从背后攻击敌人几乎变得不可能，这使得像 [红宝石柄匕首](Ruby_Hilted_Dagger.md) [![Ruby Hilted Dagger.png](../assets/Ruby_Hilted_Dagger.png)](Ruby_Hilted_Dagger.md) 和 [File:Kris Knife.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=Kris_Knife.png) [Kris Knife](https://ballxpit.wiki.gg/wiki/Kris_Knife?action=edit&redlink=1) 这样的武器成为 [驱魔者](Exorcist.md) [![Buildings Exorcist Level1.png](../assets/previews/Buildings_Exorcist_Level1-25px-516d6204.png)](Exorcist.md) 的绝佳选择，同时也极大地限制了像 [幽灵](Ghost.md) [![Ghost.png](../assets/previews/Ghost-25px-434c74b0.png)](Ghost.md) 这样的穿刺球的实用性。
 
-##### 中性
+## [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/previews/Buildings_Matchmaker_Level1-25px-79b5d151.png)](Matchmaker.md)
 
-* [掘地者（The Tunneller）](The_Tunneller.md) [![The Tunneller.png](../assets/The_Tunneller.png)](The_Tunneller.md) 球可以有效地永久活跃，因为它们将在屏幕周围连续循环，直到它们击中敌人或被玩家抓住。 [闪烁（Flicker）](Flicker.md) [![Flicker.png](../assets/Flicker.png)](Flicker.md) 但也可能导致玩家必须尽可能努力收集球，然后在需要的其他地方射击它们。
+### 好
 
-##### 坏的
+* [忏悔者](The_Repentant.md) [![The Repentant.png](../assets/previews/The_Repentant-25px-b316ac00.png)](The_Repentant.md)：如前所述，物理学家制造的球体具有独特的物理特性，容易导致球体卡在敌人的正面，从而迅速受到忏悔者被动效果的伤害。此外，忏悔者的返回机制使得球体在到达屏幕背面后还能继续造成伤害。
 
-##### 不兼容
+### 中立
 
-* [持盾者（The Shieldbearer）](The_Shieldbearer.md) [![The Shieldbearer.png](../assets/The_Shieldbearer.png)](The_Shieldbearer.md)
-* [自笞者（The Flagellant）](The_Flagellant.md) [![The Flagellant.png](../assets/The_Flagellant.png)](The_Flagellant.md)
-* [File:The Scrupulous Scoundrel.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scrupulous_Scoundrel.png) [惊人的Scuruous Scoundrel](https://ballxpit.wiki.gg/wiki/The_Scrupulous_Scoundrel?action=edit&redlink=1)
-* [File:The Recollector.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Recollector.png) [记忆者](https://ballxpit.wiki.gg/wiki/The_Recollector?action=edit&redlink=1)
-* [File:The Scandalmonger.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scandalmonger.png) [扫描器](https://ballxpit.wiki.gg/wiki/The_Scandalmonger?action=edit&redlink=1)
+* [掘地者](The_Tunneller.md) [![The Tunneller.png](../assets/previews/The_Tunneller-25px-e4e9f940.png)](The_Tunneller.md)：球可以永久保持活跃状态，因为它们会不断在屏幕上循环，直到击中敌人或被玩家捕获。这对于那些依赖球持续活跃状态的特定构建方式（如[闪烁](Flicker.md) [![Flicker.png](../assets/previews/Flicker-25px-f3081e12.png)](Flicker.md)）来说是个优势，但也可能导致玩家不得不特意去收集球并将其射向其他需要它们的位置。
 
-#### 基本数据
+### 坏
+
+### 不兼容
+
+* [持盾者](The_Shieldbearer.md) [![The Shieldbearer.png](../assets/previews/The_Shieldbearer-25px-d0846fc7.png)](The_Shieldbearer.md)
+* [自笞者](The_Flagellant.md) [![The Flagellant.png](../assets/previews/The_Flagellant-25px-4ea6f76c.png)](The_Flagellant.md)
+* [文件：The Scrupulous Scoundrel.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scrupulous_Scoundrel.png) [无耻小人](https://ballxpit.wiki.gg/wiki/The_Scrupulous_Scoundrel?action=edit&redlink=1)
+* [文件：The Recollector.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Recollector.png) [回忆者](https://ballxpit.wiki.gg/wiki/The_Recollector?action=edit&redlink=1)
+* [文件：The Scandalmonger.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Scandalmonger.png)  [Scandalmonger](https://ballxpit.wiki.gg/wiki/The_Scandalmonger?action=edit&redlink=1)
+
+## 基础属性
 
 | 属性 | 属性 |
 | --- | --- |
-| [![Endurance.png](../assets/Endurance.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | - 什么意思? |
-| [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基地损坏? |
-| [![Leadership.png](../assets/Leadership.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 宝贝球计数?；婴儿球损伤? |
-| [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速?；移动速度? |
-| [![Dexterity.png](../assets/Dexterity.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 关键机会?；发生火灾率? |
-| [![Intelligence.png](../assets/Intelligence.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 公司发动力?；状态效应功率 - ?；动力? |
+| [![Endurance.png](../assets/previews/Endurance-18px-3606b187.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | 生命值未知 |
+| [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基础伤害 - ? |
+| [![Leadership.png](../assets/previews/Leadership-18px-002d5b4c.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 小球数量 - ?；小球伤害 - ? |
+| [![Speed.png](../assets/previews/Speed-18px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速 - ?；移动速度 - ? |
+| [![Dexterity.png](../assets/previews/Dexterity-18px-7cca380e.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 暴击率 - ?；发射频率 - ? |
+| [![Intelligence.png](../assets/previews/Intelligence-18px-41c39e56.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 范围效果强度 – 待确认；状态效果强度 - ?；被动效果强度 – 待确认 |
 
-#### 性格水平的进步
+## 角色等级进展
 
-[性格升级奖励](Character_Level_Mechanics.md)
+[角色等级提升奖励](Character_Level_Mechanics.md)
 
-| 性格水平 | 总经验值 | 提高奖励水平 | 选择 |
+| 角色等级 | 总经验值 | 升级奖励 | 选择项 |
 | --- | --- | --- | --- |
 | TBA | TBA | TBA | TBA |
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/The_Physicist?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/The_Physicist?action=edit).*
 
 [共享导航](../navigation/nav-334e23d2914f.md)
 
-**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 有破损文件链接的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 坚力](../categories/Stubs.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 文件链接失效的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 待完善](../categories/Stubs.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

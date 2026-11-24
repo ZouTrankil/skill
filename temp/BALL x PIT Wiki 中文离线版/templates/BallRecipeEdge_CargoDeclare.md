@@ -1,22 +1,22 @@
-# 模板 · 包装/货物申报（BallRecipeEdge/CargoDeclare）
+# 模板 · 圆球配方材料/Cargo 申报（BallRecipeEdge/CargoDeclare）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:BallRecipeEdge%2FCargoDeclare) · [修订 4013](https://ballxpit.wiki.gg/index.php?oldid=4013) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板定义了表格“ BallRecipeEdges ” 。 [查看表](../data/BallRecipeEdges.md) 。
+此模板定义了“BallRecipeEdges”表。[查看表格](../data/BallRecipeEdges.md)。
 
-货物表: `BallRecipeEdges`
+Cargo 表： `BallRecipeEdges`
 
 |  |  |
 | --- | --- |
-| 一行为 | 一个球食谱的一个槽中一个替代成分 |
-| 存储于 | [模板 · Ball 矩形（BallRecipeEdge）](BallRecipeEdge.md),由 [模块:BallData](../site/Module_BallData.md) 从 `ingredient_N_options` 参数的参数 [模板 · 球数据（BallData）](BallData.md) |
-| 由手写的 | 无-不手工放置此模板 |
-| 衍生， 从未打字 | 每行， 从同一页上的位置参数， 在同一分析中 |
-| 从来没有放在这里 | a 显示“显示“在“在“在“显示”的“显示“在“在“在“显示”的“显示“在“在“显示”的 `ingredient`A级 `result` 列 - 存储该行的条目 *是* 结果。 A `slot_index` 上文4。 |
+| 一行是 | 圆球配方中某个材料位的一种可选材料 |
+| 存储于 | [模板 · 圆球配方材料（BallRecipeEdge）](BallRecipeEdge.md), 扩展后 [Module:BallData](../site/Module_BallData.md) 从……开始 `ingredient_N_options` 参数设置 [模板 · 球数据（BallData）](BallData.md) |
+| 手动撰写 | nothing — 请勿手动放置此模板 |
+| 衍生，从未输入 | 每一行，都来自同一页面上同一解析中的槽位参数。 |
+| 请勿在此处放置 | 一个显示别名 `ingredient`. A `result` 列 — 存储该行的文章 *是* 结果。A `slot_index` 超过4。 |
 | 另见 | [圆球（Balls）](../data/Balls.md) |
 
-各行不回填填。只当本模板在下一个解析时， 增减该模板的页面才会更新， 无效编辑它。 更改 `#cargo_declare` 上面的管理员需要运行 *特别:Cargo Tables + 重建数据*.
+行不会重新填充。获得或失去此模板的页面仅在下次解析时才会更新——请将其置为无效编辑。更改 `#cargo_declare` above 需要管理员运行 *Special:CargoTables → 重新创建数据*.
 
-**分类**　[分类 · 声明货物表页](../categories/Pages_declaring_Cargo_tables.md) · [分类 · 货物申报](../categories/Cargo_declarations.md)
+**分类**　[分类 · 声明 Cargo 表的页面](../categories/Pages_declaring_Cargo_tables.md) · [分类 · Cargo 申报](../categories/Cargo_declarations.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

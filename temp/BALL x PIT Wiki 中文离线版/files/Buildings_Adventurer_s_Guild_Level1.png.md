@@ -6,10 +6,10 @@
 
 image/png · 258 × 237 · 51,901 字节
 
-这种版本来自前皇家更新战争建筑物喷雾表，需要在获取后更新从新撕裂的喷雾表。
+此版本来自“Regal Update”之前的战争建筑精灵图，需在获取新精灵图后更新。
 
 **源页许可标记**　`{{License|game}}`
 
-**分类**　[分类 · 建筑物](../categories/Building_sprites--p-c-a9afcb8121cb.md)
+**分类**　[分类 · 建筑精灵图](../categories/Building_sprites--p-c-a9afcb8121cb.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

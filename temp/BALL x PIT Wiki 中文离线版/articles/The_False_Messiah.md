@@ -1,67 +1,69 @@
 # 伪救世主（The False Messiah）
 
-[![The False Messiah.png](../assets/The_False_Messiah.png)](../files/The_False_Messiah.png.md) ![The False Messiah mini.png](../assets/The_False_Messiah_mini.png)
-
-一位有争议的领导者，无限的魅力。..
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/The_False_Messiah) · [修订 2885](https://ballxpit.wiki.gg/index.php?oldid=2885) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/The_False_Messiah?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/The_False_Messiah?action=edit).*
 
-#### 一般信息
+## 假弥赛亚 ![The False Messiah mini.png](../assets/previews/The_False_Messiah_mini-34px-af714145.png)
 
-##### 圆球（Ball）
+[![The False Messiah.png](../assets/The_False_Messiah.png)](../files/The_False_Messiah.png.md)
 
-[流血](Bleed.md) [![Bleed.png](../assets/Bleed.png)](Bleed.md)
+一位拥有无限魅力的争议性领袖……
 
-##### 解锁
+## 基本信息
 
-激活 Twitch 扩展和链接一个 Twitch 帐户 （专用PC / PC exclusive）
+### 圆球（Ball）
 
-##### 能力
+[流血](Bleed.md) [![Bleed.png](../assets/previews/Bleed-25px-844cd7ee.png)](Bleed.md)
 
-如果在Twitch上播放，观众可以投票对某些选择和随机事件。
+### 解锁
 
-**伪救世主** 是一个独特的 [性格](Characters.md) 专用于PC版本的 *[球比伦战记](Ball_x_Pit.md)* 这种特征不是通过建立任何相关的住房而解锁，而是通过激活 [Twitch](https://www.twitch.tv) 在选项菜单的一般标签下扩展，然后通过互联网浏览器链接 Twitch 帐户。 [流血](Bleed.md) [![Bleed.png](../assets/Bleed.png)](Bleed.md).
+激活 Twitch 扩展程序并关联你的 Twitch 账户（仅限电脑端 / PC exclusive）
 
-有关设置和启用 Twitch 观众投票功能的详细指南，请参阅官方 [Twitch 扩展 FAQ](https://docs.google.com/document/d/1nz6Tkk9nvJ2gIskZaFNvTCi2YNy6LcxOA1cTY5go8HM/edit?tab=t.0#heading=h.uigggq5hzyjz).
+### 能力
 
-#### 能力的机械
+如果在 Twitch 上直播，观众可以对某些选择和随机事件进行投票。
 
-一旦解锁，选项菜单中会出现一个单独的Twitch标签，其中包含一些可以单独选择的选项，以在使用虚假弥赛亚的过程中增强游戏体验。这些包括选择合作伙伴的角色，在中期升级上升的升级选择，选择哪些具体 [圆球](Balls.md) 及 [被动道具](Passives.md) 参与进化或融合的过程 [聚合反应堆](Fusion_Reactor.md),以及就各种随机的正负游戏事件进行表决，如怪物产卵增加或产生额外的黄金皮卡{TODO:列出随机事件及其影响的完整清单}。只要使用The False Messiah,这些选项都会在扩展启用时运行，即使玩家目前没有流媒体或没有观众 (尽管在这种情况下，所有投票都会最终得到零，最后的选择将默认到游戏中呈现的最左边选项)。然而，如果只有一个可选的选择 (或除了资源升级之外，没有其他选择)，无论是否可以投票，玩家将直接控制选择剩下的选择，而不会引发投票。此外，如果选项投票对升级是活跃的，那么玩家不被授权禁止任何特定的升级。
+**伪救世主** 是独一无二的 [角色](Characters.md) 仅限 PC 版本独有 *[球比伦战记](Ball_x_Pit.md)* 该角色具有许多与流媒体和观众参与相关的功能。该角色并非通过建造相关住房解锁，而是通过激活 [Twitch](https://www.twitch.tv) 在选项菜单的“General”选项卡下扩展，然后通过互联网浏览器关联Twitch账户。他们从这里开始。 [流血](Bleed.md) [![Bleed.png](../assets/previews/Bleed-25px-844cd7ee.png)](Bleed.md).
 
-如果所有投票选项都被禁用，那么，假弥赛亚的功能就像 [战士](The_Warrior.md) [![The Warrior.png](../assets/The_Warrior.png)](The_Warrior.md) 没有直接的机械特点或游戏能力。对于此特征的级别清除仍然包括奖金，但它们不能分配给建筑物，它们没有住房或相关能力/升级，并且不能用于收获模式，并且在升级时不会收获收获升级。禁用Twitch扩展将删除角色的访问，但重新启用它将带来他们之前获得的所有经验，类似于拆除和重建任何其他角色的住房。
+关于设置并启用 Twitch 观众投票功能的详细指南，请参阅官方 [Twitch 扩展常见问题解答](https://docs.google.com/document/d/1nz6Tkk9nvJ2gIskZaFNvTCi2YNy6LcxOA1cTY5go8HM/edit?tab=t.0#heading=h.uigggq5hzyjz)。
 
-#### 配对器
+## 能力机制
 
-假弥赛亚永远不能被选为第二个字符，除非有权投票第二个字符，否则他们不能让第二个字符加入他们。但如果能够，他们可以通过投票获得合作伙伴身份, [匹配机](Matchmaker.md) 已经建成。
+一旦解锁，选项菜单中会出现一个单独的 Twitch 标签页，其中包含多个可单独选择的选项，用于在等级提升过程中增强游戏体验，这些选项都围绕 Twitch 直播观众对玩家提出的各种选项进行投票展开。这些选项包括选择搭档角色、选择等级提升时的升级内容，以及选择具体哪一项升级。 [圆球](Balls.md) 及 [被动道具](Passives.md) 在拾取时涉及进化或融合 [融合反应堆](Fusion_Reactor.md)此外，玩家还可以投票支持各种随机的积极或消极游戏内活动，例如增加怪物出现数量或额外拾取金币的机会{待办事项：列出所有随机活动及其效果的全览表}。只要“伪弥赛亚”仍在启用中，这些选项在扩展功能开启时都会生效，即使玩家当前没有进行直播或没有观众（不过在这种情况下，所有投票结果都将为零，最终选择将默认为游戏中显示的左侧选项）。然而，如果只有一个可选选项（或者除了资源升级外没有其他选项），那么无论是否启用投票功能，玩家都将直接获得选择剩余选项的权利，无需进行投票。另外，如果投票升级的选项处于激活状态，玩家将无法选择驱逐任何特定的升级选项。
 
-查看可配对字符的完整列表
+如果所有投票选项都被禁用，那么“伪弥赛亚”这个角色的游戏玩法将完全与[战士](The_Warrior.md) [![The Warrior.png](../assets/previews/The_Warrior-25px-94d3a92b.png)](The_Warrior.md) 相同，没有直接的机制特殊或技能。该角色的胜利仍然会获得奖杯奖励，但这些奖励无法分配到建筑上，它没有住房或相关技能/升级，也无法用于收获模式，且升级时不会获得收获升级。禁用 Twitch 扩展程序会移除对该角色的访问权限，但重新启用后，该角色将恢复所有已获得的经验值，类似于对其他任何角色拆除重建住房的方式。
 
-#### 策略
+## 配对系统
 
-玩家可以独立启用或禁用各种游戏玩法方面的投票选项，因此最终的游戏玩法可以根据允许的选项而异。然而，一般来说，在这里用于相关选项的策略与 [沉思者](The_Cogitator.md) [![The Cogitator.png](../assets/The_Cogitator.png)](The_Cogitator.md) 在这种情况下，升级选项的控制也同样失去了。延迟核聚变反应堆拉动延迟核聚核反应堆，以提升球/被动性，并促成更多后续选择，或使选择能够实现银行升级点，等待核聚变或演变产生预期的球或升级，或释放一个被动或球槽，以获得其他选择，在就相关方面进行投票时是有用的，尽管注意到，在那些情况下，有能力通过实施 [驱魔者](Exorcist.md) 另外，因为"假弥赛亚"开始于"假弥赛亚" [流血](Bleed.md) [![Bleed.png](../assets/Bleed.png)](Bleed.md) 如果玩家在这些方面给自己选择了，则建议围绕协同球和被动球进行策略。否则，如果没有投票选项，那么角色的功能是相同的 [战士](The_Warrior.md) [![The Warrior.png](../assets/The_Warrior.png)](The_Warrior.md) 没有其他定义能力来策略。
+假弥赛亚永远无法被选为其他角色的第二个角色，除非启用了选择第二个角色的选项，否则他们无法让第二个角色加入等级挑战。但是，如果启用了该选项，无论是否构建了[匹配机](Matchmaker.md)，他们都可以通过投票获得一个搭档角色。
 
-#### 基本数据
+{待办：确定可搭配的角色完整列表}
+
+## 策略
+
+玩家可以独立开启或关闭对游戏各个方面投票的选项，因此最终的游戏体验可能会因允许的选项不同而有所差异。不过，一般来说，这里针对相关选项的策略与 [沉思者](The_Cogitator.md) [![The Cogitator.png](../assets/previews/The_Cogitator-25px-f4b782c8.png)](The_Cogitator.md) 中的策略类似，在后者中，升级选择的控制权同样会丢失。当开启相关方面的投票时，延迟获取融合反应堆以升级球/被动道具，并启用更多后续选项，或者启用将升级点数存入并等待融合或进化产生所需的球或升级，或释放被动道具或球位以使用额外选项，这些策略都很有用。不过需要注意的是，在这些情况下，无法使用 [驱魔人](Exorcist.md) 驱逐升级项目或重新滚动升级项目。此外，鉴于《The False Messiah》以 [流血](Bleed.md) [![Bleed.png](../assets/previews/Bleed-25px-844cd7ee.png)](Bleed.md) 开始，如果玩家在这些方面赋予了自己选择权，那么建议围绕协同作用的球和被动道具进行策略制定。否则，如果没有启用投票选项，那么该角色的功能上将与 [战士](The_Warrior.md) [![The Warrior.png](../assets/previews/The_Warrior-25px-94d3a92b.png)](The_Warrior.md) 完全相同，没有其他可策略化的独特能力。
+
+## 基础属性
 
 | 属性 | 属性 |
 | --- | --- |
-| [![Endurance.png](../assets/Endurance.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | - 什么意思? |
-| [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基地损坏? |
-| [![Leadership.png](../assets/Leadership.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 宝贝球计数?；婴儿球损伤? |
-| [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速?；移动速度? |
-| [![Dexterity.png](../assets/Dexterity.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 关键机会?；发生火灾率? |
-| [![Intelligence.png](../assets/Intelligence.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 公司发动力?；状态效应功率 - ?；动力? |
+| [![Endurance.png](../assets/previews/Endurance-18px-3606b187.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | 生命值未知 |
+| [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基础伤害 - ? |
+| [![Leadership.png](../assets/previews/Leadership-18px-002d5b4c.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 小球数量 - ?；小球伤害 - ? |
+| [![Speed.png](../assets/previews/Speed-18px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速 - ?；移动速度 - ? |
+| [![Dexterity.png](../assets/previews/Dexterity-18px-7cca380e.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 暴击率 - ?；发射频率 - ? |
+| [![Intelligence.png](../assets/previews/Intelligence-18px-41c39e56.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 范围效果强度 – 待确认；状态效果强度 - ?；被动效果强度 – 待确认 |
 
-#### 性格水平的进步
+## 角色等级进展
 
-假弥赛亚没有住所，并不能在收获模式中使用，所以他们没有通过 [升级](Character_Level_Mechanics.md) 并且无法获得从 [退伍军人小屋](Veteran_s_Hut.md)然而，他们仍然获得各级的属性奖励,
+假弥赛亚没有住房，在收获模式下无法使用，因此两者都不会获得升级。 [等级提升](Character_Level_Mechanics.md) 并且无法获得该机制带来的额外经验值收益。 [老兵小屋](Veteran_s_Hut.md)不过，他们仍然会像其他角色一样，每升一级获得属性加成。
 
-[将奖金归类进步](Attributes.md)
+[属性加成进展](Attributes.md)
 
-| 性格水平 | 总经验值 | 下一个级别的经验值 | 奖金 |
+| 角色等级 | 总经验值 | 下一等级所需的额外经验值 | 加成 |
 | --- | --- | --- | --- |
 | 1 | 0 | 400 | - |
 | 2 | 400 | 457 | ? |
@@ -82,28 +84,28 @@
 | 17 |  | ? | ? |
 | ... | ... | ... | ... |
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
-* 启用Twitch扩展将打开Twitch选项菜单。
+* 启用 Twitch 扩展程序会打开 Twitch 选项菜单。
 
-  [![启用Twitch扩展将打开Twitch选项菜单。](../assets/False_Messiah_Twitch_Menu.png)](../files/False_Messiah_Twitch_Menu.png.md)
-* 投票引发事件的一个例子。
+  [![启用 Twitch 扩展程序会打开 Twitch 选项菜单。](../assets/previews/False_Messiah_Twitch_Menu-120px-46f02804.png)](../files/False_Messiah_Twitch_Menu.png.md)
+* 一个触发投票事件的示例。
 
-  [![投票引发事件的一个例子。](../assets/False_Messiah_Start_Vote.png)](../files/False_Messiah_Start_Vote.png.md)
-* 投票正在进行
+  [![一个触发投票事件的示例。](../assets/previews/False_Messiah_Start_Vote-120px-66c991bc.png)](../files/False_Messiah_Start_Vote.png.md)
+* 投票进行中
 
-  [![投票正在进行](../assets/False_Messiah_Vote_in_Progress.png)](../files/False_Messiah_Vote_in_Progress.png.md)
-* Twitch观众投票UI的例子
+  [![投票进行中](../assets/previews/False_Messiah_Vote_in_Progress-120px-ddba6f07.png)](../files/False_Messiah_Vote_in_Progress.png.md)
+* Twitch 观看者投票界面示例
 
-  [![Twitch观众投票UI的例子](../assets/False_Messiah_Twitch_Vote_UI.png)](../files/False_Messiah_Twitch_Vote_UI.png.md)
+  [![Twitch 观看者投票界面示例](../assets/previews/False_Messiah_Twitch_Vote_UI-120px-06312494.png)](../files/False_Messiah_Twitch_Vote_UI.png.md)
 * 投票结果屏幕
 
-  [![投票结果屏幕](../assets/False_Messiah_Vote_Result.png)](../files/False_Messiah_Vote_Result.png.md)
+  [![投票结果屏幕](../assets/previews/False_Messiah_Vote_Result-120px-fce1ed3d.png)](../files/False_Messiah_Vote_Result.png.md)
 
 [共享导航](../navigation/nav-334e23d2914f.md)
 
-**分类**　[分类 · 坚力](../categories/Stubs.md) · [分类 · 角色](../categories/Characters.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 待完善](../categories/Stubs.md) · [分类 · 角色](../categories/Characters.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

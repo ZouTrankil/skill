@@ -6,7 +6,7 @@
 
 image/png · 2299 × 1296 · 2,616,176 字节
 
-虚假的弥赛亚 Twitch投票 UI
+伪救世主 Twitch 投票界面。
 
 **源页许可标记**　`{{License|game}}`
 

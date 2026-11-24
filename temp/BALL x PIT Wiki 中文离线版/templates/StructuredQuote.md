@@ -1,16 +1,16 @@
-# 模板 · 结构化指数（StructuredQuote）
+# 模板 · 结构化引语（StructuredQuote）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:StructuredQuote) · [修订 349](https://ballxpit.wiki.gg/index.php?oldid=349) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-> 文本。..
+> 文字……
 >
-> - 发言者
+> —speaker
 
-#### 描述
+## 说明
 
-用于显示结构式引号的模板( A) *{{#SQuote:}}* ))。如果您想要释放结构式引号的全部潜力，请避免直接使用此模板，并考虑 *{{#SQuote:}}* 替换标记。 见 [https://community.fandom.com/wiki/Help:Structured\_Quotes](https://community.fandom.com/wiki/Help%3AStructured_Quotes) 关于结构引号的额外信息。
+用于显示结构化引用模板（*{{#SQuote:}}*）。如果您想解锁结构化引用的全部功能，请避免使用此模板，而是考虑使用*{{#SQuote:}}*标记。有关结构化引用的更多信息，请参阅[https://community.fandom.com/wiki/Help:Structured\_Quotes](https://community.fandom.com/wiki/Help%3AStructured_Quotes)。
 
-#### 语法
+## 语法
 
 ```
 {{StructuredQuote
@@ -22,11 +22,11 @@
 }}
 ```
 
-#### 样本样本
+## 样本
 
-> 体积不重要，看着我，按我的体积来判断我，对吧?
+> 体型并不重要。看看我。你会根据我的体型来评判我吗？嗯？嗯。其实你不应该这样。 (...)
 >
-> —[尤达](https://ballxpit.wiki.gg/wiki/W%3Ac%3Aen.starwars%3AYoda?action=edit&redlink=1)在 [卢克天行者](https://ballxpit.wiki.gg/wiki/W%3Ac%3Aen.starwars%3ALuke_Skywalker?action=edit&redlink=1)、 [《星球大战:第五集帝国反击》](https://ballxpit.wiki.gg/wiki/W%3Ac%3Aen.starwars%3AStar_Wars%3A_Episode_V_The_Empire_Strikes_Back?action=edit&redlink=1)
+> —[Yoda](https://ballxpit.wiki.gg/wiki/W%3Ac%3Aen.starwars%3AYoda?action=edit&redlink=1), to [Luke Skywalker](https://ballxpit.wiki.gg/wiki/W%3Ac%3Aen.starwars%3ALuke_Skywalker?action=edit&redlink=1), [Star Wars: Episode V The Empire Strikes Back](https://ballxpit.wiki.gg/wiki/W%3Ac%3Aen.starwars%3AStar_Wars%3A_Episode_V_The_Empire_Strikes_Back?action=edit&redlink=1)
 
 ```
 {{StructuredQuote
@@ -37,18 +37,18 @@
 }}
 ```
 
-#### 模板数据
+## 模板数据
 
-无说明。
+无描述。
 
-模板参数 此模板更喜欢参数的块格式化。
+模板参数 此模板更倾向于使用块格式来排列参数。
 
-| 参数 |  | 描述 | 类型 | 状态 |
+| 参数 |  | 说明 | 类型 | 状态 |
 | --- | --- | --- | --- | --- |
-| 引文 | `text` | 引引文字 | 内容 | 需要 |
-| 所引人 | `speaker` | 发表或撰写引文的个人(wikitext 链接，逗号分隔) | 内容 | 需要 |
-| 援引引号所针对的人 | `receiver` | 引用者(wikitext链接，逗号分隔) | 内容 | 建议 |
-| 归项(s) | `attribution` | 属性(wikitext 链接，逗号分隔) | 内容 | 建议 |
-| 引引来源 | `source` | 发言地点(wikitext链接) | 内容 | 建议 |
+| 引用文本 | `text` | 引用文本 | 内容 | 必需 |
+| 引用人物 | `speaker` | 说出或写下引述文字的个人（维基文本链接，逗号分隔） | 内容 | 必需 |
+| 收到报价的人 | `receiver` | 说话对象（维基文本链接，逗号分隔） | 内容 | 建议 |
+| 署名 | `attribution` | 归属（维基文本链接，逗号分隔） | 内容 | 建议 |
+| 引用来源 | `source` | 该游戏对话发生的地点（维基文本链接） | 内容 | 建议 |
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

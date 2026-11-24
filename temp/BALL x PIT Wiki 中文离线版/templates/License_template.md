@@ -4,156 +4,156 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](License_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:License/template/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:License/template/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](License_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:License/template/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:License/template/testcases)页面上进行实验。 |
 
-此模板将在文件页上的*许可* 标题下使用，以表示文件的许可证。
+此模板应在文件页面的 *许可协议* 标题下使用，用于标识文件的许可信息。
 
 [ ]
 
-#### 目录（Contents）
+## 目录（Contents）
 
-* [1 现有许可证](#%E7%8E%B0%E6%9C%89%E8%AE%B8%E5%8F%AF%E8%AF%81)
+* [1 可用许可证](#%E5%8F%AF%E7%94%A8%E8%AE%B8%E5%8F%AF%E8%AF%81)
   + [1.1 游戏](#%E6%B8%B8%E6%88%8F)
-  + [1.2 公平性](#%E5%85%AC%E5%B9%B3%E6%80%A7)
+  + [1.2 合理使用](#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8)
   + [1.3 CC0](#cc0)
-  + [1.4 CC-BY-NC-ND (英语)。](#cc-by-nc-nd-%E8%8B%B1%E8%AF%AD)
-  + [1.5 CC-BY-NC-SA (英语)。](#cc-by-nc-sa-%E8%8B%B1%E8%AF%AD)
-  + [1.6 CC-BY-NC (英语)。](#cc-by-nc-%E8%8B%B1%E8%AF%AD)
-  + [1.7 CC-BY-ND (英语)。](#cc-by-nd-%E8%8B%B1%E8%AF%AD)
-  + [1.8 美国联邦政府](#%E7%BE%8E%E5%9B%BD%E8%81%94%E9%82%A6%E6%94%BF%E5%BA%9C)
-  + [1.9 CC-BY (英语)。](#cc-by-%E8%8B%B1%E8%AF%AD)
-  + [1.10 CCPD-CCPD 共同共同市场](#ccpd-ccpd-%E5%85%B1%E5%90%8C%E5%85%B1%E5%90%8C%E5%B8%82%E5%9C%BA)
-  + [1.11 CC-SRR (中文(简体) )。](#cc-srr-%E4%B8%AD%E6%96%87%E7%AE%80%E4%BD%93-)
-  + [1.12 许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
-  + [1.13 无执照](#%E6%97%A0%E6%89%A7%E7%85%A7)
-* [2 指定源代码](#%E6%8C%87%E5%AE%9A%E6%BA%90%E4%BB%A3%E7%A0%81)
+  + [1.4 CC-BY-NC-ND](#cc-by-nc-nd)
+  + [1.5 CC-BY-NC-SA](#cc-by-nc-sa)
+  + [1.6 CC-BY-NC](#cc-by-nc)
+  + [1.7 CC-BY-ND](#cc-by-nd)
+  + [1.8 CC-BY-SA](#cc-by-sa)
+  + [1.9 CC-BY](#cc-by)
+  + [1.10 CC-PD](#cc-pd)
+  + [1.11 CC-SRR](#cc-srr)
+  + [1.12 许可](#%E8%AE%B8%E5%8F%AF)
+  + [1.13 无许可证](#%E6%97%A0%E8%AE%B8%E5%8F%AF%E8%AF%81)
+* [2 指定来源](#%E6%8C%87%E5%AE%9A%E6%9D%A5%E6%BA%90)
 
-#### 现有许可证
+## 可用许可证
 
-##### 游戏
+### 游戏
 
-* 用法: 利肯斯・游戏~~
+* 使用：{{License|游戏}}
 
-[![《在现实中](../assets/commons--IN_COPYRIGHT.svg)](https://rightsstatements.org/page/InC/1.0/?language=en)
+[![版权所有](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)](https://rightsstatements.org/page/InC/1.0/?language=en)
 
-此文件为 [Kenny Sun](../articles/Kenny_Sun.md) 和(或)其许可人。
-档案中存在的所有商标和注册商标均为 [Kenny Sun](../articles/Kenny_Sun.md) 和(或)其许可人。
+此文件归 [Kenny Sun](../articles/Kenny_Sun.md) 及其许可方所有。
+文件中出现的所有商标和注册商标均归 [Kenny Sun](../articles/Kenny_Sun.md) 及其许可方所有。
 
-##### 公平性
+### 合理使用
 
-* 用法: 利肯斯公平
+* 使用：{{License|fairuse}}
 
-[![《在现实中](../assets/commons--IN_COPYRIGHT.svg)](https://rightsstatements.org/page/InC/1.0/?language=en)
+[![版权所有](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)](https://rightsstatements.org/page/InC/1.0/?language=en)
 
-此文件有版权使用权。 使用方式将符合以下条件的公平使用: [美国版权法](https://en.wikipedia.org/wiki/Fair_use#Fair_use_under_United_States_law).
+此文件受版权保护。其使用方式符合[美国版权法](https://en.wikipedia.org/wiki/Fair_use#Fair_use_under_United_States_law)下的合理使用规定。
 
-##### CC0
+### CC0
 
-* 使用量: QQLicense CC0===
+* 使用：{{License|CC0}}
 
 [![CC0](../assets/commons--CC-0.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 
-此文件在 [CC0 1.0许可证](https://creativecommons.org/publicdomain/zero/1.0/).
+此文件受 [CC0 1.0 许可证](https://creativecommons.org/publicdomain/zero/1.0/)保护。
 
-##### CC-BY-NC-ND (英语)。
+### CC-BY-NC-ND
 
 * 用法：{{License|CC-BY-NC-ND}}
 
-[![CC-BY-NC-ND (英语)。](../assets/commons--CC-BY-NC-ND.svg)](https://creativecommons.org/licenses/by-nc-nd/3.0/)
+[![CC-BY-NC-ND](../assets/commons--CC-BY-NC-ND.svg)](https://creativecommons.org/licenses/by-nc-nd/3.0/)
 
-此文件在 [创用CC授权 - 非商业 - NoDerivs 3.0许可](https://creativecommons.org/licenses/by-nc-nd/3.0/).
+此文件受 [Creative Commons Attribution-NonCommercial-NoDerivs 3.0 License](https://creativecommons.org/licenses/by-nc-nd/3.0/) 许可。
 
-##### CC-BY-NC-SA (英语)。
+### CC-BY-NC-SA
 
 * 用法：{{License|CC-BY-NC-SA}}
 
-[![CC-BY-NC-SA (英语)。](../assets/commons--CC-BY-NC-SA.svg)](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+[![CC-BY-NC-SA](../assets/commons--CC-BY-NC-SA.svg)](https://creativecommons.org/licenses/by-nc-sa/3.0/)
 
-此文件在 [类似3.0的许可证](https://creativecommons.org/licenses/by-nc-sa/3.0/).
+此文件受 [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License](https://creativecommons.org/licenses/by-nc-sa/3.0/) 许可。
 
-##### CC-BY-NC (英语)。
+### CC-BY-NC
 
 * 用法：{{License|CC-BY-NC}}
 
-[![CC-BY-NC (英语)。](../assets/commons--CC-BY-NC.svg)](https://creativecommons.org/licenses/by-nc/3.0/)
+[![CC-BY-NC](../assets/commons--CC-BY-NC.svg)](https://creativecommons.org/licenses/by-nc/3.0/)
 
-此文件在 [知识共享署名－非商业性使用 3.0 许可协议（CC BY-NC 3.0）](https://creativecommons.org/licenses/by-nc/3.0/).
+此文件受 [知识共享署名－非商业性使用 3.0 许可协议（CC BY-NC 3.0）](https://creativecommons.org/licenses/by-nc/3.0/) 保护。
 
-##### CC-BY-ND (英语)。
+### CC-BY-ND
 
 * 用法：{{License|CC-BY-ND}}
 
-[![CC-BY-ND (英语)。](../assets/commons--CC-BY-ND.svg)](https://creativecommons.org/licenses/by-nd/3.0/)
+[![CC-BY-ND](../assets/commons--CC-BY-ND.svg)](https://creativecommons.org/licenses/by-nd/3.0/)
 
-此文件在 [创用CC授权- NoDerivs 3.0许可](https://creativecommons.org/licenses/by-nd/3.0/).
+此文件受 [Creative Commons Attribution-NoDerivs 3.0 License](https://creativecommons.org/licenses/by-nd/3.0/) 许可。
 
-##### 美国联邦政府
+### CC-BY-SA
 
 * 用法：{{License|CC-BY-SA}}
 
-[![美国联邦政府](../assets/commons--CC-BY-SA.svg)](https://creativecommons.org/licenses/by-sa/3.0/)
+[![CC-BY-SA](../assets/commons--CC-BY-SA.svg)](https://creativecommons.org/licenses/by-sa/3.0/)
 
-此文件在 [知识共享署名－相同方式共享 3.0 许可协议（CC BY-SA 3.0）](https://creativecommons.org/licenses/by-sa/3.0/).
+此文件受 [知识共享署名－相同方式共享 3.0 许可协议（CC BY-SA 3.0）](https://creativecommons.org/licenses/by-sa/3.0/) 许可。
 
-##### CC-BY (英语)。
+### CC-BY
 
-* 用法: 利肯斯 CC-BY
+* 使用：{{License|CC-BY}}
 
-[![CC-BY (英语)。](../assets/commons--CC-BY.svg)](https://creativecommons.org/licenses/by/3.0/)
+[![CC-BY](../assets/commons--CC-BY.svg)](https://creativecommons.org/licenses/by/3.0/)
 
-此文件在 [3.0许可](https://creativecommons.org/licenses/by/3.0/).
+此文件受 [Creative Commons Attribution 3.0 License](https://creativecommons.org/licenses/by/3.0/) 许可。
 
-##### CCPD-CCPD 共同共同市场
+### CC-PD
 
-* 用法: 利肯斯 CC-PD
+* 使用：{{License|CC-PD}}
 
 ![公共领域](../assets/commons--CC-PD.svg)
 
-版权持有者已将其档案公之于众，其版权已经过期，或没有版权资格。这在全世界适用。
+该文件已由版权所有者发布至公共领域，其版权已过期，或不符合版权保护条件。此规定适用于全球范围。
 
-##### CC-SRR (中文(简体) )。
+### CC-SRR
 
-* 用法: QQLICENSENCE CC-SRR QX
+* 使用：{{License|CC-SRR}}
 
-![CC-某些权利保留](../assets/commons--CC-SRR.svg)
+![CC-部分权利保留](../assets/commons--CC-SRR.svg)
 
-本文由创用CC授权使用。
+此文件受创作共用某些权利保留许可协议保护。
 
-##### 许可证
+### 许可
 
 * 用法：{{License|permission}}
 
-![与《京都议定书》第六和](../assets/commons--IN_COPYRIGHT.svg)
+![经许可使用版权](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)
 
-此文件为版权文件。 版权持有者已允许在 wiki. gg 上使用它。
+此文件受版权保护。版权所有者已授权在 wiki.gg 上使用。
 
-##### 无执照
+### 无许可证
 
-**提供无参数( 或无效的参数) 默认值**
+**未提供参数（或参数无效）时，默认使用nolicense通知。**
 
 {{License}}
 
-![未选择任何许可证。](../assets/commons--Warning-red.svg)
+![未选择许可证。](../assets/previews/commons--Warning-red-50px-69a5013e.png)
 
-请为此文件选择合适的许可， 将正确的参数添加到 \\\ license\\\ \ 。 见 [模板:许可证](License.md) 详细信息。
+请在{{License}}中添加正确的参数以选择适用于此文件的许可证。详情请参阅[模板：许可证](License.md)。
 
-#### 指定源代码
+## 指定来源
 
-**源参数( 可选) :**
+**来源参数（可选）：**
 
-源参数在文件来源处接受 URL 。
+如果必要，源参数可以接受文件来源的 URL，以便进行引用。
 
-示例:
+示例
 
 {{License|game|source=https://indie.io/}}
 
-[![《在现实中](../assets/commons--IN_COPYRIGHT.svg)](https://rightsstatements.org/page/InC/1.0/?language=en)
+[![版权所有](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)](https://rightsstatements.org/page/InC/1.0/?language=en)
 
-此文件为 [Kenny Sun](../articles/Kenny_Sun.md) 和(或)其许可人。
-档案中存在的所有商标和注册商标均为 [Kenny Sun](../articles/Kenny_Sun.md) 和(或)其许可人。
-资料来源: [https://indie.io/](https://indie.io/)
+此文件归 [Kenny Sun](../articles/Kenny_Sun.md) 及其许可方所有。
+文件中出现的所有商标和注册商标均归 [Kenny Sun](../articles/Kenny_Sun.md) 及其许可方所有。
+来源：[https://indie.io/](https://indie.io/)
 
 **分类**　[分类 · 许可证模板](../categories/License_templates.md)
 

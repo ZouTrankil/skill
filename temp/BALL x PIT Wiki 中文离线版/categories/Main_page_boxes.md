@@ -1,10 +1,10 @@
-# 分类 · 主页框（Main page boxes）
+# 分类 · 主页面框（Main page boxes）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Main_page_boxes) · [修订 606](https://ballxpit.wiki.gg/index.php?oldid=606) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
 此页面的源修订无独立可见正文。
 
-**分类**　[分类 · 主页模板](Main_page_templates.md)
+**分类**　[分类 · 主页面模板](Main_page_templates.md)
 
 **分类成员**
 

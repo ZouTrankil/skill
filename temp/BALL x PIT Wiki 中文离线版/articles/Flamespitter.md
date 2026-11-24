@@ -4,42 +4,42 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Flamespitter) · [修订 3495](https://ballxpit.wiki.gg/index.php?oldid=3495) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+## 信息（Information）
 
-##### 类型
+### 类型
 
-[迷你老板](../categories/Mini-bosses.md)
+[小首领](../categories/Mini-bosses.md)
 
-##### 卫生规模
+### 生命值倍率（Health scale）
 
 20x
 
-##### 等级（Level）
+### 等级（Level）
 
-[阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/The_SMOLDERINGxDEPTHS.png)](The_SMOLDERINGxDEPTHS.md)
+[阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/previews/The_SMOLDERINGxDEPTHS-25px-07bc20a6.png)](The_SMOLDERINGxDEPTHS.md)
 
-其他 **喷焰者** 是第二个 [迷你老板](../categories/Mini-bosses.md) 在 [阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/The_SMOLDERINGxDEPTHS.png)](The_SMOLDERINGxDEPTHS.md) 它的健康规模是20倍。
+**喷焰者**是出现在 [阴燃深渊](The_SMOLDERINGxDEPTHS.md) [![The SMOLDERINGxDEPTHS.png](../assets/previews/The_SMOLDERINGxDEPTHS-25px-07bc20a6.png)](The_SMOLDERINGxDEPTHS.md) 中的第二个 [小首领](../categories/Mini-bosses.md)。它的生命值倍率为 20 倍。
 
-#### 描述
+## 说明
 
 > “
-> *吐了一条长的火球向玩家*
-> **- 敌国官方说明**
+> *向玩家发射一连串火球*
+> **——官方敌人说明**
 
-#### 行为
+## 行为
 
-[点击这里，添加更多信息!](https://ballxpit.wiki.gg/wiki/Flamespitter%3Faction%3Dedit)
+[点击此处添加更多信息！](https://ballxpit.wiki.gg/wiki/Flamespitter%3Faction%3Dedit)
 
-#### 策略
+## 策略
 
-[单击这里，添加一个策略!](https://ballxpit.wiki.gg/wiki/Flamespitter?action=edit&section=new)
+[点击此处添加策略！](https://ballxpit.wiki.gg/wiki/Flamespitter?action=edit&section=new)
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/Flamespitter?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/Flamespitter?action=edit).*
 
 [共享导航](../navigation/nav-115867ac1be8.md)
 
-**分类**　[分类 · 敌人](../categories/Enemies.md) · [分类 · 小首领](../categories/Mini-bosses.md) · [分类 · 坚力](../categories/Stubs.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 敌人](../categories/Enemies.md) · [分类 · 小首领](../categories/Mini-bosses.md) · [分类 · 待完善](../categories/Stubs.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

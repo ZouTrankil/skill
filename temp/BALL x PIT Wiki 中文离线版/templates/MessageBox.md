@@ -1,58 +1,58 @@
-# 模板 · 信息框（MessageBox）
+# 模板 · MessageBox
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:MessageBox) · [修订 388](https://ballxpit.wiki.gg/index.php?oldid=388) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](MessageBox_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:MessageBox/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:MessageBox/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](MessageBox_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:MessageBox/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:MessageBox/testcases)页面上进行实验。 |
 
-{{信息框\\ 是一个创建信息框的模板。
+{{MessageBox}} 是一个用于创建消息框的模板。
 
-它高度定制以类、内嵌样式，并提供 CSS 选择器。 选用功能， 如图像、 左边框、 右侧文字( 例如快捷键) 和卸载函数。
+它可以通过职业、内联样式以及提供的 CSS 选择器进行高度定制。还提供了可选功能，如图片、左边界、右侧文本（例如快捷方式）以及取消功能。
 
-它使用 [Lua 临时语言](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ALua?action=edit&redlink=1),可以找到更多信息 [全球卢亚模块页面](https://ballxpit.wiki.gg/wiki/W%3Ac%3Adev%3AGlobal_Lua_Modules/Mbox?action=edit&redlink=1)。此版本被修改后产生基于 [模块的基本样式](https://ballxpit.wiki.gg/wiki/W%3Ac%3Adev%3Amediawiki%3AGlobal_Lua_Modules/Mbox.css?action=edit&redlink=1)。要使用本模块的全部功能，并删除默认的外观样式，请删除 [模块:Mbox](../site/Module_Mbox.md).
+它使用了 [Lua 模板语言](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ALua?action=edit&redlink=1)，更多相关信息可以在 [Global Lua Module 页面](https://ballxpit.wiki.gg/wiki/W%3Ac%3Adev%3AGlobal_Lua_Modules/Mbox?action=edit&redlink=1)找到。此版本经过修改，采用了基于 [模块中的基础样式](https://ballxpit.wiki.gg/wiki/W%3Ac%3Adev%3Amediawiki%3AGlobal_Lua_Modules/Mbox.css?action=edit&redlink=1)的起始样式。若要充分利用该模块的功能并去除默认样式，请移除 [Module:Mbox](../site/Module_Mbox.md)中指定的部分内容。
 
-**此模板的传统维基文本版本见 [模板的 Ambox 维基](https://ballxpit.wiki.gg/wiki/W%3Ac%3Atemplates%3ATemplate%3AAmbox?action=edit&redlink=1)**.
+**如需此模板的传统 Wikitext 版本，请参阅 [Ambox on Templates Wiki](https://ballxpit.wiki.gg/wiki/W%3Ac%3Atemplates%3ATemplate%3AAmbox?action=edit&redlink=1)**。
 
 [ ]
 
-#### 目录（Contents）
+## 目录（Contents）
 
-* [1 参数参数](#%E5%8F%82%E6%95%B0%E5%8F%82%E6%95%B0)
+* [1 参数](#%E5%8F%82%E6%95%B0)
 * [2 设计](#%E8%AE%BE%E8%AE%A1)
-* [3 实例实例实例](#%E5%AE%9E%E4%BE%8B%E5%AE%9E%E4%BE%8B%E5%AE%9E%E4%BE%8B)
-  + [3.1 基本消息框](#%E5%9F%BA%E6%9C%AC%E6%B6%88%E6%81%AF%E6%A1%86)
+* [3 示例](#%E7%A4%BA%E4%BE%8B)
+  + [3.1 基础信息框](#%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF%E6%A1%86)
   + [3.2 使用类型](#%E4%BD%BF%E7%94%A8%E7%B1%BB%E5%9E%8B)
-  + [3.3 带有图像](#%E5%B8%A6%E6%9C%89%E5%9B%BE%E5%83%8F)
-  + [3.4 与一旁](#%E4%B8%8E%E4%B8%80%E6%97%81)
-  + [3.5 标准/ 默认样式](#%E6%A0%87%E5%87%86-%E9%BB%98%E8%AE%A4%E6%A0%B7%E5%BC%8F)
+  + [3.3 带有图片](#%E5%B8%A6%E6%9C%89%E5%9B%BE%E7%89%87)
+  + [3.4 附带说明](#%E9%99%84%E5%B8%A6%E8%AF%B4%E6%98%8E)
+  + [3.5 标准/默认风格](#%E6%A0%87%E5%87%86%E9%BB%98%E8%AE%A4%E9%A3%8E%E6%A0%BC)
 
-#### 参数参数
+## 参数
 
-关于如何使用这些参数的例子，请参见 [Examples](#%E5%AE%9E%E4%BE%8B%E5%AE%9E%E4%BE%8B%E5%AE%9E%E4%BE%8B)。
+关于如何使用这些参数的示例，请参阅 [#Examples](#%E7%A4%BA%E4%BE%8B)。
 
-| 参数名称 | 描述 | 需要吗? | 默认默认 |
+| 参数名称 | 说明 | 是否必填 | 默认 |
 | --- | --- | --- | --- |
-| `class` | 根根上的额外类 `.mbox` 元素。 | 没有。 | — |
-| `bordercolor` | 厚厚左最左边框的颜色。 | 没有。 | 样式表默认默认 |
-| `type` | 在 CSS 中声明的带有变量的 mbox 类型类型。 影响最左最左边框的颜色。 见 [# 用户类型](#%E4%BD%BF%E7%94%A8%E7%B1%BB%E5%9E%8B). | 没有。 | — |
-| `bgcolor` | 信箱背景的颜色。 | 没有。 | 样式表默认默认 |
-| `style` | root 的附加内线样式 `.mbox` 元素。 | 没有。 | — |
-| `image` | 要添加到所有文本内容左侧的图像。 | 没有。 | — |
-| `imagewidth` | 图像的宽度( 高度自动调整) 。 | 没有。 | `60px` |
-| `imagelink` | 图像点( 可链接到相关维护类别， 以实例为准) 的链接。 如果不包含， 图像将无法单击。 | 没有。 | — |
-| `header` | 信头( 粗体文字放在顶部) 。 这通常用来非常简短地解释 mbox 本身的主题， 因为当 mbox 关闭时， 只有信头会显示。 | 没有。 | — |
-| `text` | 放在信头下方的非粗体文字，通常用于进一步解释或解释邮箱主题的细节。当邮箱关闭时，此文字将被隐藏。 | 没有。 | — |
-| `comment` | 放在主文本下方的小非粗体非粗体文字，通常用于添加关于通知的额外链接或上下文。当关闭了 mbox 时，此文字将被隐藏。 | 没有。 | — |
-| `aside` | 文本放在右侧的小部分分配中， 以浅灰色边框分隔。 最常用的文本是显示有关页面的快捷键( 如政策页面上)。 当 mbox 关闭时， 此文本将被隐藏。 | 没有。 | — |
-| `id` | 默认情况下， 一个关闭按钮将关闭页面上的所有 mboxes 。 但是， 要更改此选项， 可以使用此参数， 以执行 mbox 的名称( 例如“ Template: Cleanup ” ) `\|id=cleanup`). | 没有。 | — |
-| `collapsed` | 默认情况下, mbox 将被解封， 并且将显示全部内容。 但是， 要更改此选项， 此参数可用于将 mbox 设置为默认的崩溃( 例如 , ) 。 `\|collapsed=true` 将会设置默认时要崩溃的存储器) 。 | 没有。 | — |
+| `class` | 对根类添加额外类别 `.mbox` 元素。 | 否 | — |
+| `bordercolor` | 最左侧粗边框的颜色。 | 否 | 默认战术表 |
+| `type` | 如 CSS 中所述，使用变量声明 mbox 的类型。影响最左侧粗边框的颜色。参见 [#使用类型](#%E4%BD%BF%E7%94%A8%E7%B1%BB%E5%9E%8B)。 | 否 | — |
+| `bgcolor` | mbox背景的颜色。 | 否 | 默认战术表 |
+| `style` | 为根元素添加额外的内联样式 `.mbox` 元素。 | 否 | — |
+| `image` | 需要添加在所有文本内容左侧的图像。 | 否 | — |
+| `imagewidth` | 图像宽度（高度会自动调整）。 | 否 | `60px` |
+| `imagelink` | 图片指向的链接（例如，可以链接到相关的维护分类）。如果未包含此链接，图片将无法点击。 | 否 | — |
+| `header` | 标题（位于顶部的加粗文本）。通常用于非常简短地解释 mbox 的主题，因为当 mbox 关闭时，只有标题会显示出来。 | 否 | — |
+| `text` | 标题下方放置的“NonBold”文本，通常用于进一步详细说明 mbox 的主题。当 mbox 关闭时，此文本将隐藏。 | 否 | — |
+| `comment` | 主文本下方有较小的非加粗文本，通常用于添加关于通知的额外链接或背景信息。当 mbox 关闭时，此文本将被隐藏。 | 否 | — |
+| `aside` | 右侧小区域内放置的文本被浅灰色边框分隔，通常用于显示相关页面的快捷链接（例如政策页面）。当 mbox 关闭时，此文本将隐藏。 | 否 | — |
+| `id` | 默认情况下，关闭按钮会关闭页面上的所有mbox。但是，若要更改此设置，可以使用此参数，其名称应为mbox实现的名称（例如，“Template:Cleanup”）。 `\|id=cleanup`). | 否 | — |
+| `collapsed` | 默认情况下，mboxbox将保持展开状态，并显示全部内容。但是，若要更改此设置，可以使用该参数将mboxbox设置为默认展开状态（例如： `\|collapsed=true` 将默认情况下使 mbox 折叠。 | 否 | — |
 
-#### 设计
+## 设计
 
-有些社区可能希望定制模箱的外观，最常用的配方选项见于CSS。
+某些社区可能希望自定义 mbox 的外观。最常见的样式选项在 CSS 中有所说明。
 
 ```
 .mbox {
@@ -121,11 +121,11 @@
 
 技术说明
 
-* root 的附加内线样式 `.mbox` 可以通过 `style` 模板中的参数。
+* 为根元素添加额外的内联样式 `.mbox` 可以通过该方式获得元素。 `style` 模板中的参数。
 
-#### 实例实例实例
+## 示例
 
-##### 基本消息框
+### 基础信息框
 
 ```
 {{MessageBox
@@ -135,15 +135,15 @@
 }}
 ```
 
-生产:
+显示效果
 
-这里的页眉文字
+标题文本此处
 
-这里的普通文本
+普通文本在此
 
-##### 使用类型
+### 使用类型
 
-使用类型时，必须添加 CSS 变量，例如:
+要使用类型，必须添加 CSS 变量，例如：
 
 ```
 :root {
@@ -153,7 +153,7 @@
 }
 ```
 
-如果加上:
+如果添加：
 
 ```
 {{MessageBox
@@ -164,15 +164,15 @@
 }}
 ```
 
-生产:
+显示效果
 
-这里的页眉文字
+标题文本此处
 
-这里的普通文本
+普通文本在此
 
-视你的型号而定，上述例子中可能不存在视觉差异。
+根据你的造型，在上述示例中可能不会有视觉上的差异。
 
-##### 带有图像
+### 带有图片
 
 ```
 {{MessageBox
@@ -185,15 +185,15 @@
 }}
 ```
 
-生产:
+显示效果
 
 [File:Wiki.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=Wiki.png)
 
-这里的页眉文字
+标题文本此处
 
-这里的普通文本
+普通文本在此
 
-##### 与一旁
+### 附带说明
 
 ```
 {{MessageBox
@@ -205,15 +205,15 @@
 }}
 ```
 
-生产:
+显示效果
 
-这里的页眉文字
+标题文本此处
 
-这里的普通文本
+普通文本在此
 
-在此附加文字文本
+此处为旁白文本
 
-##### 标准/ 默认样式
+### 标准/默认风格
 
 ```
 {{MessageBox
@@ -226,18 +226,18 @@
 }}
 ```
 
-生产:
+显示效果
 
 [File:Wiki.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=Wiki.png)
 
-这里的页眉文字
+标题文本此处
 
-这里的普通文本
+普通文本在此
 
-这里的注释文字
+在此处输入评论文本
 
-在此附加文字文本
+此处为旁白文本
 
-**分类**　[分类 · 有破损文件链接的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 通知模板](../categories/Notice_templates.md)
+**分类**　[分类 · 文件链接失效的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 注意模板](../categories/Notice_templates.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

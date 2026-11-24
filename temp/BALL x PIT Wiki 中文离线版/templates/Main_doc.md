@@ -2,33 +2,33 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Main%2Fdoc) · [修订 553](https://ballxpit.wiki.gg/index.php?oldid=553) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-这一帽子模板意在放在一篇文章的章节中，其中提到关于另一条现有主要条款的信息。
+此帽子注模板用于文章中的各个部分，用于提及其他现有主文章的信息。
 
-模板参数 此模板更倾向于参数的内嵌格式化。
+模板参数 此模板更倾向于使用内联格式设置参数。
 
-| 参数 |  | 描述 | 类型 | 状态 |
+| 参数 |  | 说明 | 类型 | 状态 |
 | --- | --- | --- | --- | --- |
-| 第条 | `1` | 主要条款。 示例第条 | 页面名称 | 需要 |
-| 第二条第二条 | `2` | 第二项主要主要第二大主要条款。第二第二大主要第二大主要第二大主要条款。第二第二大主要第二大主要条款。 示例第二条第二条 | 页面名称 | 可选 |
-| 第三条第三条 | `3` | 第三主要文章。 示例第三条第三条 | 页面名称 | 可选 |
+| 文章 | `1` | 主文章。 示例文章 | 页面名称 | 必需 |
+| 第二篇 | `2` | 第二主文章。 示例第二篇 | 页面名称 | 可选 |
+| 第三篇 | `3` | 第三主文章。 示例第三篇 | 页面名称 | 可选 |
 
-#### 实例实例实例
+## 示例
 
-| 《法典法典法典》 | 结果 |
+| 代码 | 结果 |
 | --- | --- |
-| `{{Main\|Special:WantedPages}}` | 主页 : [特别:](https://ballxpit.wiki.gg/wiki/Special:WantedPages) |
-| `{{Main\|Special:WantedPages#Section Title}}` | 主页 : [特别:已用纸条 § 标题](https://ballxpit.wiki.gg/wiki/Special:WantedPages#Section_Title) |
-| `{{Main\|Special:WantedPages\|Special:UncategorizedPages}}` | 主页: [特别:](https://ballxpit.wiki.gg/wiki/Special:WantedPages) 及 [特别:未分类](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) |
-| `{{Main\|Special:WantedPages\|Special:UncategorizedPages\|Special:UncategorizedCategories}}` | 主页: [特别:](https://ballxpit.wiki.gg/wiki/Special:WantedPages)、 [特别:未分类](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages)和 [特别:未划分的类别](https://ballxpit.wiki.gg/wiki/Special:UncategorizedCategories) |
-| `{{Main\|Special:WantedPages{{!}}Page 1}}` （海关链接标签 / Custom link label） | 主页 : [第1页](https://ballxpit.wiki.gg/wiki/Special:WantedPages) |
+| `{{Main\|Special:WantedPages}}` | 主页面：[Special:WantedPages](https://ballxpit.wiki.gg/wiki/Special:WantedPages) |
+| `{{Main\|Special:WantedPages#Section Title}}` | 主页面：[Special:WantedPages § 章节标题](https://ballxpit.wiki.gg/wiki/Special:WantedPages#Section_Title) |
+| `{{Main\|Special:WantedPages\|Special:UncategorizedPages}}` | 主页面：[Special:WantedPages](https://ballxpit.wiki.gg/wiki/Special:WantedPages) 和 [Special:UncategorizedPages](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) |
+| `{{Main\|Special:WantedPages\|Special:UncategorizedPages\|Special:UncategorizedCategories}}` | 主页面：[Special:WantedPages](https://ballxpit.wiki.gg/wiki/Special:WantedPages)、[Special:UncategorizedPages](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) 和 [Special:UncategorizedCategories](https://ballxpit.wiki.gg/wiki/Special:UncategorizedCategories) |
+| `{{Main\|Special:WantedPages{{!}}Page 1}}` （自定义链接标签 / Custom link label） | 主页面：[第1页](https://ballxpit.wiki.gg/wiki/Special:WantedPages) |
 
-#### 依赖性
+## 依赖项
 
-此模板模板要求 `{{[Hatnote](Hatnote.md)}}` 金属板。
+此模板需要包含 `{{[Hatnote](Hatnote.md)}}` 元模板。
 
-#### 来源来源
+## 来源
 
-基本上基于 [维基百科用于模板](https://en.wikipedia.org/wiki/Template%3AFor) 。
+大致基于 [Wikipedia的For模板](https://en.wikipedia.org/wiki/Template%3AFor)。
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

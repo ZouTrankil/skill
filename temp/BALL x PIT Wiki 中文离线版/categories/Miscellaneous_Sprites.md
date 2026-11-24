@@ -1,4 +1,4 @@
-# 分类 · 不同的水果（Miscellaneous Sprites）
+# 分类 · 其他精灵图（Miscellaneous Sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Miscellaneous_Sprites)
 

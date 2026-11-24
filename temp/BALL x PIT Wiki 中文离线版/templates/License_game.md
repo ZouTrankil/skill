@@ -2,14 +2,14 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:License%2Fgame) · [修订 713](https://ballxpit.wiki.gg/index.php?oldid=713) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板目前看起来像 :
+当前该模板看起来如下：
 
-[![《在现实中](../assets/commons--IN_COPYRIGHT.svg)](https://rightsstatements.org/page/InC/1.0/?language=en)
+[![版权所有](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)](https://rightsstatements.org/page/InC/1.0/?language=en)
 
-此文件为 [Kenny Sun](../articles/Kenny_Sun.md) 和(或)其许可人。
-档案中存在的所有商标和注册商标均为 [Kenny Sun](../articles/Kenny_Sun.md) 和(或)其许可人。
+此文件归 [Kenny Sun](../articles/Kenny_Sun.md) 及其许可方所有。
+文件中出现的所有商标和注册商标均归 [Kenny Sun](../articles/Kenny_Sun.md) 及其许可方所有。
 
-见见 `{{[License](License.md)}}` 持有全许可证证件
+查看 `{{[License](License.md)}}` 如需完整的许可证文档，请查看。
 
 **分类**　[分类 · 许可证模板](../categories/License_templates.md)
 

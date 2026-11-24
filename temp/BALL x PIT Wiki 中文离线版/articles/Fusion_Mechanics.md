@@ -2,51 +2,51 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Fusion_Mechanics) · [修订 4217](https://ballxpit.wiki.gg/index.php?oldid=4217) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-##### 融合圆球
+### 融合圆球
 
-主题: 融合机制
+主条目：融合机制
 
-[![融合球示例 (BleedXFreeze)](../assets/BleedXFreeze.png)](../files/BleedXFreeze.png.md)
+[![融合球示例（BleedXFreeze）](../assets/BleedXFreeze.png)](../files/BleedXFreeze.png.md)
 
-引信弹泡和冻结球示例
+融合流血球和冻结球的示例
 
-合并球是通过合并其他2个球的球 *"未合并"* 3级特殊球，使用 [**聚合反应堆**](Fusion_Reactor.md)。可以将2个基球,2个进化球，甚至1个基球和1个进化球，但同一球不能与自身结合，如果2个球可以结合成一个进化球，那么你就可以 **我不能把它们合并。** 并且只能发展它们 (尽管这不适用于特殊球的对，其唯一的共同演变需要同时使用3个或更多的特殊球，如 [诺斯法拉图](Nosferatu.md) [![Nosferatu.png](../assets/Nosferatu.png)](Nosferatu.md) 或是 [基本](Elemental.md) [![Elemental.png](../assets/Elemental.png)](Elemental.md)) 因此，有 `(90*89) {Special Ball Combos} - 87*2 {Evolution Combos} = 7836` 潜在的功能不同的融合球。
+融合圆球（Fused Ball）由两颗尚未融合的 3 级特殊圆球通过[融合反应堆](Fusion_Reactor.md)合成。可以使用两颗基础圆球、两颗进化圆球，或者各用一颗。圆球不能与自身融合。如果两颗圆球可以直接进化成一种圆球，它们只能用于该进化。若共同进化还需要第 3 颗或更多圆球，这两颗仍可彼此融合，例如[诺斯费拉图（Nosferatu）](Nosferatu.md) [![Nosferatu.png](../assets/previews/Nosferatu-25px-a2330b63.png)](Nosferatu.md)与[元素（Elemental）](Elemental.md) [![Elemental.png](../assets/previews/Elemental-25px-132589e9.png)](Elemental.md)的配方中的圆球。按原站公式，潜在融合组合数为 `90 × 89 − 87 × 2 = 7,836`。
 
-合并球将将合并它们的合并球的名称和效果，并且他们的图标也将被更新以匹配合并。例如，合并 **流血** 及 **冻结** 这将导致 **流血 × 冻结**, 具有两个能力, **流血** 及 **冻结**效果和统计的优先级取决于所涉及的组件球。 **合并球的顺序不会改变结果球的功能统计/能力**它的名称和外观将是不同的。 *五月* 视引信具体球(例如: **蛋袋X毒** 看起来就像 **毒 X蛋袋**然而, **蜘蛛女王X吸血鬼主** 完全不同于 **吸血鬼王 X 蜘蛛女王**注意，改变引信球顺序的唯一途径是改变它们获得的顺序， 此时不能手动选择核聚变的球顺序,
+融合圆球会组合两颗材料球的名称、效果与图标。例如，将**流血**和**冻结**融合为**流血 × 冻结（Bleed × Freeze）**，结果同时具有**流血**和**冻结**的能力。效果与数值如何合并，取决于参与融合的圆球。与进化不同，**融合材料的次序不影响最终数值和能力**，但会改变名称，也*可能*改变外观。比如**卵囊 × 中毒**和**中毒 × 卵囊**外观相同，**蜘蛛女王 × 吸血鬼领主**和**吸血鬼领主 × 蜘蛛女王**则使用不同的精灵图。融合次序由材料球的取得顺序决定，融合时无法手动调整。
 
-* 蛋袋X毒
+* 卵囊 X 中毒
 
-  [![蛋袋X毒](../assets/Fusion_Example_Egg_Sac_x_Poison.jpg)](../files/Fusion_Example_Egg_Sac_x_Poison.jpg.md)
-* 毒 X蛋袋
+  [![卵囊 X 中毒](../assets/previews/Fusion_Example_Egg_Sac_x_Poison-114px-cf5adbf4.png)](../files/Fusion_Example_Egg_Sac_x_Poison.jpg.md)
+* 中毒 X 卵囊
 
-  [![毒 X蛋袋](../assets/Fusion_Example_Poison_x_Egg_Sac.jpg)](../files/Fusion_Example_Poison_x_Egg_Sac.jpg.md)
-* 蜘蛛女王X吸血鬼主
+  [![中毒 X 卵囊](../assets/previews/Fusion_Example_Poison_x_Egg_Sac-119px-ef80ce24.png)](../files/Fusion_Example_Poison_x_Egg_Sac.jpg.md)
+* 蜘蛛女王 X 吸血鬼领主
 
-  [![蜘蛛女王X吸血鬼主](../assets/Fusion_Example_Spider_Queen_x_Vampire_Lord.jpg)](../files/Fusion_Example_Spider_Queen_x_Vampire_Lord.jpg.md)
-* 吸血鬼王 X 蜘蛛女王
+  [![蜘蛛女王 X 吸血鬼领主](../assets/previews/Fusion_Example_Spider_Queen_x_Vampire_Lord-120px-46a7a873.png)](../files/Fusion_Example_Spider_Queen_x_Vampire_Lord.jpg.md)
+* 吸血鬼领主 X 蜘蛛女王
 
-  [![吸血鬼王 X 蜘蛛女王](../assets/Fusion_Example_Vampire_Lord_x_Spider_Queen.jpg)](../files/Fusion_Example_Vampire_Lord_x_Spider_Queen.jpg.md)
+  [![吸血鬼领主 X 蜘蛛女王](../assets/previews/Fusion_Example_Vampire_Lord_x_Spider_Queen-120px-8205725a.png)](../files/Fusion_Example_Vampire_Lord_x_Spider_Queen.jpg.md)
 
-##### 融合的能力
+### 融合技能
 
 能力分为三类：
 
-范围效果:对多个目标造成伤害。可以应用状态效应。
+范围效果：对多个目标造成伤害。可施加状态效果。
 
-自来水:自来水的克隆人、婴儿球或苏门答腊。自来水的单位可以继承原球的能力。
+生成：生成分身、小球或召唤物。生成的单位可以继承原始小球的能力。
 
-状态效应:对目标进行调试，不能触发其他能力。
+状态效果：对目标施加负面状态。无法触发其他技能。
 
-能力有4种不同的触发条件:当球击中目标时。当球损坏时。注意:核弹的辐射被视为损伤效应。当时:在固定的时间间隔上。当球击中时。
+这些能力（Abilities）有 4 种不同的触发条件：On-Hit：当球击中目标时。On-Damage：当球造成伤害时（注意：核弹产生的辐射被视为伤害效果）。On-Timer：按固定的时间间隔触发。On-Shoot：当球发射时。
 
-一般规则:
+通用规则：
 
-一般触发器规则
+常见触发规则
 
-| 触发器类型 | 命中时 | 伤害 | 在时间表上 |
+| 触发类型 | 命中时 | 造成伤害时 | 定时 |
 | --- | --- | --- | --- |
-| 生成 | YES | YES | NO |
-| 范围效果 | NO | YES | NO |
-| 状态效果 | NO | NO | NO |
+| 生成 | 是 | 是 | 否 |
+| 范围效果 | 否 | 是 | 否 |
+| 状态效果 | 否 | 否 | 否 |
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

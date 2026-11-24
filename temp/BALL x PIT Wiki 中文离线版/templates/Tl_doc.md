@@ -2,21 +2,21 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Tl%2Fdoc) · [修订 588](https://ballxpit.wiki.gg/index.php?oldid=588) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-![](../assets/commons--Wikipedia.svg)
+![](../assets/previews/commons--Wikipedia-48px-8d183814.png)
 
-此代码由 [维基百科](https://en.wikipedia.org/wiki/Main_Page) 调适。
+此代码改编自 [Wikipedia](https://en.wikipedia.org/wiki/Main_Page)。
 
-原始代码见以下页面: [Module:Template链接通用](https://en.wikipedia.org/wiki/Module%3ATemplate_link_general), [模板:Tlx](https://en.wikipedia.org/wiki/Template%3ATlx)
+关于原始代码，请参见以下页面：[Module:Template link general](https://en.wikipedia.org/wiki/Module%3ATemplate_link_general)，[模板:Tlx](https://en.wikipedia.org/wiki/Template%3ATlx)
 
-![](../assets/commons--Lua.svg)
+![](../assets/previews/commons--Lua-48px-e7e95a21.png)
 
-本模板使用用Lua编程语言撰写的一个或多个模块。
+此模板使用了一个或多个用 Lua 编程语言编写的模块。
 
-详情见 [维基百科:](https://en.wikipedia.org/wiki/Wikipedia%3ALua) 或是 [关于媒体wiki.org的Lua参考手册](https://mediawiki.org/wiki/Extension%3AScribunto/Lua_reference_manual)所使用的模块包括: **[模板链接](../site/Module_Template_link.md)**.
+如需更多信息，请参阅 [Wikipedia:Lua](https://en.wikipedia.org/wiki/Wikipedia%3ALua) 或 [MediaWiki.org 上的 Lua 参考手册](https://mediawiki.org/wiki/Extension%3AScribunto/Lua_reference_manual)。使用的模块包括：**[模板链接](../site/Module_Template_link.md)**。
 
-如果模板存在， 此模板将返回模板在链接到模板描述页面时的外观使用。
+此模板在模板存在时，会返回其示例用法，并链接到模板说明页面。
 
-#### 使用率
+## 使用
 
 ```
 {{tl|<Template name>}}
@@ -24,22 +24,22 @@
 ```
 
 *未命名参数* 1
-:   模板模板名称( 没有 `Template:` 前缀)
+:   模板名称（不含 `Template:` 前缀）
 
 *未命名参数* 2 - 9
-:   可选的模板参数
+:   可选。模板参数
 
-无
-:   显示未连接模板使用的可选标志。
+nl
+:   可选标志用于显示未链接的模板使用情况。
 
-#### 实例实例实例
+## 示例
 
-:   `{{tl|stub}}` 返回返回返回 `{{[stub](Stub.md)}}`
-:   `{{tl|stub|1}}` 返回返回返回 `{{[stub](Stub.md)|1}}`
-:   `{{tl|stub|1|2|nl{{=}}y}}` 返回返回返回 `{{[stub](Stub.md)|1|2|nl=y}}`
-:   `{{tl|for|page|t1{{=}}alt text}}` 返回返回返回 `{{[for](For.md)|page|t1=alt text}}`
+:   `{{tl|stub}}` 返回 `{{[stub](Stub.md)}}`
+:   `{{tl|stub|1}}` 返回 `{{[stub](Stub.md)|1}}`
+:   `{{tl|stub|1|2|nl{{=}}y}}` 返回 `{{[stub](Stub.md)|1|2|nl=y}}`
+:   `{{tl|for|page|t1{{=}}alt text}}` 返回 `{{[for](For.md)|page|t1=alt text}}`
 
-#### 另见
+## 另见
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

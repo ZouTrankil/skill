@@ -4,15 +4,15 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Game_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Game/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Game/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Game_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Game/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Game/testcases)页面上进行实验。 |
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}游戏模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{Game}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Game
@@ -32,31 +32,31 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 花的游戏
+## 花之游戏（The Game of Flower）
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 平台
+### 平台
 
 PC
 
-##### 释放日期
+### 发布日期
 
 很快
 
-##### 流派
+### 类型
 
 RPG
 
-##### 模式
+### 模式
 
-单玩家
+单人模式
 
-#### 系统要求
+## 系统要求
 
-切切边缘硬件
+尖端硬件
 
 ```
 {{Game

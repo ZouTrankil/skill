@@ -4,53 +4,53 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Balls_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Balls/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Balls/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Balls_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Balls/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Balls/testcases)页面上进行实验。 |
 
-球导航箱:游戏中的每个球都按种类分组放在球的脚下
+球类导航框：游戏中所有球类物品，按种类分类，位于球类文章下方。
 
 [ ]
 
-#### 目录（Contents）
+## 目录（Contents）
 
-* [1 职位安排](#%E8%81%8C%E4%BD%8D%E5%AE%89%E6%8E%92)
-* [2 组群群](#%E7%BB%84%E7%BE%A4%E7%BE%A4)
+* [1 放置方式](#%E6%94%BE%E7%BD%AE%E6%96%B9%E5%BC%8F)
+* [2 组队](#%E7%BB%84%E9%98%9F)
 * [3 示例](#%E7%A4%BA%E4%BE%8B)
 * [4 另见](#%E5%8F%A6%E8%A7%81)
 
-#### 职位安排
+## 放置方式
 
-每条圆球文章的最后一行， 由页面生成器发布， 没有参数。
+每篇球类文章的最后一行，由页面生成器发出。无参数。
 
 ```
 {{Balls}}
 ```
 
-在主空格中，它也将页面在 [类别:球](../categories/Balls.md) 下存档。
+在主页面上，它也将该页面归类于 [类别：球](../categories/Balls.md)。
 
-#### 组群群
+## 组队
 
-| 组组群 | 行数 |
+| 组队 | 行数 |
 | --- | --- |
 | 基础圆球 | `ball_class = base` |
 | 进化圆球 | `ball_class = evolved` |
 | 其他 | `ball_class = baby` |
 
-对下列对象进行三次查询： [圆球](../data/Balls.md) 表格，每个表格
-`_pageName`。加入 Wiki 的球在右组中出现，在正确的位置，按字母顺序排列，没有编辑此页面，这是被替换的手动类型列表无法做到的:当游戏有21个时，它命名了20个基球，从未更新过 [肉类](../articles/Flesh.md).
+对下列对象进行三次查询： [圆球](../data/Balls.md) 表格，按顺序排列
+`_pageName`. 添加到维基百科的球会按字母顺序出现在正确的分类和位置中，且不会被编辑——这是手动输入的列表所无法做到的：它列出了20种基础圆球，而游戏中实际上有21种，因此该列表从未更新过。 [肉身](../articles/Flesh.md).
 
-#### 示例
+## 示例
 
-仅此模板 *原文如下:* 与 @QQQ不同,[球数据](BallData.md)和和和[球状](BallStat.md)将各行储存于此页面上。
+此模板仅*读取*Cargo 信息，因此在此展示是安全的——与{{[BallData](BallData.md)}}和{{[BallStat](BallStat.md)}}不同，后者会存储与此页面相关的行数据。
 
 [共享导航](../navigation/nav-63012059ef49.md)
 
-#### 另见
+## 另见
 
-* {{[球桌](BallTable.md)· 表格全文 [圆球（Balls）](../articles/Balls.md)从同一个货桌。
-* {{[球链](BallLink.md)——每个单球图标和名称的链接，每个列表都是从中建立的。
+* {{[BallTable](BallTable.md)}} — 完整表格 [圆球（Balls）](../articles/Balls.md)来自同一Cargo 表。
+* {{[BallLink](BallLink.md)}} — 每个列表所基于的每球图标与名称链接。
 
-**分类**　[分类 · Navbox 模板](../categories/Navbox_templates.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 导航框模板](../categories/Navbox_templates.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

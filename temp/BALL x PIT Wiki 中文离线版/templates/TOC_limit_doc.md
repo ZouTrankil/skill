@@ -1,26 +1,26 @@
-# 模板 · 工作时间限制/doc（TOC limit/doc）
+# 模板 · TOC限制/文档（TOC limit/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:TOC_limit%2Fdoc) · [修订 584](https://ballxpit.wiki.gg/index.php?oldid=584) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-本模板插入一个目录，其中略去超出一定深度的子标题。该表格遵循与 TOC 相同的布局规则。 [魔法单词](https://mediawiki.org/wiki/Help%3AMagic_words)。在文章正文中， 寄出部分仍然有部分编辑链接。本模板的主要用途是您想要部分编辑链接以方便编辑，但不希望有完整的目录。 **在使用这个模板之前，考虑是否和为什么它对读者和其他编辑有帮助。**
+此模板会插入一个目录，但会省略超过一定深度的子标题。该目录遵循与 \_\_TOC\_\_ [魔法词](https://mediawiki.org/wiki/Help%3AMagic_words) 相同的布局规则。被省略的章节在文章正文中仍具有章节编辑链接。此模板的主要用途是当需要章节编辑链接以便于编辑，但不希望显示完整的目录时。**在使用此模板之前，请考虑它是否以及为何对读者和其他编辑有帮助。**
 
-#### 使用率
+## 使用
 
-`{{[TOC limit](TOC_limit.md)}}` 或是 `{{[TOC limit](TOC_limit.md)|3}}`
+`{{[TOC limit](TOC_limit.md)}}` 或 `{{[TOC limit](TOC_limit.md)|3}}`
 
-模板默认包含第二和第三级标题，如在技术选择委员会中编号为“1”和“1.1”的标题(注: `{{[TOC limit](TOC_limit.md)|1}}` 什么都没有:页面的第一个级别标题默认是页标题。 )
+模板默认包含第二级和第三级的标题，例如目录中编号为“1”和“1.1”的那些。（注意：） `{{[TOC limit](TOC_limit.md)|1}}` 无操作：页面上的一级标题默认即为页面标题。）
 
-您可以通过添加信头级别指定不同的限制 :
+您可以通过添加标题等级来指定不同的限制。
 
 `{{[TOC limit](TOC_limit.md)|4}}`
 
-4允许四级标题，例如“1.1.1”,但略去技选委员会下的任何小标题。
+4允许使用第四级标题，例如“1.1.1”，但会省略TOC中低于该级别的任何子标题。
 
-该模板以 CSS 隐藏下层。 见 [Mediawiki:Common.cs](../site/MediaWiki_Common.css.md) 。
+该模板通过 CSS 隐藏较低关卡的显示。请参阅 [Mediawiki:Common.css](../site/MediaWiki_Common.css.md)。
 
-#### TOC 级别与维基文本标题级别
+## TOC关卡与Wiki文本标题关卡对比
 
-技术选择委员会中的标题水平通常与wikitext 中的标题水平相对应，因此a `== Level-2 header ==` 通常生成第一级 (“ 1”) TOC 标题, a `=== Level-3 header ===` 通常将生成二级 (“1.1”) TOC 标题等。 *没有* 如果页面包含 `= Level-1 headers =` 或跳过页眉级别。 例如, wikitext 像这样 :
+TOC中的标题关卡通常对应wiki文本中的标题关卡，因此 `== Level-2 header ==` 通常会生成一级（“1”）的TOC标题，一个 `=== Level-3 header ===` 通常会生成二级（“1.1”）的TOC标题，依此类推。这种对应关系是这样的。 *不* 如果页面包含相关内容，则保持停留。 `= Level-1 headers =` 或者跳过标题关卡。例如这样的维基文本：
 
 ```
 == Level-2 heading (A) ==
@@ -32,23 +32,23 @@
 === Level-3 heading (G) ===
 ```
 
-将产生像这样的技选委员会:
+将生成如下的TOC：
 
-使用 `{{TOC limit}}` 此页面上的 *不会* 隐藏标题 D , 因为即使它是第6级标题， 它也显示在 TOC 的第二层。 而且它 *将* 隐藏页眉 G , 尽管这是一个级别-3的标题与标题 B 一样， 因为标题 G 在 TOC 第三级显示， 而标题 B 在第二级显示。
+使用 `{{TOC limit}}` 在此页面上 *不会* 隐藏标题D，因为尽管它是6级标题，但在目录中却位于第二级。而且它 *会* 隐藏标题G，尽管它和标题B一样都是3级标题，因为标题G显示在目录的第三级，而标题B则显示在第二级。
 
-#### 冲突冲突
+## 冲突
 
-此模板与 `{{[TOC right](TOC_right.md)}}` 模板。要实现正确效果，请使用带有限制参数的模板。例如, `{{[TOC right](TOC_right.md)|limit=2}}` 具有以下效果 `{{[TOC right](TOC_right.md)}}` 及 `{{[TOC limit](TOC_limit.md)|2}}` 如果他们一起工作的话
+此模板与以下内容交互不佳。 `{{[TOC right](TOC_right.md)}}` 模板。要实现正确的效果，请使用带有限制参数的模板。例如： `{{[TOC right](TOC_right.md)|limit=2}}` 具有该效果 `{{[TOC right](TOC_right.md)}}` 及 `{{[TOC limit](TOC_limit.md)|2}}` 如果它们协同工作的话，就会……
 
-#### 模板数据
+## 模板数据
 
-插入一个目录，其中略去超出一定深度的子标题。
+插入一个目录，省略超过一定深度的子标题。
 
 模板参数
 
-| 参数 |  | 描述 | 类型 | 状态 |
+| 参数 |  | 说明 | 类型 | 状态 |
 | --- | --- | --- | --- | --- |
-| 限制限制 | `1` `limit` | 包含在目录表中的最大页眉深度 默认默认3 | 数目 | 建议 |
+| 限制 | `1` `limit` | 目录中需包含上限值的标题深度 默认3 | 数字 | 建议 |
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

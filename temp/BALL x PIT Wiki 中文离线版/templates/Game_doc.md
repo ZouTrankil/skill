@@ -2,11 +2,11 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Game%2Fdoc) · [修订 152](https://ballxpit.wiki.gg/index.php?oldid=152) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}[游戏](Game.md)模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{[Game](Game.md)}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Game
@@ -26,31 +26,31 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 花的游戏
+## 花之游戏（The Game of Flower）
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 平台
+### 平台
 
 PC
 
-##### 释放日期
+### 发布日期
 
 很快
 
-##### 流派
+### 类型
 
 RPG
 
-##### 模式
+### 模式
 
-单玩家
+单人模式
 
-#### 系统要求
+## 系统要求
 
-切切边缘硬件
+尖端硬件
 
 ```
 {{Game

@@ -1,10 +1,10 @@
-# 分类 · 球酒（Ball sprites）
+# 分类 · 圆球精灵图（Ball sprites）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Ball_sprites) · [修订 3240](https://ballxpit.wiki.gg/index.php?oldid=3240) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-用于所有 [圆球](../articles/Balls.md) 在 *[球比伦战记](../articles/Ball_x_Pit.md)*.
+所有 [圆球](../articles/Balls.md)的精灵位于 *[球比伦战记](../articles/Ball_x_Pit.md)*之间。
 
-**分类**　[分类 · 发状](Sprites.md)
+**分类**　[分类 · 精灵图](Sprites.md)
 
 **分类成员**
 

@@ -6,10 +6,10 @@
 
 image/png · 183 × 205 · 18,385 字节
 
-阵营 L1建筑物
+兵营 L1 建筑精灵图
 
 **源页许可标记**　`{{License|game}}`
 
-**分类**　[分类 · 建筑物](../categories/Building_sprites--p-c-a9afcb8121cb.md)
+**分类**　[分类 · 建筑精灵图](../categories/Building_sprites--p-c-a9afcb8121cb.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

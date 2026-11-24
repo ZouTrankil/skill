@@ -2,11 +2,11 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Book%2Fdoc) · [修订 27](https://ballxpit.wiki.gg/index.php?oldid=27) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}[书籍](Book.md)模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{[Book](Book.md)}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Book
@@ -21,33 +21,33 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 花的冒险
+## 花之冒险
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 作者作者作者
+### 作者
 
-爱丽丝
+Alice
 
-##### 光照像仪
+### 插画师
 
-鲍勃
+Bob
 
-##### 发表于
+### 发布于
 
 1928 年 4 月
 
-##### 出版商
+### 发行商
 
-亚瑟
+Arthur's
 
-发布令
+发布顺序
 
-| 上一个 | 下一页 |
+| 之前 | 下一步 |
 | --- | --- |
-| 第一书第一册 | 第三书第三卷 |
+| 第一册 | 第三卷 |
 
 ```
 {{Book

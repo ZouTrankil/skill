@@ -1,4 +1,4 @@
-# 分类 · 有错误的标签模板（Hatnote templates with errors）
+# 分类 · 包含错误的标签模板（Hatnote templates with errors）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Hatnote_templates_with_errors) · [修订 157](https://ballxpit.wiki.gg/index.php?oldid=157) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

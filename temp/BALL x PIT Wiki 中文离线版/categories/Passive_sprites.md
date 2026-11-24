@@ -1,4 +1,4 @@
-# 分类 · 动态水（Passive sprites）
+# 分类 · 被动精灵图（Passive sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Passive_sprites)
 

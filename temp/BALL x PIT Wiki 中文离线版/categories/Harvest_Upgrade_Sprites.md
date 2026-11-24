@@ -1,4 +1,4 @@
-# 分类 · 收获升级水果（Harvest Upgrade Sprites）
+# 分类 · 收获升级精灵图（Harvest Upgrade Sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Harvest_Upgrade_Sprites)
 

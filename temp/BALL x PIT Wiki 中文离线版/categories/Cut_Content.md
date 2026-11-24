@@ -1,4 +1,4 @@
-# 分类 · 切割内容（Cut Content）
+# 分类 · 删减内容（Cut Content）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Cut_Content)
 

@@ -4,61 +4,61 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](BallData_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:BallData/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:BallData/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](BallData_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:BallData/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:BallData/testcases)页面上进行实验。 |
 
-球文章的数据模板。 **stories**该球在 [圆球](../data/Balls.md)货物表 **中的行，使** 成为相同值的信息框，因此页面上没有输入两次。
+这是关于球类游戏的百科模板。它**存储**球类的行在[圆球](../data/Balls.md)Cargo 表中**并渲染**信息框，因此页面上的内容不会重复输入。
 
 [ ]
 
-#### 目录（Contents）
+## 目录（Contents）
 
-* [1 职位安排](#%E8%81%8C%E4%BD%8D%E5%AE%89%E6%8E%92)
-* [2 参数参数](#%E5%8F%82%E6%95%B0%E5%8F%82%E6%95%B0)
-* [3 食食权](#%E9%A3%9F%E9%A3%9F%E6%9D%83)
+* [1 放置方式](#%E6%94%BE%E7%BD%AE%E6%96%B9%E5%BC%8F)
+* [2 参数](#%E5%8F%82%E6%95%B0)
+* [3 配方](#%E9%85%8D%E6%96%B9)
 * [4 语法](#%E8%AF%AD%E6%B3%95)
-* [5 为什么这里没有活生生的例子](#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E9%87%8C%E6%B2%A1%E6%9C%89%E6%B4%BB%E7%94%9F%E7%94%9F%E7%9A%84%E4%BE%8B%E5%AD%90)
+* [5 此处省略运行示例的原因](#%E6%AD%A4%E5%A4%84%E7%9C%81%E7%95%A5%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%E7%9A%84%E5%8E%9F%E5%9B%A0)
 * [6 备注](#%E5%A4%87%E6%B3%A8)
 
-#### 职位安排
+## 放置方式
 
-每个球文章一次， 在最上面。 这是编辑最需要输入的唯一的球模板。
+每次球类文章时，在顶部位置。这是大多数编辑唯一需要输入的球类模板。
 
-使用 **不** 传递一个页面名称:您将其放置在球上 *is* 上的文章。 不要通过图标 - [IconLink](IconLink.md) 从页面名称中获取。
+做 **不** 页面名称：您放置该文章的页面名称 *是* 球。也不要传递图标。 [IconLink](IconLink.md) 其名称源自该页面的名称。
 
-#### 参数参数
+## 参数
 
-全部可选; 空字段仅在行和信息框中找不到。
+所有选项均为可选择的；空白字段则完全不存在该行和信息框中。
 
-| 参数 | 意义意思意思意思 |
+| 参数 | 含义 |
 | --- | --- |
-| `ball_class` | `base`、 `evolved` 或是 `baby`。设置文章的类别。有效要求 — 空白的一页将页面存档到 [类别:无等级的篮球](https://ballxpit.wiki.gg/wiki/Category:Balls_with_no_class?action=edit&redlink=1). |
-| `display_name` | 游戏标签 **仅** 与页标题不同，今天每个球都是空白的 |
-| `starting_characters` | 以此球开头的字符。 逗号分隔列表: 布莱德、 地震、 铁和闪电各有两个。 |
-| `unlock_condition` | `Unlocked by default`,或如: . `Clear The SNOWYxSHORES`基球的球仅 . . |
-| `release_group` | `base-game` 或是 `post-launch`. |
-| `summary` | [圆球](../articles/Balls.md)表格中显示的短线。一组数字，大小为90行扫描。 |
-| `stat_combined_description` | 较长的工具提示行， 以斜线标记为单位水平值。 重叠 `summary` 目的 - **如果编辑一个，编辑另一个**. |
-| `on_hit_effects` | 球在撞击时会做什么: `Self-destruct`、 `Pass-through`、 `Spawn`AOOE. 不是范围效果。不是AOOE. |
-| `status_triggers` | 何种效果可适用于: `On-Hit`、 `AOE`、 `Full screen AOE`、 `On-Timer`、 `On-shoot`、 `Spawn`、 `On-timer spawn`、 `On-bounce spawn`、 `On-kill spawn`。如果球没有状态效果，则留空。 |
-| `status_effects` | 效果应用。 游戏效果名称保持原样。`Burn`、 `Poison`;任何描述动作的文字都是动词第一(动词第一())Spawn [Baby Ball](../articles/Baby_Ball.md)、 `Kill instantly`). |
-| `ingredient_1_options` … `_4` | 进化配方。 每个槽是 **替代品** 列表; 不同的槽是共序。 四个槽是上限， 最多不能持有四个球。 |
+| `ball_class` | `base`、 `evolved` 或 `baby`. 设置文章的分类。强制要求——留空则会将页面归档。 [分类：无类别的球](https://ballxpit.wiki.gg/wiki/Category:Balls_with_no_class?action=edit&redlink=1). |
+| `display_name` | 游戏内的标签， **仅限** 这与页面标题有所不同。今天每个球都是空白的。 |
+| `starting_characters` | 以这个球开头的角色。用逗号分隔的列表：流血、地震、铁与闪电各有两个。 |
+| `unlock_condition` | `Unlocked by default`或者例如。 `Clear The SNOWYxSHORES`. 仅限基础圆球。 |
+| `release_group` | `base-game` 或 `post-launch`. |
+| `summary` | 在 [圆球（Balls）](../articles/Balls.md) 的表格中显示的短行。一组数字，大小适合扫描90行。 |
+| `stat_combined_description` | 较长的工具提示行，每级数值用斜杠表示。有重叠部分。 `summary` 故意地 — **如果你编辑了一个，也编辑另一个。**. |
+| `on_hit_effects` | 球撞击时的反应： `Self-destruct`、 `Pass-through`、 `Spawn`. 非范围效果。 |
+| `status_triggers` | 效果生效的原因： `On-Hit`、 `AOE`、 `Full screen AOE`、 `On-Timer`、 `On-shoot`、 `Spawn`、 `On-timer spawn`、 `On-bounce spawn`、 `On-kill spawn`. 如果球没有状态效果，则留空。 |
+| `status_effects` | 已施加效果。游戏效果名称保持不变。`Burn`、 `Poison`); 描述动作的词语应以动词开头（Spawn [Baby Ball](../articles/Baby_Ball.md)、 `Kill instantly`). |
+| `ingredient_1_options` … `_4` | 进化配方。每个槽位都是 **选项** 的列表；不同的槽位是共同成分。最多只能持有四个球，即四个槽位的上限。 |
 
-`?` 任何地点都是合法的价值，意味着还没有人证实。
+`?` 在任何地方都是合法的值，意味着目前还没有人确认它。
 
-#### 食食权
+## 配方
 
 ```
 |ingredient_1_options = Laser (Horizontal), Laser (Vertical)
 |ingredient_2_options = Poison, Cell
 ```
 
-原文原文原文为 *(Laser HH(拉拉瑟H(拉拉拉瑟)) **或是** 激光V)+(球) **或是** 单元格)*基球和婴儿球和婴儿球都完全忽略了这些。..
+表现为 *(激光 H **或** 激光 V) + (中毒 **或** 细胞)*。基础球和小球完全省略这些效果。
 
-食谱在[BallRecipeEdges](../data/BallRecipeEdges.md)中作为每一替代物的一行存储，而不是作为列在这里，这就是让任何一页都问"Burn进化成什么",而不让Burn的一页列出任何东西。
+配方在 [圆球配方材料表](../data/BallRecipeEdges.md) 中按每种替代方案存储为一行，而非此处按列存储。正是这种结构使得任何页面都能询问“灼烧会进化成什么”，而无需在灼烧的页面中列出任何内容。
 
-#### 语法
+## 语法
 
 ```
 {{BallData
@@ -74,24 +74,22 @@
 }}
 ```
 
-基球会掉下成分槽并添加 `starting_characters` 及
+棒球掉落原料槽，并添加 `starting_characters` 及
 `unlock_condition`.
 
-#### 为什么这里没有活生生的例子
+## 此处省略运行示例的原因
 
-此模板模板 **写到 Cargo**。将它放在这页上， 将备有
-[圆球](../data/Balls.md) 列对列 *模板:BallData/doc* - 球是不存在的， 坐在每一个询问和每个桌子直到有人注意到，一个管理员跑
-*重新创建数据*。 。 。 这同样也是。[球状](BallStat.md)和和和[Ball 矩形](BallRecipeEdge.md)}}.
+此模板 **写入 Cargo**。在页面上渲染它会为 *Template:BallData/doc* 生成一行 [圆球](../data/Balls.md) 记录——这是一个不存在的球，存在于所有查询和表中，直到有人注意到并由管理员执行了 *重新创建数据*。对于 {{[BallStat](BallStat.md)}} 和 {{[圆球配方材料](BallRecipeEdge.md)}} 也是如此。
 
-模板 *读为* 货物可以证明，并且:[球数据/信息框](BallData_Infobox.md)}}, {{[球演变](BallEvolutions.md)}}, {{[球体](BallCreation.md)}}, {{[球表](https://ballxpit.wiki.gg/wiki/Template%3ABallsTable?action=edit&redlink=1)}}, {{[圆球](Balls.md)}}.
+只有 *阅读* 的 Cargo 才能展示的模板包括：{{[BallData/Infobox](BallData_Infobox.md)}}、{{[BallEvolutions](BallEvolutions.md)}}、{{[BallCreation](BallCreation.md)}}、{{[圆球列表](https://ballxpit.wiki.gg/wiki/Template%3ABallsTable?action=edit&redlink=1)}} 和 {{[圆球](Balls.md)}}。
 
-完整工作文章见 [灼烧](../articles/Burn.md)。
+如需完整的文章内容，请参阅 [灼烧](../articles/Burn.md)。
 
-#### 备注
+## 备注
 
-* **只允许主空间。** 在任何其他名称空间中， 此模板只能存储任何内容， 所以一个沙箱副本无法归档一个不存在的球。 之前创建的行需要从沙盒页面上进行空格编辑才能清除。
-* 各行不回填。在下一页解析之前， 添加此模板无任何作用， 无效编辑它。
-* 通过 [模板:BallData/Infobox](BallData_Infobox.md) 进行调试; Evolutions 块是一个查询， 因此永远不会过时。
+* **仅限主空间。** 在其他任何命名空间中，此模板会渲染但不会存储任何内容，因此沙箱副本无法投掷不存在的球。在保护机制存在之前创建的行，需要在沙箱页面上进行空值编辑以清除。
+* 行不会填充。添加此模板在页面下次解析之前没有任何效果——请直接编辑为空。
+* 通过 [模板:BallData/Infobox](BallData_Infobox.md) 渲染；Evolution 块是一个查询，因此它永远不会过时。
 
 **分类**　[分类 · 球模板](../categories/Ball_templates.md)
 

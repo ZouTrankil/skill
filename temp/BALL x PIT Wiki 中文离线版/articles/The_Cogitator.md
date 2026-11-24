@@ -1,61 +1,63 @@
 # 沉思者（The Cogitator）
 
-[![The Cogitator.png](../assets/The_Cogitator.png)](../files/The_Cogitator.png.md) ![The Cogitator mini.png](../assets/The_Cogitator_mini.png)
-
-一个聪明的哲学家，迷失了思想。
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/The_Cogitator) · [修订 4323](https://ballxpit.wiki.gg/index.php?oldid=4323) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/The_Cogitator?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/The_Cogitator?action=edit).*
 
-#### 一般信息
+## 沉思者 ![The Cogitator mini.png](../assets/previews/The_Cogitator_mini-34px-e52c326d.png)
 
-##### 圆球（Ball）
+[![The Cogitator.png](../assets/The_Cogitator.png)](../files/The_Cogitator.png.md)
 
-[激光 （垂直 / Vertical）](Laser_Vertical.md) [![Laser (Vertical).png](../assets/Laser_%28Vertical%29.png)](Laser_Vertical.md)
+一位才华横溢的哲学家，沉浸在思考中。
 
-##### 解锁
+## 基本信息
 
-构建 [别墅](Villa.md)
+### 圆球（Ball）
 
-##### 能力
+[激光（垂直）](Laser_Vertical.md) [![Laser (Vertical).png](../assets/previews/Laser__Vertical-25px-2e4391de.png)](Laser_Vertical.md)
 
-自动选择升级。
+### 解锁
 
-**沉思者** 是一个可以解锁的可播放 [角色](Characters.md) 在 *[球比伦战记](Ball_x_Pit.md)*它们通过构建 [别墅](Villa.md), 图案被发现是随机落入的 [白雪海岸](The_SNOWYxSHORES.md) [![The SNOWYxSHORES.png](../assets/The_SNOWYxSHORES.png)](The_SNOWYxSHORES.md).它们的定义特点是，它们自动选择升级，演变和融合，而不是玩家。当玩家有选择在级别运行期间使用升级点 (无论是自动升级时，还是玩家手动选择进入升级屏幕时) [聚合反应堆](Fusion_Reactor.md),Cogitator将暂时从玩家手中控制并自动随机选择可用的选项之一。与玩家通常相同的选项仍然会出现，但Cogitator不能重新滚动或驱逐升级。 [激进者](The_Radical.md) [![The Radical.png](../assets/The_Radical.png)](The_Radical.md) 玩家仍然正常控制游戏中的其他行动。 [激光 （垂直 / Vertical）](Laser_Vertical.md) [![Laser (Vertical).png](../assets/Laser_%28Vertical%29.png)](Laser_Vertical.md).
+建造 [别墅](Villa.md)
 
-#### 策略
+### 能力
 
-失去选择升级，演变或合并的能力使得这个角色比大多数人更难策略，因为他们会尝试选择与彼此协同的球和被动。 [[1]](https://www.reddit.com/r/xbox/comments/1o7kkrt/comment/nk09f3c/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)结果不一致。因此，不能依赖这种特征来趋向任何特定的构建，球或被动。尽可能拖延核聚变反应堆回收机，以最大限度地提高经验值/水平和升级蛋球/被动剂，从而提供更多/更好的选择，可以在一定程度上减轻亚最佳选择。此外，允许不自动进入升级屏幕的选项，可以替代地银行升级点，直到获得所需的演变，并且可以升级，或者通过融合反应堆释放了球/被动槽，而不是浪费这些点在游戏终端资源选项上。
+自动选择升级项目。
 
-#### [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/Buildings_Matchmaker_Level1.png)](Matchmaker.md)
+**沉思者** 是 *[球比伦战记](Ball_x_Pit.md)* 中一名可解锁的可玩 [角色](Characters.md)。建造 [别墅](Villa.md) 即可解锁，其蓝图会在 [白雪海岸](The_SNOWYxSHORES.md) [![The SNOWYxSHORES.png](../assets/previews/The_SNOWYxSHORES-25px-dce37be6.png)](The_SNOWYxSHORES.md) 中随机掉落。其显著特点是，升级、进化与融合选项由系统自动选择，而非由玩家手动决定。当玩家在等级提升过程中可以选择使用升级点时（无论是自动在等级提升时，还是玩家手动选择进入升级界面时），或者在拾取 [融合反应堆](Fusion_Reactor.md) 时，沉思者会暂时接管玩家的控制权，并随机自动选择其中一个可用选项。虽然玩家仍然可以看到通常可用的选项，但沉思者既不能重掷，也不能放逐升级。与 [激进者](The_Radical.md) [![The Radical.png](../assets/previews/The_Radical-25px-b116210c.png)](The_Radical.md) 不同，玩家仍然可以正常控制游戏中的所有其他操作。起始圆球为 [激光（垂直）(Laser (Vertical))](Laser_Vertical.md) [![Laser (Vertical).png](../assets/previews/Laser__Vertical-25px-2e4391de.png)](Laser_Vertical.md)。
 
-##### 很好。
+## 策略
 
-##### 坏的
+失去选择升级、进化或融合的能力，使得这个角色在策略制定上比大多数角色要困难得多。因为虽然他们会尝试选择彼此协同作用的球和被动道具[[1]](https://www.reddit.com/r/xbox/comments/1o7kkrt/comment/nk09f3c/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)，但结果并不稳定。因此，这个角色无法被依赖来形成特定的构建、球或被动道具的趋势。通过尽可能延迟获取融合反应堆的时间，可以一定程度上减少次优选择，从而最大化获得的经验值/等级，并升级球和被动道具，进而拥有更多/更好的选择。此外，启用不自动进入等级提升界面的选项，可以让玩家将升级点数储存起来，直到获得所需的进化并升级，或者通过融合反应堆释放球/被动道具的槽位，而不是将这些点数浪费在终局资源选项上。
 
-#### 关卡
+## [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/previews/Buildings_Matchmaker_Level1-25px-79b5d151.png)](Matchmaker.md)
 
-[性格升级奖励](Character_Level_Mechanics.md)
+### 好
 
-| 性格水平 | 总经验值 | 提高奖励水平 | 选择 |
+### 坏
+
+## 关卡
+
+[角色等级提升奖励](Character_Level_Mechanics.md)
+
+| 角色等级 | 总经验值 | 升级奖励 | 选择项 |
 | --- | --- | --- | --- |
-| 3 | 857 | [提高收获](Harvest_Upgrades_Character_Bonus.md) | [![Builder.png](../assets/Builder.png)](https://ballxpit.wiki.gg/wiki/Builder) [建筑师](https://ballxpit.wiki.gg/wiki/Builder?action=edit&redlink=1) 或是 [![Time Keeper.png](../assets/Time_Keeper.png)](https://ballxpit.wiki.gg/wiki/Time_Keeper) [时间守护者](https://ballxpit.wiki.gg/wiki/Time_Keeper?action=edit&redlink=1) |
-| 4 | 1,472 | [住房能力增长](Buildings.md#%E4%BD%8F%E6%88%BF) | 在附近的小麦田地增长25%。 |
-| 6 | 3,574 | [提高收获](Harvest_Upgrades_Character_Bonus.md) | [![Time Keeper.png](../assets/Time_Keeper.png)](https://ballxpit.wiki.gg/wiki/Time_Keeper) [时间守护者](https://ballxpit.wiki.gg/wiki/Time_Keeper?action=edit&redlink=1) 或是 [![Stonepiercer.png](../assets/Stonepiercer.png)](https://ballxpit.wiki.gg/wiki/Stonepiercer) [石头破碎者](https://ballxpit.wiki.gg/wiki/Stonepiercer?action=edit&redlink=1) |
-| 7 | 5,262 | [提高住房能力](Buildings.md#%E4%BD%8F%E6%88%BF) | 在附近的小麦田地增长了35%。 |
-| 9 | 10,409 | [提高住房能力](Buildings.md#%E4%BD%8F%E6%88%BF) | 附近的小麦田地增长了45%。 |
-| 10 | 14,069 | [提高收获](Harvest_Upgrades_Character_Bonus.md) | [![Sprinter.png](../assets/Sprinter.png)](https://ballxpit.wiki.gg/wiki/Sprinter) [冲刺运动员](https://ballxpit.wiki.gg/wiki/Sprinter?action=edit&redlink=1) 或是 [![Wheat Harvester.png](../assets/Wheat_Harvester.png)](https://ballxpit.wiki.gg/wiki/Wheat_Harvester) [麦机](https://ballxpit.wiki.gg/wiki/Wheat_Harvester?action=edit&redlink=1) |
+| 3 | 857 | [收获升级](Harvest_Upgrades_Character_Bonus.md) | [![Builder.png](../assets/previews/Builder-25px-ef318322.png)](https://ballxpit.wiki.gg/wiki/Builder) [Builder](https://ballxpit.wiki.gg/wiki/Builder?action=edit&redlink=1) 或 [![Time Keeper.png](../assets/previews/Time_Keeper-25px-10f5422a.png)](https://ballxpit.wiki.gg/wiki/Time_Keeper) [Time Keeper](https://ballxpit.wiki.gg/wiki/Time_Keeper?action=edit&redlink=1) |
+| 4 | 1,472 | [住房能力获取](Buildings.md#%E4%BD%8F%E6%88%BF) | 附近的麦田再生速度提高 25%。 |
+| 6 | 3,574 | [收获升级](Harvest_Upgrades_Character_Bonus.md) | [![Time Keeper.png](../assets/previews/Time_Keeper-25px-10f5422a.png)](https://ballxpit.wiki.gg/wiki/Time_Keeper) [时间守护者](https://ballxpit.wiki.gg/wiki/Time_Keeper?action=edit&redlink=1) 或 [![Stonepiercer.png](../assets/previews/Stonepiercer-25px-e6c7c4b4.png)](https://ballxpit.wiki.gg/wiki/Stonepiercer) [石凿者](https://ballxpit.wiki.gg/wiki/Stonepiercer?action=edit&redlink=1) |
+| 7 | 5,262 | [住房能力升级](Buildings.md#%E4%BD%8F%E6%88%BF) | 附近的麦田再生速度提高 35%。 |
+| 9 | 10,409 | [住房能力升级](Buildings.md#%E4%BD%8F%E6%88%BF) | 附近的麦田再生速度提高 45%。 |
+| 10 | 14,069 | [收获升级](Harvest_Upgrades_Character_Bonus.md) | [![Sprinter.png](../assets/previews/Sprinter-25px-0e6e32b5.png)](https://ballxpit.wiki.gg/wiki/Sprinter) [短跑手](https://ballxpit.wiki.gg/wiki/Sprinter?action=edit&redlink=1) 或 [![Wheat Harvester.png](../assets/previews/Wheat_Harvester-25px-4aa31ecc.png)](https://ballxpit.wiki.gg/wiki/Wheat_Harvester) [小麦收割机](https://ballxpit.wiki.gg/wiki/Wheat_Harvester?action=edit&redlink=1) |
 | ... | ... | ... |  |
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
 [共享导航](../navigation/nav-334e23d2914f.md)
 
-**分类**　[分类 · 坚力](../categories/Stubs.md) · [分类 · 角色](../categories/Characters.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 待完善](../categories/Stubs.md) · [分类 · 角色](../categories/Characters.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

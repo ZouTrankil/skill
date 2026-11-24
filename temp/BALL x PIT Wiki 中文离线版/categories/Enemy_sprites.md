@@ -1,4 +1,4 @@
-# 分类 · 敌人图示（Enemy sprites）
+# 分类 · 敌人精灵图（Enemy sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Enemy_sprites)
 

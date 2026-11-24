@@ -2,11 +2,11 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Quest%2Fdoc) · [修订 81](https://ballxpit.wiki.gg/index.php?oldid=81) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}[探索](Quest.md)模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{[任务](Quest.md)}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Quest
@@ -24,39 +24,39 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 示例信息框
+## 示例信息框
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 开始
+### 开始
 
-克莱
+Chrys
 
-##### 结束
+### 结束
 
-热兰Name
+格兰
 
-##### 先决条件
+### 先决条件
 
 无
 
-##### 等级（Level）
+### 等级（Level）
 
 5
 
-##### 位置
+### 位置
 
-地球地球地球
+地球
 
-##### 奖励奖励
+### 奖励（Rewards）
 
-司法 -- -- 干旱金属
+正义之花
 
-调查进展
+任务进度
 
-| 上一个 | 下一页 |
+| 之前 | 下一步 |
 | --- | --- |
 | A | C |
 

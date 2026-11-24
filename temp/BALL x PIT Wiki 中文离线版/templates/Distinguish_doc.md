@@ -2,37 +2,37 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Distinguish%2Fdoc) · [修订 493](https://ballxpit.wiki.gg/index.php?oldid=493) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-该帽子模板意在用来表明读者希望找到的替代材料的可能替代品。
+此帽子注模板用于指出读者可能想要寻找的替代选项。
 
-模板参数 此模板更倾向于参数的内嵌格式化。
+模板参数 此模板更倾向于使用内联格式设置参数。
 
-| 参数 |  | 描述 | 类型 | 状态 |
+| 参数 |  | 说明 | 类型 | 状态 |
 | --- | --- | --- | --- | --- |
-| 替代 | `1` | 备选页。 示例备选网页替代网页 | 页面名称 | 建议 |
-| 第二替代品 | `2` | 替代页的第二个替代页的第二页替代替代页第二页。 示例第二次备选替代页 | 页面名称 | 可选 |
-| 第三替代品 | `3` | 第三个替代页面。 示例第三替代页 | 页面名称 | 可选 |
-| 备选案文 | `text` | 无需使用页面，您可以提供一个完整的替代文本。此参数高于其他提供的参数。 示例\[替代页\] | 线线 | 可选 |
+| 替代方案 | `1` | 备用页面。 示例替代页面 | 页面名称 | 建议 |
+| 第二种选择 | `2` | 第二个备用页面。 示例第二备选页面 | 页面名称 | 可选 |
+| 第三选择 | `3` | 第三个备用页面。 示例第三备选页面 | 页面名称 | 可选 |
+| 替代文本 | `text` | 您可以使用完整的替代文本，而不是页面。此参数会覆盖其他提供的参数。 示例备用页面，\[\[备用页面\]\] | 线 | 可选 |
 
-#### 实例实例实例
+## 示例
 
-| 《法典法典法典》 | 结果 |
+| 代码 | 结果 |
 | --- | --- |
-| `{{Distinguish\|Special:Uncategorizedpages}}` | 不应与 [特别:未分类网页](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages). |
-| `{{Distinguish\|Special:Uncategorizedpages\|Special:Uncategorizedfiles}}` | 不应与 [特别:未分类网页](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) 或是 [特别:未分类文件](https://ballxpit.wiki.gg/wiki/Special:UncategorizedFiles). |
-| `{{Distinguish\|Special:Uncategorizedpages\|Special:Uncategorizedfiles\|Special:Uncategorizedcategories}}` | 不应与 [特别:未分类网页](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages)、 [特别:未分类文件](https://ballxpit.wiki.gg/wiki/Special:UncategorizedFiles) 或是 [特别:未分类类别](https://ballxpit.wiki.gg/wiki/Special:UncategorizedCategories). |
-| `{{Distinguish\|Special:Uncategorizedpages{{!}}Page 1}}` （海关链接标签 / Custom link label） | 不应与 [第1页](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages). |
-| `{{Distinguish\|text = Page 1, another name for [[Special:Uncategorizedpages]]}}` | 不与第1页相混淆 [特别:未分类网页](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages). |
+| `{{Distinguish\|Special:Uncategorizedpages}}` | 请勿与 [Special:Uncategorizedpages](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) 混淆。 |
+| `{{Distinguish\|Special:Uncategorizedpages\|Special:Uncategorizedfiles}}` | 请勿与 [Special:Uncategorizedpages](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) 或 [Special:Uncategorizedfiles](https://ballxpit.wiki.gg/wiki/Special:UncategorizedFiles) 混淆。 |
+| `{{Distinguish\|Special:Uncategorizedpages\|Special:Uncategorizedfiles\|Special:Uncategorizedcategories}}` | 请勿与 [Special:Uncategorizedpages](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages)、[Special:Uncategorizedfiles](https://ballxpit.wiki.gg/wiki/Special:UncategorizedFiles) 或 [Special:Uncategorizedcategories](https://ballxpit.wiki.gg/wiki/Special:UncategorizedCategories) 混淆。 |
+| `{{Distinguish\|Special:Uncategorizedpages{{!}}Page 1}}` （自定义链接标签 / Custom link label） | 请勿与 [第1页](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages)混淆。 |
+| `{{Distinguish\|text = Page 1, another name for [[Special:Uncategorizedpages]]}}` | 请勿与第 1 页混淆，后者是 [Special:Uncategorizedpages](https://ballxpit.wiki.gg/wiki/Special:UncategorizedPages) 的另一个名称。 |
 
-#### 依赖性
+## 依赖项
 
-此模板要正常工作， 您需要以下信息:
+为了让此模板正常工作，您需要以下内容：
 
-* 其他 `{{[Hatnote](Hatnote.md)}}` 基准模板。
-* 其他 `.hatnote` 类，在 [MediaWiki:Common.css](../site/MediaWiki_Common.css.md).
+* `{{[Hatnote](Hatnote.md)}}` 基础模板。
+* `.hatnote` 类别，可在 [MediaWiki:Common.css](../site/MediaWiki_Common.css.md).
 
-#### 来源来源
+## 来源
 
-基本基于 [维基百科的杰出模板](https://en.wikipedia.org/wiki/Template%3ADistinguish)。
+大致基于 [Wikipedia的Distinguish模板](https://en.wikipedia.org/wiki/Template%3ADistinguish)。
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

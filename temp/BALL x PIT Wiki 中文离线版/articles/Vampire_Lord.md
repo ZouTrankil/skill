@@ -1,68 +1,68 @@
-# 吸血鬼主（Vampire Lord）
+# 吸血鬼领主（Vampire Lord）
 
 [![Vampire Lord.png](../assets/Vampire_Lord.png)](../files/Vampire_Lord.png.md)
 
-每一次命中可造成3堆流血。 治愈1健康， 并在至少10/10/9堆流血击中敌人时消耗所有堆血。
+每次命中都会施加3层流血。当命中敌人时，如果该敌人的流血层数至少为10/10/9层，则会消耗所有层数，并恢复1点生命值。
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Vampire_Lord) · [修订 4154](https://ballxpit.wiki.gg/index.php?oldid=4154) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 基本信息
 
-##### 由
+### 由……创建
 
-[吸血鬼](Vampire.md) [![Vampire.png](../assets/Vampire.png)](Vampire.md) + ([流血](Bleed.md) [![Bleed.png](../assets/Bleed.png)](Bleed.md) 或是 [黑暗](Dark.md) [![Dark.png](../assets/Dark.png)](Dark.md))
+[吸血鬼](Vampire.md) [![Vampire.png](../assets/Vampire.png)](Vampire.md) + ([流血](Bleed.md) [![Bleed.png](../assets/Bleed.png)](Bleed.md) 或 [黑暗](Dark.md) [![Dark.png](../assets/Dark.png)](Dark.md))
 
-##### 开始的性格
+### 初始角色（Starting Character）
 
 -
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
-[流血](https://ballxpit.wiki.gg/wiki/Status_Effects?action=edit&redlink=1)健康玩者，健康玩者健康，健康玩者，健康玩者，健康玩玩者，健康玩玩者,
+[流血](https://ballxpit.wiki.gg/wiki/Status_Effects?action=edit&redlink=1)，玩家恢复
 
-##### 由于状态影响
+### 由状态效果触发
 
 命中时
 
-#### 发展情况（Evolutions）
+## 进化（Evolutions）
 
-##### 演变为
+### 进化成
 
-[诺斯法拉图](Nosferatu.md) [![Nosferatu.png](../assets/Nosferatu.png)](Nosferatu.md)
+[诺斯费拉图](Nosferatu.md) [![Nosferatu.png](../assets/previews/Nosferatu-25px-a2330b63.png)](Nosferatu.md)
 
-#### 进化配方
+## 进化配方
 
 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |  |
-| [吸血鬼（Vampire）](Vampire.md) [![](../assets/Vampire.png)](Vampire.md) |  |  |  | [流血（Bleed）](Bleed.md) [![](../assets/Bleed.png)](Bleed.md) 或是 [黑暗（Dark）](Dark.md) [![](../assets/Dark.png)](Dark.md) 清除骨院 |  |  |
+| [吸血鬼（Vampire）](Vampire.md) [![](../assets/Vampire.png)](Vampire.md) |  |  |  | [流血（Bleed）](Bleed.md) [![](../assets/Bleed.png)](Bleed.md) 或 [黑暗（Dark）](Dark.md) [![](../assets/Dark.png)](Dark.md)（通关骸骨墓园后解锁） |  |  |
 |  |  |  |  |  |  |  |
-|  |  | [![](../assets/Vampire_Lord.png)](#%E5%90%B8%E8%A1%80%E9%AC%BC%E4%B8%BBvampire-lord)吸血鬼主（Vampire Lord） |  |  |  |  |
+|  |  | [![](../assets/Vampire_Lord.png)](#%E5%90%B8%E8%A1%80%E9%AC%BC%E9%A2%86%E4%B8%BBvampire-lord)吸血鬼领主（Vampire Lord） |  |  |  |  |
 
-#### 关卡
+## 关卡
 
-| 等级 | 伤害 | 影响 |
+| 等级 | 伤害 | 效果 |
 | --- | --- | --- |
-| 1 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2至8.0) | 每次命中都会造成3堆流血，治愈1个健康，并在至少10堆流血击中敌人时消耗所有堆血。 ／ |
-| 2 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2至8.0) | 每次命中都会造成3堆流血，治愈1个健康，并在至少10堆流血击中敌人时消耗所有堆血。 ／ |
-| 3 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2至8.0) | 每一次命中都会造成3堆流血，治愈1个健康，在至少9堆流血击中敌人时消耗所有堆血。 ／ |
+| 1 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2 至 8.0) | 每次命中都会施加3层流血。当命中敌人时，如果该敌人的流血层数至少为10层，则会消耗所有层数，并恢复1点生命值。 |
+| 2 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2 至 8.0) | 每次命中都会施加3层流血。当命中敌人时，如果该敌人的流血层数至少为10层，则会消耗所有层数，并恢复1点生命值。 |
+| 3 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2 至 8.0) | 每次命中都会施加3层流血。当命中敌人时，如果该敌人的流血层数至少为9层，则会消耗所有层数，并恢复1点生命值。 |
 
-#### 发展情况
+## 进化
 
 | 组合 | 进化 |
 | --- | --- |
-| [![Vampire Lord.png](../assets/Vampire_Lord.png)](#%E5%90%B8%E8%A1%80%E9%AC%BC%E4%B8%BBvampire-lord) 吸血鬼主（Vampire Lord） + [蜘蛛女王（Spider Queen）](Spider_Queen.md) [![Spider Queen.png](../assets/Spider_Queen.png)](Spider_Queen.md) + [蚊子王（Mosquito King）](Mosquito_King.md) [![Mosquito King.png](../assets/Mosquito_King.png)](Mosquito_King.md) | [诺斯法拉图（Nosferatu）](Nosferatu.md) [![Nosferatu.png](../assets/Nosferatu.png)](Nosferatu.md) |
+| [![Vampire Lord.png](../assets/Vampire_Lord.png)](#%E5%90%B8%E8%A1%80%E9%AC%BC%E9%A2%86%E4%B8%BBvampire-lord) 吸血鬼领主（Vampire Lord） + [蜘蛛女王（Spider Queen）](Spider_Queen.md) [![Spider Queen.png](../assets/Spider_Queen.png)](Spider_Queen.md) + [蚊王（Mosquito King）](Mosquito_King.md) [![Mosquito King.png](../assets/Mosquito_King.png)](Mosquito_King.md) | [诺斯费拉图（Nosferatu）](Nosferatu.md) [![Nosferatu.png](../assets/Nosferatu.png)](Nosferatu.md) |
 
-#### 策略
+## 策略
 
-#### 更新记录
+## 更新记录
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
 [共享导航](../navigation/nav-63012059ef49.md)
 
-**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

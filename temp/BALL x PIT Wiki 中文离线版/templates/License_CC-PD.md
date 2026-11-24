@@ -2,13 +2,13 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:License%2FCC-PD) · [修订 529](https://ballxpit.wiki.gg/index.php?oldid=529) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板目前看起来像 :
+当前该模板看起来如下：
 
 ![公共领域](../assets/commons--CC-PD.svg)
 
-版权持有者已将其档案公之于众，其版权已经过期，或没有版权资格。这在全世界适用。
+该文件已由版权所有者发布至公共领域，其版权已过期，或不符合版权保护条件。此规定适用于全球范围。
 
-见见 `{{[License](License.md)}}` 持有全许可证证件
+查看 `{{[License](License.md)}}` 如需完整的许可证文档，请查看。
 
 **分类**　[分类 · 许可证模板](../categories/License_templates.md)
 

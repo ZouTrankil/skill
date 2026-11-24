@@ -1,4 +1,4 @@
-# 分类 · 角色迷你喷泉（Character Mini Sprites）
+# 分类 · 角色迷你精灵图（Character Mini Sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Character_Mini_Sprites)
 

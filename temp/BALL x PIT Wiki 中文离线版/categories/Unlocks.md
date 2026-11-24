@@ -1,8 +1,8 @@
-# 分类 · 解锁条件（Unlocks）
+# 分类 · 解锁内容（Unlocks）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Unlocks) · [修订 4268](https://ballxpit.wiki.gg/index.php?oldid=4268) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-可以打开打开的项目 *[球比伦战记](../articles/Ball_x_Pit.md)*.
+在 *[球比伦战记](../articles/Ball_x_Pit.md)*中可以解锁的物品。
 
 **分类成员**
 

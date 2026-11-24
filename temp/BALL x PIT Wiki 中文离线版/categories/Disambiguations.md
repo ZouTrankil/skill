@@ -1,4 +1,4 @@
-# 分类 · 含义不一致（Disambiguations）
+# 分类 · 去歧义化（Disambiguations）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Disambiguations) · [修订 57](https://ballxpit.wiki.gg/index.php?oldid=57) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

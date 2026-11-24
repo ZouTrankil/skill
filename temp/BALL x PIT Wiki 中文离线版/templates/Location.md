@@ -4,15 +4,15 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Location_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Location/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Location/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Location_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Location/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Location/testcases)页面上进行实验。 |
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}位置模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{Location}} 模板并填写相应的字段。空白的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Location
@@ -28,33 +28,33 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 花岛
-
-[![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
-
-岛岛
+## 弗洛拉岛
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-区地图
+岛屿
 
-##### 类型
+[![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-争议
+区域地图
 
-##### 等级（Level）
+### 类型
+
+竞技
+
+### 等级（Level）
 
 1-5
 
-##### 位置
+### 位置
 
-地球地球地球
+地球
 
-##### 居民
+### 居民
 
-腐臭人类、饮蜜蜂
+笨拙的人类，贪饮的蜜蜂
 
 ```
 {{Location

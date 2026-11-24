@@ -1,72 +1,72 @@
-# 蚊子群（Mosquito Swarm）
+# 蚊群（Mosquito Swarm）
 
 [![Mosquito Swarm.png](../assets/Mosquito_Swarm.png)](../files/Mosquito_Swarm.png.md)
 
-爆发成3-6/3-6/4-8蚊子，蚊子攻击随机的敌人，每人处理80-120/100-150/100-150的损伤，如果蚊子杀死敌人，它们会偷走1个健康。
+会爆炸飞出3-6/3-6/4-8只蚊子。蚊子会随机攻击敌人，每次造成80-120/100-150/100-150的伤害。如果蚊子杀死了敌人，它们会窃取1点生命值。
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Mosquito_Swarm) · [修订 4126](https://ballxpit.wiki.gg/index.php?oldid=4126) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 基本信息
 
-##### 由
+### 由……创建
 
-[吸血鬼](Vampire.md) [![Vampire.png](../assets/Vampire.png)](Vampire.md) + [蛋袋](Egg_Sac.md) [![Egg Sac.png](../assets/Egg_Sac.png)](Egg_Sac.md)
+[吸血鬼](Vampire.md) [![Vampire.png](../assets/Vampire.png)](Vampire.md) + [卵囊](Egg_Sac.md) [![Egg Sac.png](../assets/Egg_Sac.png)](Egg_Sac.md)
 
-##### 开始的性格
+### 初始角色（Starting Character）
 
 -
 
-##### 命中效果（On-Hit Effects）
+### 命中效果（On-Hit Effects）
 
-自杀，斯帕恩
+自毁，生成
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
-养蚊、偷盗健康
+生成蚊子，偷取生命值
 
-##### 由于状态影响
+### 由状态效果触发
 
 命中时、生成时
 
-#### 发展情况（Evolutions）
+## 进化（Evolutions）
 
-##### 演变为
+### 进化成
 
-[蚊子王国](Mosquito_Kingdom.md) [![Mosquito Kingdom.png](../assets/Mosquito_Kingdom.png)](Mosquito_Kingdom.md)
+[蚊子王国](Mosquito_Kingdom.md) [![Mosquito Kingdom.png](../assets/previews/Mosquito_Kingdom-25px-26d20c46.png)](Mosquito_Kingdom.md)
 
-#### 进化配方
+## 进化配方
 
 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |  |
-| [吸血鬼（Vampire）](Vampire.md) [![](../assets/Vampire.png)](Vampire.md) |  |  |  | [蛋袋（Egg Sac）](Egg_Sac.md) [![](../assets/Egg_Sac.png)](Egg_Sac.md) |  |  |
+| [吸血鬼（Vampire）](Vampire.md) [![](../assets/Vampire.png)](Vampire.md) |  |  |  | [卵囊（Egg Sac）](Egg_Sac.md) [![](../assets/Egg_Sac.png)](Egg_Sac.md) |  |  |
 |  |  |  |  |  |  |  |
-|  |  | [![](../assets/Mosquito_Swarm.png)](#%E8%9A%8A%E5%AD%90%E7%BE%A4mosquito-swarm)蚊子群（Mosquito Swarm） |  |  |  |  |
+|  |  | [![](../assets/Mosquito_Swarm.png)](#%E8%9A%8A%E7%BE%A4mosquito-swarm)蚊群（Mosquito Swarm） |  |  |  |  |
 
-#### 关卡
+## 关卡
 
-| 等级 | 伤害 | 影响 |
+| 等级 | 伤害 | 效果 |
 | --- | --- | --- |
-| 1 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6至6.8) | 爆裂后产生 3–6 只蚊子。蚊子随机攻击敌人，每只造成 80–120 点伤害。蚊子击杀敌人时窃取 1 点生命值。 ／ |
-| 2 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6至6.8) | 爆发成3-6蚊，蚊虫攻击随机的敌人，每人处理100到150个损伤，如果蚊子杀死敌人，它们会窃取1个健康。 ／ |
-| 3 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6至6.8) | 爆裂后产生 4–8 只蚊子。蚊子随机攻击敌人，每只造成 100–150 点伤害。蚊子击杀敌人时窃取 1 点生命值。 ／ |
+| 1 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6 至 6.8) | 爆裂后产生 3–6 只蚊子。蚊子随机攻击敌人，每只造成 80–120 点伤害。蚊子击杀敌人时窃取 1 点生命值。 |
+| 2 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6 至 6.8) | 会爆裂成3到6只蚊子。蚊子会随机攻击敌人，每只造成100到150点伤害。如果蚊子杀死了敌人，会窃取1点生命值。 |
+| 3 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6 至 6.8) | 爆裂后产生 4–8 只蚊子。蚊子随机攻击敌人，每只造成 100–150 点伤害。蚊子击杀敌人时窃取 1 点生命值。 |
 
-#### 发展情况
+## 进化
 
 | 组合 | 进化 |
 | --- | --- |
-| [![Mosquito Swarm.png](../assets/Mosquito_Swarm.png)](#%E8%9A%8A%E5%AD%90%E7%BE%A4mosquito-swarm) 蚊子群（Mosquito Swarm） + [蚊子王（Mosquito King）](Mosquito_King.md) [![Mosquito King.png](../assets/Mosquito_King.png)](Mosquito_King.md) | [蚊子王国（Mosquito Kingdom）](Mosquito_Kingdom.md) [![Mosquito Kingdom.png](../assets/Mosquito_Kingdom.png)](Mosquito_Kingdom.md) |
+| [![Mosquito Swarm.png](../assets/Mosquito_Swarm.png)](#%E8%9A%8A%E7%BE%A4mosquito-swarm) 蚊群（Mosquito Swarm） + [蚊王（Mosquito King）](Mosquito_King.md) [![Mosquito King.png](../assets/Mosquito_King.png)](Mosquito_King.md) | [蚊子王国（Mosquito Kingdom）](Mosquito_Kingdom.md) [![Mosquito Kingdom.png](../assets/Mosquito_Kingdom.png)](Mosquito_Kingdom.md) |
 
-#### 策略
+## 策略
 
-#### 更新记录
+## 更新记录
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
 [共享导航](../navigation/nav-63012059ef49.md)
 
-**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

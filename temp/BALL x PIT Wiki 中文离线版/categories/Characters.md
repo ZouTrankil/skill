@@ -2,7 +2,7 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Characters) · [修订 3971](https://ballxpit.wiki.gg/index.php?oldid=3971) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-[角色](../articles/Characters.md) 在 *[球比伦战记](../articles/Ball_x_Pit.md)*.
+*[球比伦战记](../articles/Ball_x_Pit.md)*中的[角色](../articles/Characters.md)。
 
 **分类成员**
 

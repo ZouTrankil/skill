@@ -1,4 +1,4 @@
-# 分类 · 成就标志（Achievement Badges）
+# 分类 · 成就徽章（Achievement Badges）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Achievement_Badges)
 

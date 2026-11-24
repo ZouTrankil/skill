@@ -1,57 +1,57 @@
-# 模板 · 名称空间（Namespace）
+# 模板 · 命名空间（Namespace）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Namespace) · [修订 158](https://ballxpit.wiki.gg/index.php?oldid=158) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Namespace_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Namespace/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Namespace/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Namespace_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Namespace/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Namespace/testcases)页面上进行实验。 |
 
-这是。..名称空间元模板。它有助于其他模板检测其页面的类型。
+这是 {{Namespace}} 元模板。它有助于其他模板识别自己所处的页面类型。
 
-它将Fandom使用的所有不同的 [命名空间](https://en.wikipedia.org/wiki/Namespace#Enumeration) 检测和分组为几种类型:
+它检测并归类了Fandom上使用的所有不同的[命名空间](https://en.wikipedia.org/wiki/Namespace#Enumeration)，将其分为几类：
 
 主要
-:   主要(即物品)空间，存放正常物品。
+:   主页空间，用于放置常规文章。
 
-谈谈
-:   任何谈话空间， 包括以“ 演讲: ” 开头的页面名称、 “ 用户演讲: ” “ 发言: ” 、 “ 游戏演讲: ” 等等。
+讨论
+:   任何聊天空间，包括以“Talk:”、“User talk:”、“File talk:”等开头的页面名称。
 
-用户用户
+用户
 
-文件文件
+文件
 
-媒体
+mediawiki
 
 模板
 
-帮助帮助帮助
+帮助
 
-类别
-:   剩余命名空间。
+分类
+:   剩余的命名空间。
 
 其他
-:   未指定为模板参数的任何命名空间(见下文解释)。
+:   任何未作为模板参数指定的命名空间（详见下文说明）。
 
-对于后向兼容性， 此模板处理 **映像** , 好像 **文件** 。 **映像** ([[图像: ] ]) 现在被折旧。
+为了向后兼容，此模板将 **图像** 视为 **文件** 进行处理。**图像**（[[Image:...]]) 现已过时。
 
-**注:** 对于大多数情况，最好使用更简单的命名空间探测模板(见 [另见下文](https://ballxpit.wiki.gg/wiki/Template%3ANamespace#See_also) 节)。这个模板更容易出现人为错误，如拼错参数名称。
+**注意：**在大多数情况下，使用更简单的命名空间检测模板可能更为合适（请参阅下面的[另见](https://ballxpit.wiki.gg/wiki/Template%3ANamespace#See_also)部分）。该模板更容易出现人为错误，例如参数名称拼写错误。
 
-此模板模板使用 [Lua 临时语言](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ALua?action=edit&redlink=1),可以找到更多信息 [全球卢亚模块页面](https://ballxpit.wiki.gg/wiki/W%3Ac%3Adev%3AGlobal_Lua_Modules/Namespace_detect?action=edit&redlink=1). **此模板的传统维基文本版本见 [模板上的名称空间\_ 探测](https://ballxpit.wiki.gg/wiki/W%3Ac%3Atemplates%3ATemplate%3ANamespace_detect?action=edit&redlink=1)**.
+此模板使用 [Lua 模板语言](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ALua?action=edit&redlink=1)，更多相关信息可参见 [全局 Lua 模块页面](https://ballxpit.wiki.gg/wiki/W%3Ac%3Adev%3AGlobal_Lua_Modules/Namespace_detect?action=edit&redlink=1)。**如需此模板的传统 Wikitext 版本，请参阅 [Templates Wiki 上的 Namespace\_detect](https://ballxpit.wiki.gg/wiki/W%3Ac%3Atemplates%3ATemplate%3ANamespace_detect?action=edit&redlink=1)**。
 
 [ ]
 
-#### 目录（Contents）
+## 目录（Contents）
 
-* [1 使用率](#%E4%BD%BF%E7%94%A8%E7%8E%87)
-* [2 空间和页面](#%E7%A9%BA%E9%97%B4%E5%92%8C%E9%A1%B5%E9%9D%A2)
-* [3 参数参数](#%E5%8F%82%E6%95%B0%E5%8F%82%E6%95%B0)
+* [1 使用](#%E4%BD%BF%E7%94%A8)
+* [2 Demospace和页面](#demospace%E5%92%8C%E9%A1%B5%E9%9D%A2)
+* [3 参数](#%E5%8F%82%E6%95%B0)
 * [4 技术细节](#%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82)
 
-#### 使用率
+## 使用
 
-此模板使用上面所列不同页面类型后命名的一个或多个参数。 例如 :
+此模板接受一个或多个名为上述不同页面类型的参数。例如：
 
 ```
 {{Namespace
@@ -61,15 +61,15 @@
 }}
 ```
 
-如果模板在主页(文章)页面上， 它会返回此模板 :
+如果模板位于主页面上，它将返回此内容：
 
-:   条条案文
+:   文章文本
 
-如果模板在文章或谈话页面以外的任何页面上， 它会返回 :
+如果模板位于文章或讨论页以外的其他页面上，它将返回此提示：
 
-:   其他页数
+:   其他页面文本
 
-上述示例使模板返回了所有页面类型的某种内容。 但如果我们不使用 **其它** 参数或将其留空， 它将不会返回其它页面类型的任何内容。 例如 :
+上述示例使模板能够为所有页面类型返回内容。但如果我们不使用 **其他** 参数或将其留空，则其他页面类型将不会返回任何内容。例如：
 
 ```
 {{Namespace
@@ -79,9 +79,9 @@
 }}
 ```
 
-除档案和分类页外，上述代码在任何页面上都无济于事。
+在文件页面和分类页面之外的任何页面上，上述代码将不会显示任何内容。
 
-使用空参数可以使模板无法对特定页面类型产生任何效果。例如 :
+通过使用空参数，你可以让模板对某些特定页面类型不显示任何内容。例如：
 
 ```
 {{Namespace
@@ -90,15 +90,15 @@
 }}
 ```
 
-在主空间(文章)页面上，上述代码将无任何作用，但在其他页面上，则将归还:
+当在主空间（文章）页面时，上述代码将不显示任何内容，但在其他页面时会返回此内容：
 
-:   其他页数
+:   其他页面文本
 
-#### 空间和页面
+## Demospace和页面
 
-为测试和演示目的，该模板可使用两个参数，即 **demospace** 和 **page**。
+出于测试和演示目的，此模板可以接受两个名为 **demospace** 和 **page** 的参数。
 
-**demospace** 理解此模板所使用的任何页面类型名称， 包括 **其它** 类型。 它告诉模板在某特定类型的页面上的行为方式。 例如 :
+**demospace** 理解此模板所使用的任何页面类型名称，包括 **other** 类型。它告诉模板表现得就像它位于某种特定类型的页面上。例如：
 
 ```
 {{Namespace
@@ -108,11 +108,11 @@
 }}
 ```
 
-无论上面的代码使用哪页， 它都会返回:
+无论上述代码用于哪种页面，它都会返回此结果：
 
-:   条条案文
+:   文章文本
 
-**page** 参数取一个普通的页名，使本模板的行为与该页完全相同。页名不必是已有的页。像这样:
+**page**参数可以接受普通的页面名称，使得此模板的行为完全如同在该页面上一样。页面名称不必是现有的页面。例如：
 
 ```
 {{Namespace
@@ -122,11 +122,11 @@
 }}
 ```
 
-无论上面的代码使用哪页， 它都会返回:
+无论上述代码用于哪种页面，它都会返回此结果：
 
-:   用户网页文本
+:   用户页面文本
 
-让您的模板理解 **振动空间** 和/或 **页次** 参数并发送到QQ名称空间模板。像这样:
+让模板理解 **demospace** 和/或 **page** 参数，并将其传递给 {{Namespace}} 模板，这样会非常方便。
 
 ```
 {{Namespace
@@ -137,11 +137,11 @@
 }}
 ```
 
-如果**demospace**和**page**两个参数都是空的或未定义的，模板将照常检测页面类型。
+如果 **demospace** 和 **page** 参数均为空或未定义，模板将像往常一样检测页面类型。
 
-#### 参数参数
+## 参数
 
-全部参数列表 :
+所有参数列表：
 
 ```
 {{Namespace
@@ -155,12 +155,12 @@
 }}
 ```
 
-#### 技术细节
+## 技术细节
 
-如果您打算将表格作为内容反馈到此模板的编号参数， 您需要知道这一点 :
+如果您打算将表格作为内容提供给该模板中的编号参数，您需要了解以下事项：
 
-[模板](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ATemplate?action=edit&redlink=1) 含有管道的处理参数数据存在问题 "`|`除非管子在另一个模板里 `{{name|param1}}` 或管道链接内 `[[w:Help:Template|help]]`。因此模板无法处理 [维基通](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ATable?action=edit&redlink=1) 作为输入输入，除非使用 `{{!}}` [魔法单词](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AMagic_words?action=edit&redlink=1)。这使得很难使用维基字符作为模板的参数。相反，通常的解决方案是使用 HTML 维基马克来表示表格代码，因为表格代码更坚固。
+[模板](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ATemplate?action=edit&redlink=1) 处理包含管道的参数数据时遇到问题。`|`除非管道位于另一个模板内部 `{{name|param1}}` 或位于管道链接内 `[[w:Help:Template|help]]`. 因此，模板无法处理这种情况。 [维基表格](https://ballxpit.wiki.gg/wiki/W%3AHelp%3ATable?action=edit&redlink=1) 作为输入，除非你使用退出功能来避开它们。 `{{!}}` [魔法词](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AMagic_words?action=edit&redlink=1). 这使得将维基表格作为模板参数变得困难。通常的解决方案是使用HTML维基标记来编写表格代码，这种方法更为可靠。
 
-**分类**　[分类 · 一般维基模板](../categories/General_wiki_templates.md)
+**分类**　[分类 · 通用维基模板](../categories/General_wiki_templates.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

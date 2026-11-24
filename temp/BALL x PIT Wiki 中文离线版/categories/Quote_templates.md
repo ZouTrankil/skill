@@ -1,4 +1,4 @@
-# 分类 · 报价模板（Quote templates）
+# 分类 · 引用模板（Quote templates）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Quote_templates) · [修订 9](https://ballxpit.wiki.gg/index.php?oldid=9) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

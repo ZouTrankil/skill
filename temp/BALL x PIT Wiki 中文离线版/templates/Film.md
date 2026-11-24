@@ -4,15 +4,15 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Film_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Film/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Film/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Film_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Film/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Film/testcases)页面上进行实验。 |
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}电影模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{Film}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Film
@@ -34,55 +34,55 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 这是测试
+## 这是一次测试
 
-##### 首开日期
+### 首映日期
 
-这是测试
+这是一次测试
 
-##### 流派
+### 类型
 
-这是测试
+这是一次测试
 
-##### 评分
+### 评分
 
-这是测试
+这是一次测试
 
-##### 运行时间
+### 运行时间
 
-这是测试
+这是一次测试
 
-##### 导演:
+### 导演：
 
-这是测试
+这是一次测试
 
-##### 撰写人
+### 由作者撰写
 
-这是测试
+这是一次测试
 
-##### 音乐由
+### 音乐由
 
-这是测试
+这是一次测试
 
-##### 由
+### 由……制作
 
-这是测试
+这是一次测试
 
-##### 预算
+### 预算
 
-这是测试
+这是一次测试
 
-##### 信箱办公室
+### 票房
 
-这是测试
+这是一次测试
 
 系列
 
-| 上一个 | 下一个 |
+| ← 之前 | 下一页 → |
 | --- | --- |
-| 这是测试 | 这是测试 |
+| 这是一次测试 | 这是一次测试 |
 
 ```
 {{Film

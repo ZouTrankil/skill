@@ -1,81 +1,83 @@
 # 自笞者（The Flagellant）
 
-[![The Flagellant.png](../assets/The_Flagellant.png)](../files/The_Flagellant.png.md) ![The Flagellant mini.png](../assets/The_Flagellant_mini.png)
-
-只是你的平均旗手。
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/The_Flagellant) · [修订 4335](https://ballxpit.wiki.gg/index.php?oldid=4335) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 鞭笞者 ![The Flagellant mini.png](../assets/previews/The_Flagellant_mini-34px-61a72783.png)
 
-##### 圆球（Ball）
+[![The Flagellant.png](../assets/The_Flagellant.png)](../files/The_Flagellant.png.md)
 
-[蛋袋](Egg_Sac.md) [![Egg Sac.png](../assets/Egg_Sac.png)](Egg_Sac.md)
+你不过是个普通的苦修者罢了。
 
-##### 解锁
+## 基本信息
 
-建筑物 [修道院](Monastery.md) [![Buildings Monastery Level1.png](../assets/Buildings_Monastery_Level1.png)](Monastery.md)
+### 圆球（Ball）
 
-##### 能力
+[卵囊](Egg_Sac.md) [![Egg Sac.png](../assets/previews/Egg_Sac-25px-cebed9b9.png)](Egg_Sac.md)
 
-球通常从屏幕底部跳出。
+### 解锁
 
-**自笞者** 是一个可玩的 [性格](Characters.md) 在基本游戏版本中推出了 *[球比伦战记](Ball_x_Pit.md)*它们通过构建 [修道院](Monastery.md) [![Buildings Monastery Level1.png](../assets/Buildings_Monastery_Level1.png)](Monastery.md) 据报道, [血腥草原](The_GORYxGRASSLANDS.md) [![The GORYxGRASSLANDS.png](../assets/The_GORYxGRASSLANDS.png)](The_GORYxGRASSLANDS.md) 他们的起始球是 [蛋袋](Egg_Sac.md) [![Egg Sac.png](../assets/Egg_Sac.png)](Egg_Sac.md).
+建造 [修道院](Monastery.md) [![Buildings Monastery Level1.png](../assets/previews/Buildings_Monastery_Level1-25px-f832d71e.png)](Monastery.md)
 
-#### 能力的机械
+### 能力
 
-当玩法时，球会像其他墙一样从屏幕底部跳出，而不是回到玩家身上。
+球会正常从屏幕底部反弹。
 
-#### 策略
+**自笞者** 是 *[球比伦战记](Ball_x_Pit.md)* 基础游戏中就包含的一名可玩的 [角色](Characters.md)。建造 [修道院](Monastery.md) [![Buildings Monastery Level1.png](../assets/previews/Buildings_Monastery_Level1-25px-f832d71e.png)](Monastery.md) 即可解锁，其蓝图位于 [血腥草原](The_GORYxGRASSLANDS.md) [![The GORYxGRASSLANDS.png](../assets/previews/The_GORYxGRASSLANDS-25px-ac398f91.png)](The_GORYxGRASSLANDS.md)。起始圆球为 [卵囊](Egg_Sac.md) [![Egg Sac.png](../assets/previews/Egg_Sac-25px-cebed9b9.png)](Egg_Sac.md)。
 
-* 由于球不会再回到玩家的后面墙上，所以理论上它们可以保持无限，只要玩家没有手动抓住它们。 [闪烁（Flicker）](Flicker.md) [![Flicker.png](../assets/Flicker.png)](Flicker.md) 由于他们欣赏了空气时间的增加。
+## 能力机制
 
-#### [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/Buildings_Matchmaker_Level1.png)](Matchmaker.md)
+当扮演鞭笞者时，球会像反弹到其他墙壁一样从屏幕底部反弹，而不会返回到玩家身上。
 
-##### 很好。
+## 策略
 
-##### 坏的
+* 由于球在撞到后墙后不再返回玩家手中，因此只要玩家不手动接住它们，理论上它们就可以无限地留在空中。当这些球在飞行过程中触发如 [闪烁](Flicker.md) [![Flicker.png](../assets/previews/Flicker-25px-f3081e12.png)](Flicker.md) 这样的效果时，这一特性就变得非常强大了，因为它们能享受更长的空中停留时间。
 
-##### 不兼容
+## [匹配机](Matchmaker.md) 配对 [![Buildings Matchmaker Level1.png](../assets/previews/Buildings_Matchmaker_Level1-25px-79b5d151.png)](Matchmaker.md)
 
-* [忏悔者（The Repentant）](The_Repentant.md) [![The Repentant.png](../assets/The_Repentant.png)](The_Repentant.md)
-* [持盾者（The Shieldbearer）](The_Shieldbearer.md) [![The Shieldbearer.png](../assets/The_Shieldbearer.png)](The_Shieldbearer.md)
-* [物理学家（The Physicist）](The_Physicist.md) [![The Physicist.png](../assets/The_Physicist.png)](The_Physicist.md)
-* [掘地者（The Tunneller）](The_Tunneller.md) [![The Tunneller.png](../assets/The_Tunneller.png)](The_Tunneller.md)
-* [战术家（The Tactician）](The_Tactician.md) [![The Tactician.png](../assets/The_Tactician.png)](The_Tactician.md)
-* [File:The Recollector.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Recollector.png) [记忆者](https://ballxpit.wiki.gg/wiki/The_Recollector?action=edit&redlink=1)
+### 好
 
-#### 基本数据
+### 坏
+
+### 不兼容
+
+* [忏悔者](The_Repentant.md) [![The Repentant.png](../assets/previews/The_Repentant-25px-b316ac00.png)](The_Repentant.md)
+* [持盾者](The_Shieldbearer.md) [![The Shieldbearer.png](../assets/previews/The_Shieldbearer-25px-d0846fc7.png)](The_Shieldbearer.md)
+* [物理学家](The_Physicist.md) [![The Physicist.png](../assets/previews/The_Physicist-25px-fc1fdedb.png)](The_Physicist.md)
+* [掘地者](The_Tunneller.md) [![The Tunneller.png](../assets/previews/The_Tunneller-25px-e4e9f940.png)](The_Tunneller.md)
+* [战术家](The_Tactician.md) [![The Tactician.png](../assets/previews/The_Tactician-25px-ec68bac9.png)](The_Tactician.md)
+* [文件：The Recollector.png](https://ballxpit.wiki.gg/wiki/Special%3AUpload?wpDestFile=The_Recollector.png) [回忆者](https://ballxpit.wiki.gg/wiki/The_Recollector?action=edit&redlink=1)
+
+## 基础属性
 
 | 属性 | 属性 |
 | --- | --- |
-| [![Endurance.png](../assets/Endurance.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | - 什么意思? |
-| [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基地损坏? |
-| [![Leadership.png](../assets/Leadership.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 宝贝球计数?；婴儿球损伤? |
-| [![Speed.png](../assets/Speed.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速?；移动速度? |
-| [![Dexterity.png](../assets/Dexterity.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 关键机会?；发生火灾率? |
-| [![Intelligence.png](../assets/Intelligence.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 公司发动力?；状态效应功率 - ?；动力? |
+| [![Endurance.png](../assets/previews/Endurance-18px-3606b187.png)](https://ballxpit.wiki.gg/wiki/Endurance) 耐力 | 生命值未知 |
+| [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) 力量 | 基础伤害 - ? |
+| [![Leadership.png](../assets/previews/Leadership-18px-002d5b4c.png)](https://ballxpit.wiki.gg/wiki/Leadership) 领导力 | 小球数量 - ?；小球伤害 - ? |
+| [![Speed.png](../assets/previews/Speed-18px-606bbc5b.png)](https://ballxpit.wiki.gg/wiki/Speed) 速度 | 球速 - ?；移动速度 - ? |
+| [![Dexterity.png](../assets/previews/Dexterity-18px-7cca380e.png)](https://ballxpit.wiki.gg/wiki/Dexterity) 敏捷 | 暴击率 - ?；发射频率 - ? |
+| [![Intelligence.png](../assets/previews/Intelligence-18px-41c39e56.png)](https://ballxpit.wiki.gg/wiki/Intelligence) 智力 | 范围效果强度 – 待确认；状态效果强度 - ?；被动效果强度 – 待确认 |
 
-#### 性格水平的进步
+## 角色等级进展
 
-[性格升级奖励](Character_Level_Mechanics.md)
+[角色等级提升奖励](Character_Level_Mechanics.md)
 
-| 性格水平 | 总经验值 | 提高奖励水平 | 选择 |
+| 角色等级 | 总经验值 | 升级奖励 | 选择项 |
 | --- | --- | --- | --- |
 | TBA | TBA | TBA | TBA |
 
-#### 冷知识
+## 冷知识
 
-* "鞭子"是鞭打自己或他人的人，通常是宗教悔改的形式。
+* “鞭笞者”是指那些自残或鞭打他人的人，通常是一种宗教赎罪的方式。
 
-#### 图片库
+## 图片库
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/The_Flagellant?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/The_Flagellant?action=edit).*
 
 [共享导航](../navigation/nav-334e23d2914f.md)
 
-**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 有破损文件链接的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 坚力](../categories/Stubs.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 角色](../categories/Characters.md) · [分类 · 文件链接失效的页面](../categories/Pages_with_broken_file_links.md) · [分类 · 待完善](../categories/Stubs.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

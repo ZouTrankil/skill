@@ -8,11 +8,11 @@
 
 **分类成员**
 
-- [分类 · 标志（Logos）](Logos.md)
-- [分类 · 促销图片（Promotional images）](Promotional_images.md)
+- [分类 · Logos](Logos.md)
+- [分类 · 宣传图片（Promotional images）](Promotional_images.md)
 - [分类 · 截图（Screenshots）](Screenshots.md)
-- [分类 · 没有归类的文件（Unattributed files）](Unattributed_files.md)
-- [分类 · 维基皮肤图像（Wiki skin images）](Wiki_skin_images.md)
+- [分类 · 未归属文件（Unattributed files）](Unattributed_files.md)
+- [分类 · Wiki外观图片（Wiki skin images）](Wiki_skin_images.md)
 - [Example.jpg](../files/Example.jpg.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

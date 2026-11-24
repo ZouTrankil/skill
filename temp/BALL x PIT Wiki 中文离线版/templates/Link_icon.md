@@ -4,27 +4,27 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Link_icon_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Link_icon/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Link_icon/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Link_icon_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Link_icon/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Link_icon/testcases)页面上进行实验。 |
 
-![](../assets/commons--Warning-red.svg)
+![](../assets/previews/commons--Warning-red-48px-69a5013e.png)
 
-不要直接从任何内容页面上调用这个模板!
+不要直接从任何内容页面调用此模板！
 
-此模板打算在另一个模板内使用。 然后该模板可以用于内容页面。
+此模板适用于在其他模板中使用。然后，该模板可依次用于内容页面。
 
-#### 链接图标模板列表
+## 链接图标模板列表
 
 * `{{[Character icon](Character_icon.md)}}`
 * `{{[Item icon](Item_icon.md)}}`
 
-#### 依赖性
+## 依赖项
 
-此模板要正常工作， 您需要以下信息:
+为了让此模板正常工作，您需要以下内容：
 
-* 其他 `.link-icon` 和任何相关类别，见 [MediaWiki:Common.css](../site/MediaWiki_Common.css.md).
+* `.link-icon` 类及其相关类，位于 [MediaWiki:Common.css](../site/MediaWiki_Common.css.md).
 
-**分类**　[分类 · 格式化模板](../categories/Formatting_templates.md)
+**分类**　[分类 · 模板格式化](../categories/Formatting_templates.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

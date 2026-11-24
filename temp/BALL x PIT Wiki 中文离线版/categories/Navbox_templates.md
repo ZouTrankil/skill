@@ -1,4 +1,4 @@
-# 分类 · Navbox 模板（Navbox templates）
+# 分类 · 导航框模板（Navbox templates）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Navbox_templates) · [修订 389](https://ballxpit.wiki.gg/index.php?oldid=389) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
@@ -13,7 +13,7 @@
 - [模板 · 角色（Characters）](../templates/Characters.md)
 - [模板 · 敌人（Enemies）](../templates/Enemies.md)
 - [模板 · 关卡（Levels）](../templates/Levels.md)
-- [模板 · 航行箱（Navbox）](../templates/Navbox.md)
+- [模板 · 导航框（Navbox）](../templates/Navbox.md)
 - [模板 · 被动道具（Passives）](../templates/Passives.md)
 - [模板 · 资源（Resources）](../templates/Resources.md)
 

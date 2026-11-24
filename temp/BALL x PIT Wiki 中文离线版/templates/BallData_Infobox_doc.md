@@ -1,63 +1,63 @@
-# 模板 · 球数据/信息箱/doc（BallData/Infobox/doc）
+# 模板 · 球数据/信息框/文档（BallData/Infobox/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:BallData%2FInfobox%2Fdoc) · [修订 4023](https://ballxpit.wiki.gg/index.php?oldid=4023) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-圆柱文章信息框。 建在 [便携式信息框](https://mediawiki.org/wiki/Extension%3APortableInfobox) 上。
+球类物品信息框。基于 [PortableInfobox](https://mediawiki.org/wiki/Extension%3APortableInfobox) 构建。
 
-#### 职位安排
+## 放置方式
 
-**从未被手牵过** {{[球数据](BallData.md)过滤并传递它已经储存的参数的每一个值， 因此信息箱不需任何货物查询。
+**从未手动放置过。** {{[BallData](BallData.md)}} 会跳过它，并将参数中已存储的所有值传递过去，因此信息框不会消耗任何Cargo 查询。
 
-这是 QQ 的子页[球数据](BallData.md)}}，表示它仅供该页面使用。请在条目的 {{ 中编辑数值。[球数据](BallData.md)打个电话
+这是{{[BallData](BallData.md)}}的子页面，旨在将其设为私有。请编辑文章中的{{[BallData](BallData.md)}}调用值。
 
-#### 参数参数
+## 参数
 
-由 {{ 提供[球数据](BallData.md),在这里列出只是为了显示信息框使用的内容。
+由 {{[BallData](BallData.md)}} 提供，此处列出仅用于展示信息框中使用的内容。
 
-| 参数 | 调自 |
+| 参数 | 从 |
 | --- | --- |
 | `description` | `summary` |
-| `characters` | `starting_characters`的图标链接 [模块:BallData](../site/Module_BallData.md)然而，仍然有许多——没有固定的空位——没有固定的空位。 然而，仍然有许多——没有固定的空位。 |
-| `characters_label` | 或"魅力人" 或"魅力人" |
+| `characters` | `starting_characters`，以图标链接的形式呈现 [Module:BallData](../site/Module_BallData.md). 无论有多少——都没有固定的位置。 |
+| `characters_label` | “角色”或“角色”，按数量统计 |
 | `unlocking` | `unlock_condition` |
-| `onhit`、 `triggers`、 `status` | 三效果字段 |
-| `evolutions` | a 查询——每个配方包括此球的球 |
-| `name`、 `image` | 可选; 默认页面名称和 `PageName.png` |
+| `onhit`、 `triggers`、 `status` | 三个效果领域 |
+| `evolutions` | 一个查询——任何配方中包含此成分的球 |
+| `name`、 `image` | 可选；默认使用页面名称。 `PageName.png` |
 
-#### 示例
+## 示例
 
-Bleed 的信息箱， 值为 QQ[球数据](BallData.md)会通过。
+流血的信息框，包含值 {{[BallData](BallData.md)}} 将会传递。
 
-#### 流血（Bleed）
+## 流血（Bleed）
 
-#### 一般信息
+## 基本信息
 
-##### 开始的角色
+### 初始角色（Starting Characters）
 
-[战士](../articles/The_Warrior.md) [![The Warrior.png](../assets/The_Warrior.png)](../articles/The_Warrior.md)
-[伪救世主](../articles/The_False_Messiah.md) [![The False Messiah.png](../assets/The_False_Messiah.png)](../articles/The_False_Messiah.md)
+[战士](../articles/The_Warrior.md) [![The Warrior.png](../assets/previews/The_Warrior-25px-94d3a92b.png)](../articles/The_Warrior.md)
+[伪救世主](../articles/The_False_Messiah.md) [![The False Messiah.png](../assets/previews/The_False_Messiah-25px-a9c0c9f7.png)](../articles/The_False_Messiah.md)
 
-##### 解锁
+### 解锁
 
 默认解锁
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
 [流血](https://ballxpit.wiki.gg/wiki/Status_Effects?action=edit&redlink=1)
 
-##### 由于状态影响
+### 由状态效果触发
 
 命中时
 
-#### 发展情况（Evolutions）
+## 进化（Evolutions）
 
-##### 演变为
+### 进化成
 
-[贝尔塞克](../articles/Berserk.md) [![Berserk.png](../assets/Berserk.png)](../articles/Berserk.md)
-[输血](../articles/Hemorrhage.md) [![Hemorrhage.png](../assets/Hemorrhage.png)](../articles/Hemorrhage.md)
-[李克](../articles/Leech.md) [![Leech.png](../assets/Leech.png)](../articles/Leech.md)
-[牺牲](../articles/Sacrifice.md) [![Sacrifice.png](../assets/Sacrifice.png)](../articles/Sacrifice.md)
-[吸血鬼主](../articles/Vampire_Lord.md) [![Vampire Lord.png](../assets/Vampire_Lord.png)](../articles/Vampire_Lord.md)
+[狂暴](../articles/Berserk.md) [![Berserk.png](../assets/Berserk.png)](../articles/Berserk.md)
+[大出血](../articles/Hemorrhage.md) [![Hemorrhage.png](../assets/Hemorrhage.png)](../articles/Hemorrhage.md)
+[水蛭](../articles/Leech.md) [![Leech.png](../assets/Leech.png)](../articles/Leech.md)
+[献祭](../articles/Sacrifice.md) [![Sacrifice.png](../assets/Sacrifice.png)](../articles/Sacrifice.md)
+[吸血鬼领主](../articles/Vampire_Lord.md) [![Vampire Lord.png](../assets/Vampire_Lord.png)](../articles/Vampire_Lord.md)
 
 ```
 {{BallData/Infobox
@@ -72,19 +72,18 @@ Bleed 的信息箱， 值为 QQ[球数据](BallData.md)会通过。
 }}
 ```
 
-在你写的文章上,[球数据](BallData.md)填满每个字段,
-`evolutions` 来源于查询而不是被输入。
+在真实的文章里，不会出现这些内容——{{[球数据](BallData.md)}} 填充了每一个字段，并且
+`evolutions` 不是通过输入文字，而是通过查询得到的。
 
-#### 备注
+## 备注
 
-* 在此注意到图像丢失吗 ? 它是由 \_ pageName 参数生成的。 如果此信息框被放在 [https://ballxpit.wiki.gg/wiki/Bleed](../articles/Bleed.md) 页面上， 那么
+* 发现这里图片缺失了吗？这是由 \_pageName 参数生成的。如果此信息框位于 [https://ballxpit.wiki.gg/wiki/Bleed](../articles/Bleed.md) 页面上，那么
 
-[![Bleed.png](../assets/Bleed.png)](../files/Bleed.png.md)
-仅显示在一般信息部分上方。
+[![Bleed.png](../assets/Bleed.png)](../files/Bleed.png.md) 将出现在“General information”部分的正上方。
 
-* 其他 `evolutions` 从不键入行。 烧灼是十个球的成分， 并且没有列出其中任何一个; 添加一个第十一进化的球， 自动更新 Burn 的信息箱。
-* `type="Ball"` 在 XML 中, XML 是便携式信息框主题键，而不是页面名称。它会保留 `Ball`.
-* 类别来自 QQ[球数据](BallData.md)*,以 `ball_class` -不是从这里
+* `evolutions` row 从未被输入过。Burn 是十个球中的一种成分，它不指定任何球名；添加第十一颗进化球时，Burn 的信息框会自动更新。
+* `type="Ball"` 在 XML 中是指 PortableInfobox 主题键，而不是页面名称。它保持不变。 `Ball`.
+* 类别来自{{[球数据](BallData.md)}}, 以...为关键 `ball_class` — 不是来自这里。
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

@@ -2,66 +2,66 @@
 
 [![Buildings Market Level1.png](../assets/Buildings_Market_Level1.png)](../files/Buildings_Market_Level1.png.md)
 
-释放了交易黄金的能力。
+解锁用金币兑换其他资源的功能。
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Market) · [修订 4281](https://ballxpit.wiki.gg/index.php?oldid=4281) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+## 信息（Information）
 
-##### 分类（Category）
+### 分类（Category）
 
 经济
 
-##### 子类（Subcategory）
+### 子类（Subcategory）
 
-多种类型
+其他信息
 
-##### 蓝图位置（Blueprint location）
+### 蓝图位置（Blueprint location）
 
-[边境沙漠](The_LIMINALxDESERT.md) [![The LIMINALxDESERT.png](../assets/The_LIMINALxDESERT.png)](The_LIMINALxDESERT.md)
+[边境沙漠](The_LIMINALxDESERT.md) [![The LIMINALxDESERT.png](../assets/previews/The_LIMINALxDESERT-25px-2fd67388.png)](The_LIMINALxDESERT.md)
 
-##### 基础资源消耗（Base resource cost）
+### 基础资源消耗（Base resource cost）
 
-[![Gold.png](../assets/Gold.png)](Gold.md) 500
+[![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 500
 
-##### 建造点消耗（Build point cost）
+### 建造点消耗（Build point cost）
 
 5
 
-待补充条目
+待完善
 
-*这是一个 [待补充条目](../categories/Stubs.md)你可以帮助BALL xPIT Wiki通过 [补充此条目](https://ballxpit.wiki.gg/wiki/Market?action=edit).*
+*此条目为 [待完善](../categories/Stubs.md). 你可以通过帮助 BALL x PIT 维基贡献一份力量。 [补充内容](https://ballxpit.wiki.gg/wiki/Market?action=edit).*
 
-其他 **市场** 是一个多元经济 [建筑物](Buildings.md) 在 *[球比伦战记](Ball_x_Pit.md)*一旦建成，进入市场可以让你买卖 [![Wheat.png](../assets/Wheat.png)](Wheat.md) 麦子, [![Wood.png](../assets/Wood.png)](Wood.md) 树木和 [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 石头以换取 [![Gold.png](../assets/Gold.png)](Gold.md) 黄金:购买和销售资源将分别增加和减少购买黄金所需的黄金量，通过建筑升级，这些增长和下降的速度以及基汇率可以得到改善。
+**市场**是*[《球比伦战记》](Ball_x_Pit.md)*中的经济类[建筑](Buildings.md)。建成后，可在市场用金币[![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md)买卖小麦[![Wheat.png](../assets/previews/Wheat-21px-e2038ac5.png)](Wheat.md)、木材[![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md)和石材[![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md)。买入一种资源会抬高它之后的买入价，卖出会压低买入价。升级市场可改善基础兑换价和交易产生的价格涨跌幅度。
 
 被动效果与升级
 
-| 等级 | 图片 | 描述 | 资源消耗 | 建造点消耗 | 拆除 | 基本汇率 | 购买/出售单位的成本变化 |
+| 等级 | 图片 | 说明 | 资源消耗 | 建造点消耗 | 拆除 | 基础汇率 | 每购买/出售单位的价格变动 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [![Buildings Market Level1.png](../assets/Buildings_Market_Level1.png)](../files/Buildings_Market_Level1.png.md) | 释放了交换黄金的能力 | [![Gold.png](../assets/Gold.png)](Gold.md) 500 | 5 | [![Gold.png](../assets/Gold.png)](Gold.md) 500 | ? | ? |
-| 2 | [![Buildings Market Level2.png](../assets/Buildings_Market_Level2.png)](../files/Buildings_Market_Level2.png.md) | 释放了交换黄金的能力 改善汇率 | [![Gold.png](../assets/Gold.png)](Gold.md) 500 | 5 | [![Gold.png](../assets/Gold.png)](Gold.md) 1,000 | ? | ? |
-| 3 | [![Buildings Market Level3.png](../assets/Buildings_Market_Level3.png)](../files/Buildings_Market_Level3.png.md) | 释放了交换黄金的能力 改善汇率 | [![Gold.png](../assets/Gold.png)](Gold.md) 750 | 15 | [![Gold.png](../assets/Gold.png)](Gold.md) 1,750 | ? | ? |
+| 1 | [![Buildings Market Level1.png](../assets/Buildings_Market_Level1.png)](../files/Buildings_Market_Level1.png.md) | 解锁用金币兑换其他资源的功能 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 500 | 5 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 500 | ? | ? |
+| 2 | [![Buildings Market Level2.png](../assets/Buildings_Market_Level2.png)](../files/Buildings_Market_Level2.png.md) | 解锁用金币兑换其他资源的功能 提高汇率 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 500 | 5 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 1,000 | ? | ? |
+| 3 | [![Buildings Market Level3.png](../assets/Buildings_Market_Level3.png)](../files/Buildings_Market_Level3.png.md) | 解锁用金币兑换其他资源的功能 提高汇率 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 750 | 15 | [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md) 1,750 | ? | ? |
 
-#### 市场机械
+## 市场机制
 
-{?要做:更深入地确定，衍生基本汇率}
-每种资源可以按 1、5、10、25、100、500、1,000、2,500 或 10,000 单位成批购买或出售，交易规模会按比例影响后续买入价格。各资源的起始价格如下：
- [![Wheat.png](../assets/Wheat.png)](Wheat.md) 小麦=18买/4卖
- [![Wood.png](../assets/Wood.png)](Wood.md) 木材 = 45买/10卖
- [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 石头=180买/40卖
-销售价格不能低于1个资源。
-售价随着时间的推移/每轮之后的增长。 价格可能是十分数，但只有购买一次性卖出足够的东西时才会看到这一点。
-购买最多需要的资源是最佳的，因为每个单位的价格是固定的，并且每次交易后才会调整。
-销售一次性消耗最大的资源是最佳的，因为每个单位的价格是固定的，并且只会在每个交易后调整。
-销售1个单位似乎不经常调整价格,
-交易前和交易后的价格数据
- 测试:
-以每块10块售出25块木材，给250块黄金，并将价格降低到每块7.5块。
+待补充：深入测试并推算基础兑换价。
+ 每次可以买卖 1、5、10、25、100、500、1,000、2,500 或 10,000 单位的同种资源。交易的数量会按比例影响之后的买入价。资源的初始单价如下。
+ 小麦[![Wheat.png](../assets/previews/Wheat-21px-e2038ac5.png)](Wheat.md)，买入 18，卖出 4。
+ 木材[![Wood.png](../assets/previews/Wood-23px-0e6cb6c3.png)](Wood.md)，买入 45，卖出 10。
+ 石材[![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md)，买入 180，卖出 40。
+ 每单位资源的卖出价最低为 1。
+ 卖出价随时间推移或每轮结束而上涨。价格可以有小数，交易量足够大时才看得出来。
+ 买入所需资源时，一笔交易买足最划算，单价会在交易结束后调整。
+ 卖出多余资源时也是如此，尽量一次卖出。
+ 卖出 1 单位通常看不出价格变化，重复多次后可能会变。
+ 待补充：采集交易前后的价格。
+ 测试记录
+ 以每单位 10 金币卖出 25 木材，获得 250 金币，之后的卖出价降至每单位 7.5 金币。
 
-销售价格的降低率似乎不是线性的，所以也许像销售价格 = 圆到0.5 ((初始销售价格\_木/销售\_木)
+ 卖出价的降幅似乎并非线性。可能的公式为：卖出价 = 木材初始卖出价 ÷ 已卖木材量，结果按 0.5 取整。
 
 [共享导航](../navigation/nav-d4956b01aa56.md)
 
-**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 经济](../categories/Economy.md) · [分类 · 多种类型](../categories/Miscellaneous.md) · [分类 · 坚力](../categories/Stubs.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 经济](../categories/Economy.md) · [分类 · 其他信息](../categories/Miscellaneous.md) · [分类 · 待完善](../categories/Stubs.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

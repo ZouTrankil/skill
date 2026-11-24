@@ -1,4 +1,4 @@
-# 分类 · 维基皮肤图像（Wiki skin images）
+# 分类 · Wiki外观图片（Wiki skin images）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Wiki_skin_images) · [修订 300](https://ballxpit.wiki.gg/index.php?oldid=300) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

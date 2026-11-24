@@ -1,10 +1,10 @@
-# 分类 · 逃脱字符模板（Escaped character templates）
+# 分类 · 转义字符模板（Escaped character templates）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Category:Escaped_character_templates) · [修订 598](https://ballxpit.wiki.gg/index.php?oldid=598) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
 此页面的源修订无独立可见正文。
 
-**分类**　[分类 · 格式化模板](Formatting_templates.md)
+**分类**　[分类 · 模板格式化](Formatting_templates.md)
 
 **分类成员**
 

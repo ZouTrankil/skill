@@ -1,10 +1,10 @@
-# 模板 · 截图/doc（Trim/doc）
+# 模板 · 修剪/文档（Trim/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Trim%2Fdoc) · [修订 331](https://ballxpit.wiki.gg/index.php?oldid=331) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-描述
+说明
 
-此模板从所提供值的开始和结尾处修剪空格。 它使用简单的黑客过滤它的方式工作 `#if` 解析函数。
+此模板会去除提供值首尾的空白字符。其工作原理是通过简单的过滤操作来实现。 `#if` 解析器函数。
 
 语法
 

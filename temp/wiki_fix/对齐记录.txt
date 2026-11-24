@@ -1,0 +1,120 @@
+   62  分类 · 残局 → 分类 · 待完善
+   20  分类 · 将军 → 分类 · 通用
+   12  冻灼 → 霜灼
+    9  未完成条目 → 待完善
+    6  冻结射线 → 冰冻射线
+    4  分类 · 球精灵图 → 分类 · 圆球精灵图
+    4  分类 · 角色图像 → 分类 · 角色精灵图
+    3  构筑 ／ 积分 → 建造点
+    3  分类 · 未完成条目（Stubs） → 分类 · 待完善（Stubs）
+    2  分类 · 删除内容 → 分类 · 删减内容
+    2  分类 · 敌人角色图像 → 分类 · 敌人精灵图
+
+修改文件数 107
+articles/Abbey.md
+articles/Adventurer_s_Guild.md
+articles/Ancient_Warg.md
+articles/Antique_Shop.md
+articles/Attributes.md
+articles/Bag_Maker_Building.md
+articles/Ball_x_Pit.md
+articles/Ballbylon.md
+articles/Balls.md
+articles/Bank.md
+articles/Bone_Ballista.md
+articles/Buildings.md
+articles/Candle_Maker.md
+articles/Carpenter_Building.md
+articles/Casino.md
+articles/Character_Level_Mechanics.md
+articles/Cordyceps_Queen.md
+articles/Damage.md
+articles/Dragon_Prince.md
+articles/Elder_Boomshroom.md
+articles/Evolution_Chamber_Building.md
+articles/Exorcist.md
+articles/Flamespitter.md
+articles/Freeze_Ray.md
+articles/Frozen_Flame.md
+articles/Gambler_s_Den.md
+articles/Game_Updates.md
+articles/Gemsmith.md
+articles/Goblin_Sniper.md
+articles/Goblin_Warlord.md
+articles/Gold.md
+articles/Great_Grub_Cluster.md
+articles/Great_Sentinel.md
+articles/Icebound_Champion.md
+articles/Icebound_Howler.md
+articles/Icebound_Queen.md
+articles/Jeweler.md
+articles/Lord_of_Owls.md
+articles/Magnet_Factory.md
+articles/Market.md
+articles/Marksman_s_Guild.md
+articles/Matchmaker.md
+articles/Meditation_Tent.md
+articles/Moonkin.md
+articles/Moonkin_Geode.md
+articles/Necromancer.md
+articles/Relic_Collector_Building.md
+articles/Resources.md
+articles/Restless_One.md
+articles/Sabertooth.md
+articles/Seething_Locust.md
+articles/Shroom_Swarm.md
+articles/Skeletal_Brigade.md
+articles/Skeleton_King.md
+articles/Stone_resource.md
+articles/The_Ballbearer.md
+articles/The_Carouser.md
+articles/The_Cogitator.md
+articles/The_Cohabitants.md
+articles/The_Embedded.md
+articles/The_Empty_Nester.md
+articles/The_Falconer.md
+articles/The_False_Messiah.md
+articles/The_Flagellant.md
+articles/The_Hoary_Hoarder.md
+articles/The_Itchy_Finger.md
+articles/The_Juggler.md
+articles/The_Makeshift_Sisyphus.md
+articles/The_Moon.md
+articles/The_Physicist.md
+articles/The_Radical.md
+articles/The_Repentant.md
+articles/The_Shade.md
+articles/The_Shieldbearer.md
+articles/The_Spendthrift.md
+articles/The_Tactician.md
+articles/The_Tiptoer.md
+articles/The_Tunneller.md
+articles/The_Warrior.md
+articles/Twisted_Serpent.md
+articles/Wagon_Factory.md
+articles/War_Room.md
+articles/Warrior_s_Guild.md
+articles/Wheat.md
+articles/Wishing_Well.md
+articles/Wizened_Snatcher.md
+articles/Wood.md
+categories/Ball_sprites.md
+categories/Character_sprites.md
+categories/Cut_Content.md
+categories/Enemy_sprites.md
+categories/Maintenance.md
+categories/Sprites.md
+categories/Stubs.md
+categories/目录.md
+templates/Ambox.md
+templates/Ambox_doc.md
+templates/Cleanup.md
+templates/Merge.md
+templates/Move.md
+templates/No_direct_use.md
+templates/Split.md
+templates/Spoiler_warning.md
+templates/Uses_Lua.md
+data/BallStatsByLevel.md
+data/Balls.md
+navigation/重定向.md

@@ -1,4 +1,4 @@
-# 过度增长（Overgrowth）
+# 疯长（Overgrowth）
 
 [![Overgrowth.png](../assets/Overgrowth.png)](../files/Overgrowth.png.md)
 
@@ -6,55 +6,55 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Overgrowth) · [修订 4131](https://ballxpit.wiki.gg/index.php?oldid=4131) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 基本信息
 
-##### 由
+### 由……创建
 
 [地震](Earthquake.md) [![Earthquake.png](../assets/Earthquake.png)](Earthquake.md) + [细胞](Cell.md) [![Cell.png](../assets/Cell.png)](Cell.md)
 
-##### 开始的性格
+### 初始角色（Starting Character）
 
 -
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
-[过度增长](https://ballxpit.wiki.gg/wiki/Status_Effects?action=edit&redlink=1)
+[疯长](https://ballxpit.wiki.gg/wiki/Status_Effects?action=edit&redlink=1)
 
-##### 由于状态影响
+### 由状态效果触发
 
-开球了，范围效果?
+命中时，范围效果？
 
-#### 进化配方
+## 进化配方
 
 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |  |
-| [地震（Earthquake）](Earthquake.md) [![](../assets/Earthquake.png)](Earthquake.md) |  |  |  | [细胞（Cell）](Cell.md) [![](../assets/Cell.png)](Cell.md) 清除 FUNGALxforforest |  |  |
+| [地震（Earthquake）](Earthquake.md) [![](../assets/Earthquake.png)](Earthquake.md) |  |  |  | [细胞（Cell）](Cell.md) [![](../assets/Cell.png)](Cell.md) 清除真菌森林 |  |  |
 |  |  |  |  |  |  |  |
-|  |  | [![](../assets/Overgrowth.png)](#%E8%BF%87%E5%BA%A6%E5%A2%9E%E9%95%BFovergrowth)过度增长（Overgrowth） |  |  |  |  |
+|  |  | [![](../assets/Overgrowth.png)](#%E7%96%AF%E9%95%BFovergrowth)疯长（Overgrowth） |  |  |  |  |
 
-#### 关卡
+## 关卡
 
-| 等级 | 伤害 | 影响 |
+| 等级 | 伤害 | 效果 |
 | --- | --- | --- |
-| 1 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6至6.8) | 应用 1堆叠的过度生长。 到达 3时， 消耗所有堆叠， 并在 3x3瓷砖平方中处理 150- 200个敌人的损坏。 ／ |
-| 2 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6至6.8) | 应用 1堆叠的过度生长。 到达 3时， 消耗所有堆叠， 并在 3x3瓷砖平方中处理 180- 250对所有敌人的破坏。 ／ |
-| 3 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6至6.8) | 应用 1堆叠的过度生长。 到达 2时， 消耗所有堆叠， 并在 3x3瓷砖方块中处理所有敌人的180 - 250损坏。 ／ |
+| 1 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6 至 6.8) | 施加1层疯长效果。当达到3层时，消耗所有层，并对3x3格范围内的所有敌人造成150-200点伤害。 |
+| 2 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6 至 6.8) | 施加1层疯长效果。当达到3层时，消耗所有层，并对3x3格范围内的所有敌人造成180-250点伤害。 |
+| 3 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(3.6 至 6.8) | 施加1层疯长效果。当层数达到2时，消耗所有层数，并对3x3格范围内的所有敌人造成180-250点伤害。 |
 
-#### 发展情况
+## 进化
 
-*这个球不能进一步发展。*
+*这个球无法进一步进化。*
 
-#### 策略
+## 策略
 
-#### 更新记录
+## 更新记录
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
 [共享导航](../navigation/nav-63012059ef49.md)
 
-**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

@@ -2,44 +2,44 @@
 
 [![Buildings Mausoleum Level1.png](../assets/Buildings_Mausoleum_Level1.png)](../files/Buildings_Mausoleum_Level1.png.md)
 
-一个房子 [暗影](The_Shade.md) [![The Shade.png](../assets/The_Shade.png)](The_Shade.md).
-
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Mausoleum) · [修订 3394](https://ballxpit.wiki.gg/index.php?oldid=3394) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 信息（Information）
+[暗影](The_Shade.md) [![The Shade.png](../assets/previews/The_Shade-25px-ef519492.png)](The_Shade.md) 的房子。
 
-##### 分类（Category）
+## 信息（Information）
 
-住房
-
-##### 子类（Subcategory）
+### 分类（Category）
 
 住房
 
-##### 蓝图位置（Blueprint location）
+### 子类（Subcategory）
 
-[边境沙漠](The_LIMINALxDESERT.md) [![The LIMINALxDESERT.png](../assets/The_LIMINALxDESERT.png)](The_LIMINALxDESERT.md)
+住房
 
-##### 基础资源消耗（Base resource cost）
+### 蓝图位置（Blueprint location）
 
-[![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 30
+[边境沙漠](The_LIMINALxDESERT.md) [![The LIMINALxDESERT.png](../assets/previews/The_LIMINALxDESERT-25px-2fd67388.png)](The_LIMINALxDESERT.md)
 
-##### 建造点消耗（Build point cost）
+### 基础资源消耗（Base resource cost）
+
+[![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 30
+
+### 建造点消耗（Build point cost）
 
 20
 
-修建陵墓的解锁 [暗影](The_Shade.md) [![The Shade.png](../assets/The_Shade.png)](The_Shade.md) 一旦角色获得足够的经验值才能达到水平 {?TODO找到角色水平的奖励},这个建筑释放了一个被动的能力，在这个过程中玩家将自动获得 [![Gold.png](../assets/Gold.png)](Gold.md) 在一个级别中一个角色死去时，这种效果也会触发，即使使用 [尼克罗曼斯的](Necromancer.md) 能力)这座建筑的性能可以通过进一步提高，而不是直接升级建筑本身，进一步升级角色到水平 {???}.请注意，拆除一个角色的房子将使这个角色不适用于收获模式或水平运行，并将它们从任何建筑任务中移除，直到他们的房子重建 (尽管角色仍然会保留之前的所有进展)。
+建造陵墓将解锁[暗影](The_Shade.md) [![The Shade.png](../assets/previews/The_Shade-25px-ef519492.png)](The_Shade.md) 作为可玩角色。一旦该角色获得足够的经验值达到等级{？？？}，该建筑将解锁一项被动技能，即每当该角色死亡时，玩家将自动获得[![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md)金币（注意，此效果在利用[死灵法师](Necromancer.md)技能复活角色后也会触发）。通过进一步将角色升级到{???}等级，而非直接升级建筑本身，可以进一步提升该技能的效果。请注意，拆除角色的住宅将使该角色在收获模式或等级提升中无法使用，并使其从所有建筑任务中移除，直到其住宅重建为止（尽管该角色仍会保留之前的所有进度）。
 
 被动效果与升级
 
-| 等级 | 图片 | 描述 | 资源消耗 | 建造点消耗 | 拆除 | 性格水平要求 |
+| 等级 | 图片 | 说明 | 资源消耗 | 建造点消耗 | 拆除 | 角色等级要求 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [![Buildings Mausoleum Level1.png](../assets/Buildings_Mausoleum_Level1.png)](../files/Buildings_Mausoleum_Level1.png.md) | 影子的房子。 | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 30 | 20 | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 30 | - |
-| 2 |  |  | - | - | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 30 |  |
-| 3 |  | 影子的房子。 收益100 [![Gold.png](../assets/Gold.png)](Gold.md) 每当一个角色在某个层面死亡。 | - | - | [![Stone (resource).png](../assets/Stone_%28resource%29.png)](Stone_resource.md) 30 |  |
+| 1 | [![Buildings Mausoleum Level1.png](../assets/previews/Buildings_Mausoleum_Level1-121px-59c24839.png)](../files/Buildings_Mausoleum_Level1.png.md) | 给暗影者的房子。 | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 30 | 20 | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 30 | - |
+| 2 |  |  | - | - | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 30 |  |
+| 3 |  | 给暗影者的房子。 每当角色在某一等级中死亡时，将获得 100 [![Gold.png](../assets/previews/Gold-18px-37fc111e.png)](Gold.md)。 | - | - | [![Stone (resource).png](../assets/previews/Stone__resource-21px-79e1a9bc.png)](Stone_resource.md) 30 |  |
 
 [共享导航](../navigation/nav-d4956b01aa56.md)
 
-**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 建筑](../categories/Buildings.md) · [分类 · 住房](../categories/Housing.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

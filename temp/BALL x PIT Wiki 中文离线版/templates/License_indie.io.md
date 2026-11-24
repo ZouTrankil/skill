@@ -2,14 +2,14 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:License%2Findie.io) · [修订 541](https://ballxpit.wiki.gg/index.php?oldid=541) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板目前看起来像 :
+当前该模板看起来如下：
 
-[![《在现实中](../assets/commons--IN_COPYRIGHT.svg)](https://rightsstatements.org/page/InC/1.0/?language=en)
+[![版权所有](../assets/previews/commons--IN_COPYRIGHT-50px-0e725ad3.png)](https://rightsstatements.org/page/InC/1.0/?language=en)
 
-此文件为 [一、一、二、二、三](https://indie.io) 和(或)其许可证发放者和(或)其许可发放人，并依照《巴塞尔公约》 [一、一、二、二、三](https://indie.io) [使用术语的使用术语的使用术语的使用条款](https://www.indie.io/terms-of-service).
-档案中存在的所有商标和注册商标均为 [一、一、二、二、三](https://indie.io) 和(或)其许可人。
+此文件归 [indie.io](https://indie.io) 及其许可方所有，并根据 [indie.io](https://indie.io) [使用条款](https://www.indie.io/terms-of-service)进行许可。
+ 文件中出现的所有商标和注册商标均归 [indie.io](https://indie.io) 及其许可方所有。
 
-见见 `{{[License](License.md)}}` 持有全许可证证件
+查看 `{{[License](License.md)}}` 如需完整的许可证文档，请查看。
 
 **分类**　[分类 · 许可证模板](../categories/License_templates.md)
 

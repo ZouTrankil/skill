@@ -1,10 +1,10 @@
-# 模板 · Iter/doc(意大利)（Iter/doc）
+# 模板 · 迭代/文档（Iter/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Iter%2Fdoc) · [修订 506](https://ballxpit.wiki.gg/index.php?oldid=506) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-此模板模板帮助您在表格中创建索引化列( 特别是) [货物](https://support.wiki.gg/wiki/Cargo) 查询)和在使用分析器函数时检索迭代器值 `{{#arraymaptemplate` (与扩展部分(Parser Power on wiki.gg)相混合)。
+此模板有助于您在表格中创建索引列（特别是 [Cargo](https://support.wiki.gg/wiki/Cargo) 查询) 并在使用解析函数时检索迭代器值 `{{#arraymaptemplate` （与 Extension:ParserPower 捆绑在 wiki.gg 上）。
 
-#### 简单计数
+## 简单计数
 
 ```
 * {{iter|}}
@@ -18,7 +18,7 @@
 * 3
 * 4
 
-#### 重置柜台
+## 重置计数器
 
 ```
 * {{iter|reset=yes}}
@@ -32,7 +32,7 @@
 * 1
 * 2
 
-#### 多个计数器
+## 多个计数器
 
 ```
 * {{iter|key1}}
@@ -46,7 +46,7 @@
 * 2
 * 2
 
-#### 获取值而不加量
+## 获取价值而不增加数值
 
 ```
 * {{iter|reset=yes}}

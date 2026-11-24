@@ -4,15 +4,15 @@
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Album_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Album/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Album/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Album_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Album/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Album/testcases)页面上进行实验。 |
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}专辑模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{Album}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Album
@@ -28,35 +28,35 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 花花
+## Fleur
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 艺艺人
+### 艺术家
 
-结婚
+玛莉戈尔德
 
-##### 释放
+### 发布
 
 2012 年 6 月
 
-##### 录音录音
+### 记录
 
 2011
 
-##### 长长长
+### 长度
 
 88:88
 
-##### 标签标签
+### 标签
 
-春春
+春天
 
-##### 生产者生产者
+### 制作人
 
-达飞
+达菲
 
 ```
 {{Album

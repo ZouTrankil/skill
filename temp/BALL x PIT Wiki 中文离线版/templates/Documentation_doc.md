@@ -1,22 +1,22 @@
-# 模板 · 文件/文档（Documentation/doc）
+# 模板 · 文档资料/文档（Documentation/doc）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Documentation%2Fdoc) · [修订 396](https://ballxpit.wiki.gg/index.php?oldid=396) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 描述
+## 说明
 
-此模板用于在模板页面插入描述。
+此模板用于插入模板页面上的描述。
 
-#### 语法
+## 语法
 
-添加添加添加 `<noinclude>{{[Documentation](Documentation.md)}}</noinclude>` 在模板页面结尾处。
+添加 `<noinclude>{{[Documentation](Documentation.md)}}</noinclude>` 在模板页面末尾。
 
-添加添加添加 `<noinclude>{{[Documentation](Documentation.md)|<documentation page>}}</noinclude>` 以从/doc 子页中清除替代页面。
+添加 `<noinclude>{{[Documentation](Documentation.md)|<documentation page>}}</noinclude>` 要引用/doc子页面中的其他页面。
 
-#### 使用率
+## 使用
 
-##### 在模板页面上
+### 在模板页面上
 
-使用时此格式为常规格式 :
+这是使用时的常规格式：
 
 ```
 TEMPLATE CODE
@@ -24,15 +24,15 @@ TEMPLATE CODE
 <noinclude>{{Documentation}}</noinclude>
 ```
 
-*如果您的模板不是一个完整的 div 或表格， 您可能需要在之前关闭标签 `{{Documentation}}` 插入(在“不包括”标签内)。*
+*如果您的模板不是完整的 div 或 table，您可能需要在即将结束之前关闭标签。 `{{Documentation}}` 已插入（在 noinclude 标签内）。*
 
-*前面的换行符 `{{Documentation}}` 也可以有用，因为它有助于防止文档模板“运行到”以前的代码。*
+*就在换行之前 `{{Documentation}}` 这也有用，因为它有助于防止文档模板“遇到”之前的代码。*
 
-##### 文件页
+### 在文档页面上
 
-文件页面通常位于模板的/doc 子页面上，但可以用模板的第一个参数指定不同的页面(见 [Syntax](#%E8%AF%AD%E6%B3%95))。
+文档页面通常位于模板的 /doc 子页面上，但可以通过模板的第一个参数指定其他页面（参见 [语法](#%E8%AF%AD%E6%B3%95)）。
 
-通常情况下，您要在文档页面上写下类似内容:
+通常，您会在文档页面上写入类似以下内容：
 
 ```
 ==Description==
@@ -52,9 +52,9 @@ results in...
 <noinclude>[[Category:Template documentation]]</noinclude>
 ```
 
-使用上述描述/ 语法/ 样本输出部分的任何或全部。 您也可以添加“ 另参看” 或其他部分。
+使用上述说明/语法/示例输出部分中的任意或全部内容。您也可以添加“参见”或其他部分。
 
-请注意，上述示例还使用 [模板:T](T.md)模板。
+请注意，上述示例也使用了 [模板:T](T.md) 模板。
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

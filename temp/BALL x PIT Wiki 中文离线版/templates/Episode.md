@@ -1,18 +1,18 @@
-# 模板 · 剧情（Episode）
+# 模板 · 剧集（Episode）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Episode) · [修订 13](https://ballxpit.wiki.gg/index.php?oldid=13) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
 | 模板文档 |
 | --- |
-| *注:未提供值，模板样本的某些部分可能无法见。* |
-| 查看或编辑 [此文档](Episode_doc.md) ( [关于模板文档](Documentation.md)) |
-| 编辑器可以在此模板 [sandbox](https://ballxpit.wiki.gg/wiki/Template:Episode/sandbox?action=edit) 和 [测试案例](https://ballxpit.wiki.gg/wiki/Template:Episode/testcases) 页面上进行实验。 |
+| *注意：如果没有提供数值，模板样本的部分内容可能无法显示。* |
+| 查看或编辑 [此文档](Episode_doc.md)。（[关于模板文档](Documentation.md)） |
+| 编辑可以在此模板的[沙盒](https://ballxpit.wiki.gg/wiki/Template:Episode/sandbox?action=edit)和[测试案例](https://ballxpit.wiki.gg/wiki/Template:Episode/testcases)页面上进行实验。 |
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}剧情模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{剧集}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Episode
@@ -28,35 +28,35 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 贝贝花花
+## 巴贝尔之花
 
 [![Example.jpg](../assets/commons--Example.jpg)](../files/Example.jpg.md)
 
-##### 季节
+### 赛季
 
 一个
 
-##### 剧情
+### 剧集
 
-三
+三个
 
-##### 航空日期
+### 播出日期
 
-未偿还未偿
+未放送
 
-##### 作家作家作家
+### 作者
 
-D. 右
+D. 右侧
 
-##### 主任主任主任
+### 导演
 
-A. 恢复
+A. di Rektour
 
-集导
+剧集指南
 
-| 上一个 | 下一页 |
+| 之前 | 下一步 |
 | --- | --- |
 | 第二集 | 第四集 |
 

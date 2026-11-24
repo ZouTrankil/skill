@@ -2,33 +2,33 @@
 
 [![Nuclear Bomb.png](../assets/Nuclear_Bomb.png)](../files/Nuclear_Bomb.png.md)
 
-撞击敌人时爆炸，对附近的敌人造成300-500/400-700/400-700的伤害，并对无限期在场的每个人施加1堆辐射(最大5堆)，每堆辐射会增加10%/10%/15%的损伤。有3秒冷却。
+击中敌人时爆炸，对附近的敌人造成 300-500/400-700/400-700 的伤害，并无限期地向在场所有人施加 1 层辐射（最多 5 层）。每层辐射使受到的伤害分别增加 10%/10%/15%。冷却时间为 3 秒。
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Nuclear_Bomb) · [修订 4279](https://ballxpit.wiki.gg/index.php?oldid=4279) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 一般信息
+## 基本信息
 
-##### 由
+### 由……创建
 
 [炸弹](Bomb.md) [![Bomb.png](../assets/Bomb.png)](Bomb.md) + [中毒](Poison.md) [![Poison.png](../assets/Poison.png)](Poison.md)
 
-##### 开始的性格
+### 初始角色（Starting Character）
 
 -
 
-##### 命中效果（On-Hit Effects）
+### 命中效果（On-Hit Effects）
 
-自杀
+自爆
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
 [辐射](https://ballxpit.wiki.gg/wiki/Status_Effects?action=edit&redlink=1)
 
-##### 由于状态影响
+### 由状态效果触发
 
-开放式，全屏范围效果
+命中时，全屏范围效果
 
-#### 进化配方
+## 进化配方
 
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -39,30 +39,30 @@
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  |  | [![](../assets/Nuclear_Bomb.png)](#%E6%A0%B8%E5%BC%B9nuclear-bomb)核弹（Nuclear Bomb） |  |  |  |  |  |  |  |  |
 
-#### 关卡
+## 关卡
 
-| 等级 | 伤害 | 影响 |
+| 等级 | 伤害 | 效果 |
 | --- | --- | --- |
-| 1 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2至8.0) | 撞击敌人时会爆炸，对附近的敌人造成300-500的伤害，并对无限期在场的每一个人施加1堆辐射(最大5堆)，每堆辐射会增加10%的伤害。有3次冷却。 ／ |
-| 2 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2至8.0) | 在击中敌人时爆炸，对附近的敌人造成400-700的伤害，并将1堆辐射用于无限时间 (最高5堆)。每堆辐射增加收到的伤害10%。有3秒的冷却。 ／ |
-| 3 | [![Strength.png](../assets/Strength.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2至8.0) | 射击敌人时爆炸，对附近的敌人造成400-700伤害，并将1堆辐射用于无限时间 (最多5堆)。每堆辐射增加15%。每堆辐射收到的伤害增加了3秒的冷却。 ／ |
+| 1 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2 至 8.0) | 击中敌人时爆炸，对附近的敌人造成 300-500 点伤害，并无限期地向所有在场人员施加 1 层辐射（最多 5 层）。每层辐射使受到的伤害增加 10%。冷却时间为 3 秒。 |
+| 2 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2 至 8.0) | 击中敌人时爆炸，对附近的敌人造成 400-700 点伤害，并无限期地向所有在场人员施加 1 层辐射（最多 5 层）。每层辐射会使受到的伤害增加 10%。冷却时间为 3 秒。 |
+| 3 | [![Strength.png](../assets/previews/Strength-18px-6a8caee0.png)](https://ballxpit.wiki.gg/wiki/Strength) x(4.2 至 8.0) | 击中敌人时爆炸，对附近的敌人造成 400-700 点伤害，并无限期地向所有在场人员施加 1 层辐射（最多 5 层）。每层辐射会使受到的伤害增加 15%。冷却时间为 3 秒。 |
 
-#### 发展情况
+## 进化
 
-*这个球不能进一步发展。*
+*这个球无法进一步进化。*
 
-#### 策略
+## 策略
 
-与细胞的融合创造了多个核弹球。
+与细胞融合会生成多个核弹球。
 
-#### 更新记录
+## 更新记录
 
-#### 冷知识
+## 冷知识
 
-#### 图片库
+## 图片库
 
 [共享导航](../navigation/nav-63012059ef49.md)
 
-**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 页面有导航框](../categories/Pages_with_navboxes.md)
+**分类**　[分类 · 进化圆球](../categories/Evolved_Balls.md) · [分类 · 圆球](../categories/Balls.md) · [分类 · 带有导航框的页面](../categories/Pages_with_navboxes.md)
 
 [返回总入口](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md) · [返回本分目录](%E7%9B%AE%E5%BD%95.md)

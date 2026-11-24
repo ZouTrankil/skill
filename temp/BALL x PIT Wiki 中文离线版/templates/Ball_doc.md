@@ -2,11 +2,11 @@
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:Ball%2Fdoc) · [修订 2710](https://ballxpit.wiki.gg/index.php?oldid=2710) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 
-#### 描述
+## 说明
 
-要使用此模板， 请添加 {} {}[圆球](Ball.md)模板并填入相应字段。 左空字段不会出现在文章中。 此信息框模板的使用 [方制信息箱语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1).
+要使用此模板，请添加 {{[圆球](Ball.md)}} 模板并填写相应的字段。未填写的字段将不会出现在文章中。此信息框模板使用 [Fandom 的信息框语法](https://ballxpit.wiki.gg/wiki/W%3AHelp%3AInfobox?action=edit&redlink=1)。
 
-#### 语法
+## 语法
 
 ```
 {{Character
@@ -26,76 +26,76 @@
 }}
 ```
 
-#### 抽样产出
+## 示例输出
 
-#### 流血（Bleed）
+## 流血（Bleed）
 
 [![Bleed.png](../assets/Bleed.png)](../files/Bleed.png.md)
 
-2堆血，流血的敌人在被球击中时每堆1个损伤(最大8个堆)。
+施加2层流血效果。被球击中的敌人每层会遭受1点伤害（最多8层）。
 
-#### 一般信息
+## 基本信息
 
-##### 角色（Characters）
+### 角色（Characters）
 
-[战士](../articles/The_Warrior.md) [![The Warrior.png](../assets/The_Warrior.png)](../articles/The_Warrior.md)
-[伪救世主](../articles/The_False_Messiah.md) [![The False Messiah.png](../assets/The_False_Messiah.png)](../articles/The_False_Messiah.md)
+[战士](../articles/The_Warrior.md) [![The Warrior.png](../assets/previews/The_Warrior-25px-94d3a92b.png)](../articles/The_Warrior.md)
+[伪救世主](../articles/The_False_Messiah.md) [![The False Messiah.png](../assets/previews/The_False_Messiah-25px-a9c0c9f7.png)](../articles/The_False_Messiah.md)
 
-##### 解锁
+### 解锁
 
-N/A (在比赛开始时可用)
+N/A（游戏开始时可获取）
 
-##### 损失类型
+### 伤害类型
 
-敌军德布夫
+命中时，敌人减益
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
-出血
+流血
 
-##### 发展情况（Evolutions）
+### 进化（Evolutions）
 
-[贝尔塞克](../articles/Berserk.md) [![Berserk.png](../assets/Berserk.png)](../articles/Berserk.md)
-[输血](../articles/Hemorrhage.md) [![Hemorrhage.png](../assets/Hemorrhage.png)](../articles/Hemorrhage.md)
-[李克](../articles/Leech.md) [![Leech.png](../assets/Leech.png)](../articles/Leech.md)
-[牺牲](../articles/Sacrifice.md) [![Sacrifice.png](../assets/Sacrifice.png)](../articles/Sacrifice.md)
-[吸血鬼主](../articles/Vampire_Lord.md) [![Vampire Lord.png](../assets/Vampire_Lord.png)](../articles/Vampire_Lord.md)
+[狂暴](../articles/Berserk.md) [![Berserk.png](../assets/previews/Berserk-25px-af4432fd.png)](../articles/Berserk.md)
+[大出血](../articles/Hemorrhage.md) [![Hemorrhage.png](../assets/previews/Hemorrhage-25px-780f4b2e.png)](../articles/Hemorrhage.md)
+[水蛭](../articles/Leech.md) [![Leech.png](../assets/previews/Leech-25px-30d1c1cb.png)](../articles/Leech.md)
+[献祭](../articles/Sacrifice.md) [![Sacrifice.png](../assets/previews/Sacrifice-25px-36b5702b.png)](../articles/Sacrifice.md)
+[吸血鬼领主](../articles/Vampire_Lord.md) [![Vampire Lord.png](../assets/previews/Vampire_Lord-25px-53072792.png)](../articles/Vampire_Lord.md)
 
-#### 灼烧（Burn）
+## 灼烧（Burn）
 
 [![Burn.png](../assets/Burn.png)](../files/Burn.png.md)
 
-应用刻录( 4-8 dmg/ s) 。 最大 3 Stacks
+施加灼烧效果（4-8点伤害/秒）。最多可叠加3层。
 
-#### 一般信息
+## 基本信息
 
-##### 性格（Character）
+### 角色（Character）
 
-[快枪手](../articles/The_Itchy_Finger.md) [![The Itchy Finger.png](../assets/The_Itchy_Finger.png)](../articles/The_Itchy_Finger.md)
+[快枪手](../articles/The_Itchy_Finger.md) [![The Itchy Finger.png](../assets/previews/The_Itchy_Finger-25px-4ce66804.png)](../articles/The_Itchy_Finger.md)
 
-##### 解锁
+### 解锁
 
-N/A (在比赛开始时可用)
+N/A（游戏开始时可获取）
 
-##### 损失类型
+### 伤害类型
 
-中弹， 长期伤害伤害
+命中时，随时间伤害
 
-##### 状态效果（Status Effects）
+### 状态效果（Status Effects）
 
-燃烧燃烧
+燃烧
 
-##### 发展情况（Evolutions）
+### 进化（Evolutions）
 
-[驱逐的火焰](../articles/Banished_Flame.md) [![Banished Flame.png](../assets/Banished_Flame.png)](../articles/Banished_Flame.md)
-[贝尔塞克](../articles/Berserk.md) [![Berserk.png](../assets/Berserk.png)](../articles/Berserk.md)
-[炸弹](../articles/Bomb.md) [![Bomb.png](../assets/Bomb.png)](../articles/Bomb.md)
-[硫磺](../articles/Brimstone.md) [![Brimstone.png](../assets/Brimstone.png)](../articles/Brimstone.md)
-[烟花](../articles/Fireworks.md) [![Fireworks.png](../assets/Fireworks.png)](../articles/Fireworks.md)
-[冰冻火焰](../articles/Frozen_Flame.md) [![Frozen Flame.png](../assets/Frozen_Flame.png)](../articles/Frozen_Flame.md)
-[在地狱里](../articles/Inferno.md) [![Inferno.png](../assets/Inferno.png)](../articles/Inferno.md)
-[马格玛](../articles/Magma.md) [![Magma.png](../assets/Magma.png)](../articles/Magma.md)
-[太阳](../articles/Sun.md) [![Sun.png](../assets/Sun.png)](../articles/Sun.md)
+[放逐之焰](../articles/Banished_Flame.md) [![Banished Flame.png](../assets/previews/Banished_Flame-25px-60560be0.png)](../articles/Banished_Flame.md)
+[狂暴](../articles/Berserk.md) [![Berserk.png](../assets/previews/Berserk-25px-af4432fd.png)](../articles/Berserk.md)
+[炸弹](../articles/Bomb.md) [![Bomb.png](../assets/previews/Bomb-25px-b9be8ab6.png)](../articles/Bomb.md)
+[硫磺](../articles/Brimstone.md) [![Brimstone.png](../assets/previews/Brimstone-25px-b00e8921.png)](../articles/Brimstone.md)
+[烟花](../articles/Fireworks.md) [![Fireworks.png](../assets/previews/Fireworks-25px-292036bc.png)](../articles/Fireworks.md)
+[冰冻火焰](../articles/Frozen_Flame.md) [![Frozen Flame.png](../assets/previews/Frozen_Flame-25px-18615c36.png)](../articles/Frozen_Flame.md)
+[炼狱](../articles/Inferno.md) [![Inferno.png](../assets/previews/Inferno-25px-b172d554.png)](../articles/Inferno.md)
+[岩浆](../articles/Magma.md) [![Magma.png](../assets/previews/Magma-25px-2cac90e9.png)](../articles/Magma.md)
+[太阳](../articles/Sun.md) [![Sun.png](../assets/previews/Sun-25px-99923612.png)](../articles/Sun.md)
 
 ```
 {{Ball
@@ -133,7 +133,7 @@ N/A (在比赛开始时可用)
 }}
 ```
 
-**NOTE:** 名称和图像参数是完全可选的，将分别默认于页面名称和图像名称。
+**注意：** 名称和图片参数完全是可选的，默认将使用页面名称和图片名称。
 
 **分类**　[分类 · 模板文档](../categories/Template_documentation.md)
 

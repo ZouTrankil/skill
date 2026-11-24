@@ -1,4 +1,4 @@
-# 分类 · 建筑物（Building sprites）
+# 分类 · 建筑精灵图（Building sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Building_sprites)
 

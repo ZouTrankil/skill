@@ -1,4 +1,4 @@
-# 模板 · 球盘/沙盒（BallTableRow/sandbox）
+# 模板 · 圆球表格行/沙盒（BallTableRow/sandbox）
 
 [原文与贡献者记录](https://ballxpit.wiki.gg/wiki/Template:BallTableRow%2Fsandbox) · [修订 2269](https://ballxpit.wiki.gg/index.php?oldid=2269) · [返回目录](../%E7%90%83%E6%AF%94%E4%BC%A6%E6%88%98%E8%AE%B0%20Wiki.md)
 

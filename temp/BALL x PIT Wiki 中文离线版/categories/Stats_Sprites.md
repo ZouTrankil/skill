@@ -1,4 +1,4 @@
-# 分类 · 统计物质（Stats Sprites）
+# 分类 · 属性精灵图（Stats Sprites）
 
 [查看原站分类](https://ballxpit.wiki.gg/wiki/Category:Stats_Sprites)
 
